@@ -54,6 +54,15 @@ def FromLS(input_line) -> dict:
             Booleans[boolean_name] = boolean_value
         parse_block["Booleans"] = Booleans
 
+    elif parse_type == "JSON":
+        JsonField = ParseLiteral(line.current)
+        parse_block["JsonField"] = JsonField
+        Booleans = {}
+        while Lookahead(line.current) == "Boolean":
+            boolean_name, boolean_value = SetBool(line.current)
+            Booleans[boolean_name] = boolean_value
+        parse_block["Booleans"] = Booleans
+
     else:
         return None
 
