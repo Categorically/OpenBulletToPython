@@ -11,9 +11,11 @@ def FromLS(input_line) -> dict:
     
     parse_block = {}
 
+    #Temp
     label = ParseLabel(line.current)
     parse_block["label"] = label
 
+    #Temp
     block_type = ParseEnum(line.current)
     parse_block["block_type"] = block_type
 
@@ -57,6 +59,17 @@ def FromLS(input_line) -> dict:
     elif parse_type == "JSON":
         JsonField = ParseLiteral(line.current)
         parse_block["JsonField"] = JsonField
+        Booleans = {}
+        while Lookahead(line.current) == "Boolean":
+            boolean_name, boolean_value = SetBool(line.current)
+            Booleans[boolean_name] = boolean_value
+        parse_block["Booleans"] = Booleans
+
+    elif parse_type == "LR":
+        LeftString = ParseLiteral(line.current)
+        parse_block["LeftString"] = LeftString
+        RightString = ParseLiteral(line.current)
+        parse_block["LeftString"] = LeftString
         Booleans = {}
         while Lookahead(line.current) == "Boolean":
             boolean_name, boolean_value = SetBool(line.current)
