@@ -1,4 +1,4 @@
-from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken
+from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt
 
 def FromLS(input_line) -> dict:
     """
@@ -24,7 +24,6 @@ def FromLS(input_line) -> dict:
     parse_block["parse_type"] = parse_type
 
     if parse_type == "REGEX":
-
         regex_pattern  = ParseLiteral(line.current)
         parse_block["regex_pattern"] = regex_pattern
 
@@ -36,8 +35,28 @@ def FromLS(input_line) -> dict:
             boolean_name, boolean_value = SetBool(line.current)
             Booleans[boolean_name] = boolean_value
         parse_block["Booleans"] = Booleans
+    
+    elif parse_type == "CSS":
+        CssSelector =  ParseLiteral(line.current)
+        parse_block["CssSelector"] = CssSelector
+
+        AttributeName = ParseLiteral(line.current)
+        parse_block["AttributeName"] = AttributeName
+
+        if Lookahead(line.current) == "Boolean":
+            SetBool(line.current)
+        elif Lookahead(line.current) == "Integer":
+            CssElementIndex = ParseInt(line.current)
+            parse_block["CssElementIndex"] = CssElementIndex
+        Booleans = {}
+        while Lookahead(line.current) == "Boolean":
+            boolean_name, boolean_value = SetBool(line.current)
+            Booleans[boolean_name] = boolean_value
+        parse_block["Booleans"] = Booleans
+
     else:
         return None
+
     arrow = ParseToken(line.current,"Arrow",True,True)
 
     var_type = ParseToken(line.current,"Parameter",True,True)
