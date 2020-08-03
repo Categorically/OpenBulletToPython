@@ -70,3 +70,8 @@ def Lookahead(line_input):
 def SetBool(line_input):
     name, value  = ParseToken(line_input,"Parameter",True,True).split("=")
     return name, value
+
+def EnsureIdentifier(input_string, id_string):
+    token = ParseToken(input_string,"Parameter",True,True)
+    if token.upper() != id_string.upper():
+        print(f"Expected identifier '{id_string}")
