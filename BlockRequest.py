@@ -14,9 +14,9 @@ def FromLS(input_line):
 
     if str(line_input).startswith("!"):
         return None
-    
-    request_block = {}
 
+    request_block = {}
+    
     #Temp
     if input_line.startswith("#"):
         label = ParseLabel(line.current)
@@ -32,11 +32,10 @@ def FromLS(input_line):
     Url = ParseLiteral(line.current)
     request_block["Url"] = Url
 
-    Booleans = {}
+    request_block["Booleans"] = {}
     while Lookahead(line.current) == "Boolean":
         boolean_name, boolean_value = SetBool(line.current)
-        Booleans[boolean_name] = boolean_value
-    request_block["Booleans"] = Booleans
+        request_block["Booleans"][boolean_name] = boolean_value
 
     while len(str(line.current)) != 0 and line.current.startswith("->") == False:
         parsed = ParseToken(line.current,"Parameter",True,True).upper()
@@ -114,8 +113,7 @@ def FromLS(input_line):
             while Lookahead(line.current) == "Boolean":
                     
                 boolean_name, boolean_value = SetBool(line.current)
-                Booleans[boolean_name] = boolean_value
-            request_block["Booleans"] = Booleans
+                request_block["Booleans"][boolean_name] = boolean_value
 
         elif outType.upper() == "BASE64":
             ResponseType = "BASE64"
