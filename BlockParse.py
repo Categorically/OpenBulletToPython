@@ -58,7 +58,7 @@ class BlockParse:
             LeftString = ParseLiteral(line.current)
             parse_block["LeftString"] = LeftString
             RightString = ParseLiteral(line.current)
-            parse_block["LeftString"] = LeftString
+            parse_block["RightString"] = RightString
             parse_block["Booleans"] = {}
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
