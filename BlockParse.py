@@ -1,96 +1,88 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt
+class BlockParse:
+    def FromLS(self,input_line) -> dict:
+        """
+        "<SOURCE>" REGEX "" "" CreateEmpty=FALSE -> VAR ""
+        """
+        input_line = input_line.strip()
 
-def FromLS(input_line) -> dict:
-    """
-    #Label PARSE "<SOURCE>" REGEX "" "" CreateEmpty=FALSE -> VAR ""
-    """
-    input_line = input_line.strip()
-    line.current = input_line
-    if str(input_line).startswith("!"):
-        return None
-    
-    parse_block = {}
+        if str(input_line).startswith("!"):
+            return None
+        line.current = input_line
+        parse_block = {}
 
-    #Temp
-    label = ParseLabel(line.current)
-    parse_block["label"] = label
+        ParseTarget = ParseLiteral(line.current)
+        parse_block["ParseTarget"] = ParseTarget
 
-    #Temp
-    block_type = ParseEnum(line.current)
-    parse_block["block_type"] = block_type
+        parse_type = ParseEnum(line.current)
+        parse_block["parse_type"] = parse_type
 
-    ParseTarget = ParseLiteral(line.current)
-    parse_block["ParseTarget"] = ParseTarget
+        if parse_type == "REGEX":
+            regex_pattern  = ParseLiteral(line.current)
+            parse_block["regex_pattern"] = regex_pattern
 
-    parse_type = ParseEnum(line.current)
-    parse_block["parse_type"] = parse_type
+            regex_output = ParseLiteral(line.current)
+            parse_block["regex_output"] = regex_output
 
-    if parse_type == "REGEX":
-        regex_pattern  = ParseLiteral(line.current)
-        parse_block["regex_pattern"] = regex_pattern
+            parse_block["Booleans"] = {}
+            while Lookahead(line.current) == "Boolean":
+                boolean_name, boolean_value = SetBool(line.current)
+                parse_block["Booleans"][boolean_name] = boolean_value
+        
+        elif parse_type == "CSS":
+            CssSelector =  ParseLiteral(line.current)
+            parse_block["CssSelector"] = CssSelector
 
-        regex_output = ParseLiteral(line.current)
-        parse_block["regex_output"] = regex_output
+            AttributeName = ParseLiteral(line.current)
+            parse_block["AttributeName"] = AttributeName
 
-        parse_block["Booleans"] = {}
-        while Lookahead(line.current) == "Boolean":
-            boolean_name, boolean_value = SetBool(line.current)
-            parse_block["Booleans"][boolean_name] = boolean_value
-    
-    elif parse_type == "CSS":
-        CssSelector =  ParseLiteral(line.current)
-        parse_block["CssSelector"] = CssSelector
+            if Lookahead(line.current) == "Boolean":
+                SetBool(line.current)
+            elif Lookahead(line.current) == "Integer":
+                CssElementIndex = ParseInt(line.current)
+                parse_block["CssElementIndex"] = CssElementIndex
+            parse_block["Booleans"] = {}
+            while Lookahead(line.current) == "Boolean":
+                boolean_name, boolean_value = SetBool(line.current)
+                parse_block["Booleans"][boolean_name] = boolean_value
 
-        AttributeName = ParseLiteral(line.current)
-        parse_block["AttributeName"] = AttributeName
+        elif parse_type == "JSON":
+            JsonField = ParseLiteral(line.current)
+            parse_block["JsonField"] = JsonField
+            parse_block["Booleans"] = {}
+            while Lookahead(line.current) == "Boolean":
+                boolean_name, boolean_value = SetBool(line.current)
+                parse_block["Booleans"][boolean_name] = boolean_value
 
-        if Lookahead(line.current) == "Boolean":
-            SetBool(line.current)
-        elif Lookahead(line.current) == "Integer":
-            CssElementIndex = ParseInt(line.current)
-            parse_block["CssElementIndex"] = CssElementIndex
-        parse_block["Booleans"] = {}
-        while Lookahead(line.current) == "Boolean":
-            boolean_name, boolean_value = SetBool(line.current)
-            parse_block["Booleans"][boolean_name] = boolean_value
+        elif parse_type == "LR":
+            LeftString = ParseLiteral(line.current)
+            parse_block["LeftString"] = LeftString
+            RightString = ParseLiteral(line.current)
+            parse_block["LeftString"] = LeftString
+            parse_block["Booleans"] = {}
+            while Lookahead(line.current) == "Boolean":
+                boolean_name, boolean_value = SetBool(line.current)
+                parse_block["Booleans"][boolean_name] = boolean_value
 
-    elif parse_type == "JSON":
-        JsonField = ParseLiteral(line.current)
-        parse_block["JsonField"] = JsonField
-        parse_block["Booleans"] = {}
-        while Lookahead(line.current) == "Boolean":
-            boolean_name, boolean_value = SetBool(line.current)
-            parse_block["Booleans"][boolean_name] = boolean_value
+        else:
+            return None
 
-    elif parse_type == "LR":
-        LeftString = ParseLiteral(line.current)
-        parse_block["LeftString"] = LeftString
-        RightString = ParseLiteral(line.current)
-        parse_block["LeftString"] = LeftString
-        parse_block["Booleans"] = {}
-        while Lookahead(line.current) == "Boolean":
-            boolean_name, boolean_value = SetBool(line.current)
-            parse_block["Booleans"][boolean_name] = boolean_value
+        arrow = ParseToken(line.current,"Arrow",True,True)
 
-    else:
-        return None
+        var_type = ParseToken(line.current,"Parameter",True,True)
 
-    arrow = ParseToken(line.current,"Arrow",True,True)
+        IsCapture = False
+        if str(var_type.upper()) == "VAR" or str(var_type.upper()) == "CAP":
+            if str(var_type.upper()) == "CAP": IsCapture = True
+        parse_block["IsCapture"] = IsCapture
 
-    var_type = ParseToken(line.current,"Parameter",True,True)
+        variable_name = ParseLiteral(line.current)
+        parse_block["variable_name"] = variable_name
 
-    IsCapture = False
-    if str(var_type.upper()) == "VAR" or str(var_type.upper()) == "CAP":
-        if str(var_type.upper()) == "CAP": IsCapture = True
-    parse_block["IsCapture"] = IsCapture
+        prefix = ParseLiteral(line.current)
+        parse_block["prefix"] = prefix
 
-    variable_name = ParseLiteral(line.current)
-    parse_block["variable_name"] = variable_name
+        suffix = ParseLiteral(line.current)
+        parse_block["suffix"] = suffix
 
-    prefix = ParseLiteral(line.current)
-    parse_block["prefix"] = prefix
-
-    suffix = ParseLiteral(line.current)
-    parse_block["suffix"] = suffix
-
-    return parse_block
+        return parse_block
