@@ -5,14 +5,14 @@ def ParseString(input_string, separator, count) -> dict:
     return [ n.strip() for n in input_string.split(separator,count)]
 
 def FromLS(input_line):
-    line_input = input_line.strip()
+    input_line = input_line.strip()
     line.current = input_line
     MultipartContents = []
     CustomHeaders = {}
     CustomCookies = {}
     ResponseType = "STRING"
 
-    if str(line_input).startswith("!"):
+    if str(input_line).startswith("!"):
         return None
 
     request_block = {}

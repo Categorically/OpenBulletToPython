@@ -4,9 +4,9 @@ def FromLS(input_line) -> dict:
     """
     #Label PARSE "<SOURCE>" REGEX "" "" CreateEmpty=FALSE -> VAR ""
     """
-    line_input = input_line.strip()
+    input_line = input_line.strip()
     line.current = input_line
-    if str(line_input).startswith("!"):
+    if str(input_line).startswith("!"):
         return None
     
     parse_block = {}
