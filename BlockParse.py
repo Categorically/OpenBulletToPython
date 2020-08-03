@@ -32,11 +32,10 @@ def FromLS(input_line) -> dict:
         regex_output = ParseLiteral(line.current)
         parse_block["regex_output"] = regex_output
 
-        Booleans = {}
+        parse_block["Booleans"] = {}
         while Lookahead(line.current) == "Boolean":
             boolean_name, boolean_value = SetBool(line.current)
-            Booleans[boolean_name] = boolean_value
-        parse_block["Booleans"] = Booleans
+            parse_block["Booleans"][boolean_name] = boolean_value
     
     elif parse_type == "CSS":
         CssSelector =  ParseLiteral(line.current)
@@ -50,31 +49,28 @@ def FromLS(input_line) -> dict:
         elif Lookahead(line.current) == "Integer":
             CssElementIndex = ParseInt(line.current)
             parse_block["CssElementIndex"] = CssElementIndex
-        Booleans = {}
+        parse_block["Booleans"] = {}
         while Lookahead(line.current) == "Boolean":
             boolean_name, boolean_value = SetBool(line.current)
-            Booleans[boolean_name] = boolean_value
-        parse_block["Booleans"] = Booleans
+            parse_block["Booleans"][boolean_name] = boolean_value
 
     elif parse_type == "JSON":
         JsonField = ParseLiteral(line.current)
         parse_block["JsonField"] = JsonField
-        Booleans = {}
+        parse_block["Booleans"] = {}
         while Lookahead(line.current) == "Boolean":
             boolean_name, boolean_value = SetBool(line.current)
-            Booleans[boolean_name] = boolean_value
-        parse_block["Booleans"] = Booleans
+            parse_block["Booleans"][boolean_name] = boolean_value
 
     elif parse_type == "LR":
         LeftString = ParseLiteral(line.current)
         parse_block["LeftString"] = LeftString
         RightString = ParseLiteral(line.current)
         parse_block["LeftString"] = LeftString
-        Booleans = {}
+        parse_block["Booleans"] = {}
         while Lookahead(line.current) == "Boolean":
             boolean_name, boolean_value = SetBool(line.current)
-            Booleans[boolean_name] = boolean_value
-        parse_block["Booleans"] = Booleans
+            parse_block["Booleans"][boolean_name] = boolean_value
 
     else:
         return None
