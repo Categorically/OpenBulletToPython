@@ -1,7 +1,7 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
 
 
-def ParseString(input_string, separator, count) -> dict:
+def ParseString(input_string, separator, count) -> list:
     return [ n.strip() for n in input_string.split(separator,count)]
 
 def FromLS(input_line):
