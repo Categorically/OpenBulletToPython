@@ -75,3 +75,10 @@ def EnsureIdentifier(input_string, id_string):
     token = ParseToken(input_string,"Parameter",True,True)
     if token.upper() != id_string.upper():
         print(f"Expected identifier '{id_string}")
+
+def CheckIdentifier(input_string, id_string):
+    try:
+        token = ParseToken(input_string,"Parameter",True,False)
+        return token.upper() == id_string.upper()
+    except:
+        return False
