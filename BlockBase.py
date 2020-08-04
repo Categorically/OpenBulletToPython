@@ -6,9 +6,6 @@ def ParseArguments(input_string, delimL, delimR):
     for match in matches:
         output.append(match)
     return output
-bot_data = {"Variables": {"SOURCE":{"Value":{"name":"testes"},
-                                                     "Type": "Dictionary"}},
-                             "GlobalVariables": {}}
 def ReplaceValues(input_string, bot_data):
     """ Example: bot_data = {"Variables": {"SOURCE":{"Value":{"name":"testes"},
                                                      "Type": "Dictionary"}},
@@ -18,7 +15,7 @@ def ReplaceValues(input_string, bot_data):
 
     previous = ""
     output = input_string
-    
+
     while "<" in output and ">" in output and output != previous:
         previous = output
         r = re.compile('<([^<>]*)>')
@@ -72,4 +69,3 @@ def ReplaceValues(input_string, bot_data):
             else:
                 output = output.replace(full,str(v.get("Value")))
     return output
-print(ReplaceValues("<SOURCE>",bot_data))
