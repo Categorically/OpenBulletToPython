@@ -6,16 +6,20 @@ def ParseArguments(input_string, delimL, delimR):
     for match in matches:
         output.append(match)
     return output
-
+bot_data = {"Variables": {"SOURCE":{"Value":{"name":"testes"},
+                                                     "Type": "Dictionary"}},
+                             "GlobalVariables": {}}
 def ReplaceValues(input_string, bot_data):
-    """ Example: bot_data = {"Variables": {"SOURCE":{"Value":{"name":"testes"},"Type": "Dictionary"}},"GlobalVariables": {}}"""
+    """ Example: bot_data = {"Variables": {"SOURCE":{"Value":{"name":"testes"},
+                                                     "Type": "Dictionary"}},
+                             "GlobalVariables": {}}"""
 
     if "<" not in input_string and ">" not in input_string: return input_string
 
     previous = ""
     output = input_string
-    # Can't use goto labels in python
-    while "<" in output and ">" in output:
+    
+    while "<" in output and ">" in output and output != previous:
         previous = output
         r = re.compile('<([^<>]*)>')
         full = ""
@@ -40,6 +44,7 @@ def ReplaceValues(input_string, bot_data):
             
         if v.get("Type") == "Single":
             output = output.replace(full, v.get("Value"))
+
         elif v.get("Type") == "List":
             if args:
                 output = output.replace(full, str(v.get("Value")))
@@ -49,22 +54,22 @@ def ReplaceValues(input_string, bot_data):
             item = v.get("Value")[index]
             if item:
                 output = output.replace(full,str(item))
+
         elif v.get("Type") == "Dictionary":
             if "(" in args and ")" in args:
                 dicKey = ParseArguments(args, "(", ")")[0]
                 # Don't want to change input if this is None
                 if v.get("Value").get(dicKey):
                     output = output.replace(full,v.get("Value").get(dicKey))
+
             elif "{" in args and "}" in args:
                 dicVal = ParseArguments(args, "{", "}")[0]
                 try:
                     output = [dict_name for dict_name, dict_val in v.get("Value").items() if dicVal == dicVal][0]
                 except:
                     pass
+
             else:
                 output = output.replace(full,str(v.get("Value")))
-
-        # Not sure if needed
-        if output == previous:
-            break
     return output
+print(ReplaceValues("<SOURCE>",bot_data))
