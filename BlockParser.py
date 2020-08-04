@@ -19,11 +19,12 @@ BlockMappings  = {"BYPASSCF":"BlockBypassCF" ,
 from BlockParse import BlockParse
 from BlockRequest import BlockRequest
 from BlockKeycheck import BlockKeycheck
+from BlockFunction import BlockFunction
 BlockMappings2  = {"BYPASSCF": None,
             "SOLVECAPTCHA": None,
             "REPORTCAPTCHA": None,
             "CAPTCHA": None,
-            "FUNCTION": None,
+            "FUNCTION": BlockFunction().FromLS,
             "KEYCHECK": BlockKeycheck().FromLS,
             "PARSE":BlockParse().FromLS ,
             "RECAPTCHA": None,
@@ -63,9 +64,13 @@ def Parse(input_line):
     #Todo blocks
     if block:
         block = block(line.current)
-        block["label"] = label
-        block["block_type"] = identifier
-        return block
+        if block:
+            block["label"] = label
+            block["block_type"] = identifier
+            return block
+        else:
+            # ERROR
+            return False
     else:
         return None
     
