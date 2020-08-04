@@ -1,8 +1,11 @@
 # OpenBullet2Python
 OpenBullet2Python using code from OpenBullet
+
+#Parsing Loliscript into dicts
 - [x] PARSE
 - [x] REQUEST
 - [x] KEYCHECK
+- [x] FUNCTIONS
 
 ```
 from ToPython import ToPython
