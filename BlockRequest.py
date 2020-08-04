@@ -31,16 +31,16 @@ class BlockRequest:
         while len(str(line.current)) != 0 and line.current.startswith("->") == False:
             parsed = ParseToken(line.current,"Parameter",True,True).upper()
             if parsed == "MULTIPART":
-                request_block["Multipart"] = True
+                request_block["RequestType"] = "Multipart"
 
             elif parsed == "BASICAUTH":
-                request_block["Multipart"] = True
+                request_block["RequestType"] = "BasicAuth"
 
             elif parsed == "STANDARD":
-                request_block["Multipart"] = True
+                request_block["RequestType"] = "Standard"
 
             elif parsed == "RAW":
-                request_block["Multipart"] = True
+                request_block["RequestType"] = "Raw"
 
             elif parsed == "CONTENT":
                 PostData = ParseLiteral(line.current)
