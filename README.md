@@ -27,6 +27,10 @@ blocks = ToPython(config_text)
 - FUNCTION
   - [x] Constant
 - REQUEST
+  - [ ] Standard
+  - [ ] BasicAuth
+  - [ ] Multipart
+  - [ ] Raw
 - PARSE
   - [ ] LR
   - [ ] CSS
