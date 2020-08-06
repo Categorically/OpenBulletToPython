@@ -37,10 +37,10 @@ def ReplaceValues(input_string):
             v = BotData.Variables.GetWithName(name)
             # To do
             # if not v: v = bot_data.get("GlobalVariables").get(name)
-            if not v: pass
+            if not v: return output
 
             args = m.replace(name,"")
-
+            
             if v.VarType == VarType().Single:
                 output = output.replace(full, v.Value)
 
