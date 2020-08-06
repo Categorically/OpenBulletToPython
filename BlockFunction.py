@@ -43,12 +43,13 @@ class Function:
     PBKDF2PKCS5 = "PBKDF2PKCS5"
 
 class BlockFunction:
-    def __init__(self,variableName=None, isCapture=False,inputString="",functionType=None,Dict=None):
-        self.variableName = variableName 
-        self.isCapture = isCapture 
-        self.inputString = inputString 
-        self.functionType = functionType
-        self.Dict = Dict
+    def __init__(self):
+        self.VariableName = "" 
+        self.IsCapture = False 
+        self.InputString = "" 
+        self.FunctionType = ""
+        self.CreateEmpty = True
+        self.Dict = {}
     def FromLS(self,input_line):
         input_line = input_line.strip()
 
@@ -67,7 +68,7 @@ class BlockFunction:
 
         FunctionType  = ParseEnum(line.current)
         self.Dict["FunctionType"] = FunctionType
-        self.functionType = FunctionType
+        self.FunctionType = FunctionType
 
         if FunctionType == Function().Constant:
             pass
@@ -77,19 +78,19 @@ class BlockFunction:
             self.Dict["HashType"] = HashType
 
             while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
         elif FunctionType == Function().HMAC:
             self.Dict["HashType"] = ParseEnum(line.current)
             self.Dict["HmacKey"] = ParseLiteral(line.current)
             while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
         elif FunctionType == Function().Translate:
             while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
             self.Dict["TranslationDictionary"] = {}
             while line.current and Lookahead(line.current) == "Parameter":
@@ -111,7 +112,7 @@ class BlockFunction:
             self.Dict["ReplaceWhat"] = ParseLiteral(line.current)
             self.Dict["ReplaceWith"] = ParseLiteral(line.current)
             if Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
         elif FunctionType == Function().RegexMatch:
@@ -127,7 +128,7 @@ class BlockFunction:
                 self.Dict["RandomMax"] = str(ParseInt(line.current))
             
             if Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
         elif FunctionType == Function().CountOccurrences:
@@ -144,7 +145,7 @@ class BlockFunction:
             self.Dict["RsaN"] = ParseLiteral(line.current)
             self.Dict["RsaE"] = ParseLiteral(line.current)
             if Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
         elif FunctionType == Function().RSAPKCS1PAD2:
@@ -179,7 +180,7 @@ class BlockFunction:
             pass
         if Lookahead(line.current) == "Literal":
             inputString  = ParseLiteral(line.current)
-            self.inputString = inputString
+            self.InputString = inputString
             self.Dict["InputString"] = inputString
 
         # Try to parse the arrow, otherwise just return the block as is with default var name and var / cap choice
@@ -195,24 +196,24 @@ class BlockFunction:
 
         # Parse the variable/capture name
         VariableName = ParseToken(line.current,"Literal",True,True)
-        self.variableName = VariableName
+        self.VariableName = VariableName
         self.Dict["VariableName"] = VariableName
 
     def Process(self):
-        localInputStrings = ReplaceValuesRecursive(self.inputString)
+        localInputStrings = ReplaceValuesRecursive(self.InputString)
         outputs = []
 
         i = 0
         while i < len(localInputStrings):
             localInputString = localInputStrings[i]
             outputString = ""
-            if self.functionType == "Constant":
+            if self.FunctionType == "Constant":
                 outputString = localInputString
             else:
                 pass
             outputs.append(outputString)
             i += 1
-        print(f"Executed function {self.functionType} on input {localInputStrings} with outcome {outputString}")
-        isList = len(outputs) > 1 or "[*]" in self.inputString or "(*)" in self.inputString or "{*}" in self.inputString
-        InsertVariable(self.isCapture,isList,outputs,self.variableName,createEmpty=True)
+        print(f"Executed function {self.FunctionType} on input {localInputStrings} with outcome {outputString}")
+        isList = len(outputs) > 1 or "[*]" in self.InputString or "(*)" in self.InputString or "{*}" in self.InputString
+        InsertVariable(self.IsCapture,isList,outputs,self.VariableName,self.CreateEmpty)
 
