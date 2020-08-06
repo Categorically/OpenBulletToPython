@@ -4,6 +4,9 @@ OpenBullet2Python using code from OpenBullet
 # Parsing Loliscript
 - PARSE
   - [x] LR
+   - [x] CSS
+    - [x] JSON
+     - [x] REGEX
 - [x] REQUEST
 - [x] KEYCHECK
 - [x] FUNCTIONS
