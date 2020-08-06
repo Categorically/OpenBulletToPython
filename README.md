@@ -24,8 +24,14 @@ blocks = ToPython(config_text)
 ```
 
 # Processing Blocks
-- Functions
-  - [x] Constant 
+- FUNCTION
+  - [x] Constant
+- REQUEST
+- PARSE
+  - [ ] LR
+  - [ ] CSS
+  - [ ] JSON
+  - [ ] REGEX
   
 ```Python
 # Temp
