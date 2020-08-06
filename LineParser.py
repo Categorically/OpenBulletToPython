@@ -67,8 +67,12 @@ def Lookahead(line_input):
         return "Parameter"
 
 
-def SetBool(line_input):
+def SetBool(line_input,object):
     name, value  = ParseToken(line_input,"Parameter",True,True).split("=")
+    if "TRUE" in value.upper():
+        setattr(object,name,True)
+    elif "FALSE" in value.upper():
+        setattr(object,name,False)
     return name, value
 
 def EnsureIdentifier(input_string, id_string):
