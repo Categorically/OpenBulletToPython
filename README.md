@@ -1,7 +1,7 @@
 # OpenBullet2Python
 OpenBullet2Python using code from OpenBullet
 
-#Parsing Loliscript into dicts
+# Parsing Loliscript
 - [x] PARSE
 - [x] REQUEST
 - [x] KEYCHECK
