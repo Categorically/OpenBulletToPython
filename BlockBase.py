@@ -91,13 +91,14 @@ def ReplaceValuesRecursive(input_string):
         # if not variable:
         #     variable = bot_data.get("GlobalVariables").get(name)
         if not variable:
-            break
+            pass
 
         if variable.VarType == VarType().List:
             variables.append(variable)
             
     def theEnd(toReplace):
-        return [ReplaceValues(replace) for replace in toReplace]
+        toReplace = [ReplaceValues(replace) for replace in toReplace]
+        return toReplace
 
     if len(variables) > 0:
         max_index = len(variable.Value)
@@ -149,6 +150,8 @@ def ReplaceValuesRecursive(input_string):
             for key in theDict:
                 toReplace.append(input_string.replace(full,str(key)))
         return theEnd(toReplace)
+    toReplace.append(input_string)
+    return theEnd(toReplace)
 
 def InsertVariable(isCapture,recursive,values,variableName,prefix="" ,suffix="" ,urlEncode=False ,createEmpty=True):
     # thisList = [ReplaceValues(prefix, bot_data) + str(v).strip() + ReplaceValues(suffix,bot_data) for v in values]
