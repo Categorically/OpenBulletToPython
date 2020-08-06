@@ -1,43 +1,48 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt
+
+from BlockBase import ReplaceValues,InsertVariable
+
+from Parse import LR
 class ParseType:
     LR = "LR"
     CSS = "CSS"
     JSON = "JSON"
     REGEX = "REGEX"
 class BlockParse:
-    def __init__(self,parseTarget="<SOURCE>",prefix="",suffix="",recursive=False,variableName=None, isCapture=False,inputString="",functionType=None,Dict=None,dotMatches=False,caseSensitive=False,createEmpty=True,ParseType=ParseType().LR):
-        self.variableName = variableName 
-        self.isCapture = isCapture 
-        self.parseTarget = parseTarget
-        self.prefix = prefix
-        self.suffix = suffix
-        self.recursive = recursive
-        self.dotMatches = dotMatches
-        self.caseSensitive = caseSensitive
-        self.createEmpty = createEmpty
-        self.ParseType = ParseType
+    def __init__(self):
+        self.VariableName  = ""  
+        self.IsCapture  = False 
+        self.ParseTarget = "" 
+        self.Prefix = ""
+        self.Suffix = ""
+        self.Recursive = False
+        self.DotMatches = False
+        self.CaseSensitive  = True
+        self.EncodeOutput = False
+        self.CreateEmpty = True
+        self.ParseType = ParseType().LR
 
-        #LR
-        self.leftString = ""
-        self.rightString = ""
-        self.useRegexLR = ""
+        # LR
+        self.LeftString = ""
+        self.RightString = ""
+        self.UseRegexLR = False
 
-        #CSS
-        self.cssSelector = ""
-        self.attributeName = ""
-        self.cssElementIndex = 0
+        # CSS
+        self.CssSelector = ""
+        self.AttributeName = ""
+        self.CssElementIndex = 0
 
-        #JSON
-        self.jsonField = ""
-        self.jTokenParsing = False
+        # JSON
+        self.JsonField = ""
+        self.JTokenParsing = False
 
-        #REGEX
-        self.regexString = ""
-        self.regexOutput = ""
+        # REGEX
+        self.RegexString = ""
+        self.RegexOutput = ""
 
 
 
-        self.Dict = Dict
+        self.Dict = None
 
     def FromLS(self,input_line) -> dict:
         """
@@ -52,11 +57,12 @@ class BlockParse:
 
         ParseTarget = ParseLiteral(line.current)
         self.Dict["ParseTarget"] = ParseTarget
+        self.ParseTarget = ParseTarget
 
         parse_type = ParseEnum(line.current)
         self.Dict["parse_type"] = parse_type
 
-        if parse_type == "REGEX":
+        if parse_type == ParseType().REGEX:
             regex_pattern  = ParseLiteral(line.current)
             self.Dict["regex_pattern"] = regex_pattern
 
@@ -65,10 +71,10 @@ class BlockParse:
 
             self.Dict["Booleans"] = {}
             while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
-        elif parse_type == "CSS":
+        elif parse_type == ParseType().CSS:
             CssSelector =  ParseLiteral(line.current)
             self.Dict["CssSelector"] = CssSelector
 
@@ -76,31 +82,33 @@ class BlockParse:
             self.Dict["AttributeName"] = AttributeName
 
             if Lookahead(line.current) == "Boolean":
-                SetBool(line.current)
+                SetBool(line.current,self)
             elif Lookahead(line.current) == "Integer":
                 CssElementIndex = ParseInt(line.current)
                 self.Dict["CssElementIndex"] = CssElementIndex
             self.Dict["Booleans"] = {}
             while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif parse_type == "JSON":
+        elif parse_type == ParseType().JSON:
             JsonField = ParseLiteral(line.current)
             self.Dict["JsonField"] = JsonField
             self.Dict["Booleans"] = {}
             while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif parse_type == "LR":
+        elif parse_type == ParseType().LR:
             LeftString = ParseLiteral(line.current)
             self.Dict["LeftString"] = LeftString
+            self.LeftString = LeftString
             RightString = ParseLiteral(line.current)
+            self.RightString = RightString
             self.Dict["RightString"] = RightString
             self.Dict["Booleans"] = {}
             while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current)
+                boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
         else:
@@ -114,12 +122,26 @@ class BlockParse:
         if str(var_type.upper()) == "VAR" or str(var_type.upper()) == "CAP":
             if str(var_type.upper()) == "CAP": IsCapture = True
         self.Dict["IsCapture"] = IsCapture
-
+        self.IsCapture = IsCapture
         variable_name = ParseLiteral(line.current)
         self.Dict["variable_name"] = variable_name
+        self.VariableName = variable_name
 
         prefix = ParseLiteral(line.current)
         self.Dict["prefix"] = prefix
+        self.Prefix = prefix
 
         suffix = ParseLiteral(line.current)
         self.Dict["suffix"] = suffix
+        self.Suffix = suffix
+
+    def Process(self):
+        original = ReplaceValues(self.ParseTarget)
+        List = []
+        if self.ParseType == ParseType().LR:
+            List = LR(original,ReplaceValues(self.LeftString),ReplaceValues(self.RightString),self.Recursive,self.UseRegexLR)
+            print(f"Parsed {List} From {original}")
+        else:
+            pass
+
+        InsertVariable(self.IsCapture,self.Recursive,List,self.VariableName,self.Prefix,self.Suffix,self.EncodeOutput,self.CreateEmpty)
