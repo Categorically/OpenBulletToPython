@@ -3,8 +3,67 @@ from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBoo
 
 def ParseString(input_string, separator, count) -> list:
     return [ n.strip() for n in input_string.split(separator,count)]
+class RequestType:
+    Standard = "Standard"
+    BasicAuth = "BasicAuth"
+    Multipart = "Multipart"
+    Raw = "Raw"
+
+class MultipartContentType:
+    String = "String"
+    File = "File"
+
+class ResponseType:
+    String = "String"
+    File = "File"
+    Base64String = "Base64String"
+
+
+
 class BlockRequest:
     def __init__(self):
+        self.Url = ""
+        self.RequestType = ""
+
+        # Basic Auth
+        self.AuthUser = ""
+        self.AuthPass = ""
+
+        # Standard
+        self.PostData = ""
+
+        # Raw
+        self.RawData = ""
+
+        self.Method = "GET"
+
+        self.CustomCookies = {}
+
+        self.CustomHeaders = {}
+
+        self.ContentType = "application/x-www-form-urlencoded"
+
+        self.AutoRedirect = True
+
+        self.ReadResponseSource = True
+
+        self.encodeContent = False
+
+        self.AcceptEncoding = True
+
+        self.MultipartBoundary = ""
+
+        self.MultipartContents = []
+
+        self.ResponseType = ResponseType().String
+
+        self.DownloadPath = ""
+
+        self.OutputVariable = ""
+
+        self.SaveAsScreenshot = False
+
+
         self.Dict = {}
 
     def FromLS(self,input_line):
@@ -22,13 +81,15 @@ class BlockRequest:
 
         Method = ParseEnum(line.current)
         self.Dict["Method"] = Method
+        self.Method = Method
 
         Url = ParseLiteral(line.current)
         self.Dict["Url"] = Url
+        self.Url = Url
 
         self.Dict["Booleans"] = {}
         while Lookahead(line.current) == "Boolean":
-            boolean_name, boolean_value = SetBool(line.current)
+            boolean_name, boolean_value = SetBool(line.current,self)
             self.Dict["Booleans"][boolean_name] = boolean_value
 
         while len(str(line.current)) != 0 and line.current.startswith("->") == False:
@@ -41,6 +102,7 @@ class BlockRequest:
 
             elif parsed == "STANDARD":
                 self.Dict["RequestType"] = "Standard"
+                self.RequestType = RequestType.Standard
 
             elif parsed == "RAW":
                 self.Dict["RequestType"] = "Raw"
@@ -66,8 +128,9 @@ class BlockRequest:
                 CustomCookies[cookiePair[0]] = cookiePair[1]
 
             elif parsed == "HEADER":
-                cookiePair = ParseString(ParseLiteral(line.current), ':', 2)
-                CustomHeaders[cookiePair[0]] = cookiePair[1]
+                headerPair = ParseString(ParseLiteral(line.current), ':', 2)
+                CustomHeaders[headerPair[0]] = headerPair[1]
+                self.CustomHeaders[headerPair[0]] = headerPair[1]
 
             elif parsed == "CONTENTTYPE":
                 ContentType = ParseLiteral(line.current)
@@ -106,7 +169,7 @@ class BlockRequest:
                 self.Dict["DownloadPath"] = DownloadPath
                 while Lookahead(line.current) == "Boolean":
                         
-                    boolean_name, boolean_value = SetBool(line.current)
+                    boolean_name, boolean_value = SetBool(line.current,self)
                     self.Dict["Booleans"][boolean_name] = boolean_value
 
             elif outType.upper() == "BASE64":
@@ -116,3 +179,6 @@ class BlockRequest:
                 
         self.Dict["CustomCookies"] = CustomCookies
         self.Dict["CustomHeaders"] = CustomHeaders
+
+    def Process():
+        pass
