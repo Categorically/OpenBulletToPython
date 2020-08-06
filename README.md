@@ -24,7 +24,7 @@ blocks = ToPython(config_text)
 
 # Processing Blocks
 - Functions
-  - Constant [x]
+  - [x] Constant 
   
 ```Python
 # Temp
