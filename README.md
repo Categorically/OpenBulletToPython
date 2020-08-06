@@ -44,7 +44,8 @@ from BotData import BotData
 from BlockParser import Parse
 data = BotData()
 config_text = """FUNCTION Constant "test123" -> VAR "test" 
-FUNCTION Constant "<test>" -> VAR "testagain" """
+FUNCTION Constant "<test>" -> VAR "testagain" 
+PARSE "test" LR "t" "t" -> VAR "NewVar"""
 compressed = CompressedLines(config_text)
 for c in compressed:
   block = Parse(c)
@@ -53,6 +54,7 @@ for c in compressed:
 ```
 >>> Executed function Constant on input ['test123'] with outcome test123
 >>> Executed function Constant on input ['test123'] with outcome test123
+>>> Parsed ['es'] From test
  ```
  
  https://github.com/openbullet/openbullet
