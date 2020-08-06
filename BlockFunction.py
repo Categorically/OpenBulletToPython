@@ -1,145 +1,177 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
+from BlockBase import ReplaceValuesRecursive, InsertVariable
+
 class BlockFunction:
+    def __init__(self,variableName=None, isCapture=False,inputString="",functionType=None,Dict=None):
+        self.variableName = variableName 
+        self.isCapture = isCapture 
+        self.inputString = inputString 
+        self.functionType = functionType
+        self.Dict = Dict
     def FromLS(self,input_line):
         input_line = input_line.strip()
 
         if str(input_line).startswith("!"):
             return None
         line.current = input_line
-        function_block = {} 
+        self.Dict = {} 
 
-        function_block["IsCapture"] = False
+        self.Dict["IsCapture"] = False
         
-        function_block["VariableName"] = ""
+        self.Dict["VariableName"] = ""
 
-        function_block["InputString"] = ""
+        self.Dict["InputString"] = ""
 
-        function_block["Booleans"] = {}
+        self.Dict["Booleans"] = {}
 
         FunctionType  = ParseEnum(line.current)
-        function_block["FunctionType"] = FunctionType
+        self.Dict["FunctionType"] = FunctionType
+        self.functionType = FunctionType
 
         if FunctionType == "Constant":
             pass
 
         elif FunctionType == "Hash":
             HashType = ParseEnum(line.current)
-            function_block["HashType"] = HashType
+            self.Dict["HashType"] = HashType
 
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
-                function_block["Booleans"][boolean_name] = boolean_value
+                self.Dict["Booleans"][boolean_name] = boolean_value
         
         elif FunctionType == "HMAC":
-            function_block["HashType"] = ParseEnum(line.current)
-            function_block["HmacKey"] = ParseLiteral(line.current)
+            self.Dict["HashType"] = ParseEnum(line.current)
+            self.Dict["HmacKey"] = ParseLiteral(line.current)
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
-                function_block["Booleans"][boolean_name] = boolean_value
+                self.Dict["Booleans"][boolean_name] = boolean_value
 
         elif FunctionType == "Translate":
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
-                function_block["Booleans"][boolean_name] = boolean_value
-            function_block["TranslationDictionary"] = {}
+                self.Dict["Booleans"][boolean_name] = boolean_value
+            self.Dict["TranslationDictionary"] = {}
             while line.current and Lookahead(line.current) == "Parameter":
                 EnsureIdentifier(line.current, "KEY")
                 k = ParseLiteral(line.current)
                 EnsureIdentifier(line.current, "VALUE")
                 v = ParseLiteral(line.current)
-                function_block["TranslationDictionary"][k] = v
+                self.Dict["TranslationDictionary"][k] = v
 
         elif FunctionType == "DateToUnixTime":
-            function_block["DateFormat"] = ParseLiteral(line.current)
+            self.Dict["DateFormat"] = ParseLiteral(line.current)
 
         elif FunctionType == "UnixTimeToDate":
-            function_block["DateFormat"] = ParseLiteral(line.current)
+            self.Dict["DateFormat"] = ParseLiteral(line.current)
             if Lookahead(line.current) != "Literal":
-                function_block["InputString"] = "yyyy-MM-dd:HH-mm-ss"
+                self.Dict["InputString"] = "yyyy-MM-dd:HH-mm-ss"
 
         elif FunctionType == "Replace":
-            function_block["ReplaceWhat"] = ParseLiteral(line.current)
-            function_block["ReplaceWith"] = ParseLiteral(line.current)
+            self.Dict["ReplaceWhat"] = ParseLiteral(line.current)
+            self.Dict["ReplaceWith"] = ParseLiteral(line.current)
             if Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
-                function_block["Booleans"][boolean_name] = boolean_value
+                self.Dict["Booleans"][boolean_name] = boolean_value
 
         elif FunctionType == "RegexMatch":
-            function_block["RegexMatch"] = ParseLiteral(line.current)
+            self.Dict["RegexMatch"] = ParseLiteral(line.current)
 
         elif FunctionType == "RandomNum":
             if Lookahead(line.current) == "Literal":
-                function_block["RandomMin"] = ParseLiteral(line.current)
-                function_block["RandomMax"] = ParseLiteral(line.current)
+                self.Dict["RandomMin"] = ParseLiteral(line.current)
+                self.Dict["RandomMax"] = ParseLiteral(line.current)
             # Support for old integer definition of Min and Max
             else:
-                function_block["RandomMin"] = str(ParseInt(line.current))
-                function_block["RandomMax"] = str(ParseInt(line.current))
+                self.Dict["RandomMin"] = str(ParseInt(line.current))
+                self.Dict["RandomMax"] = str(ParseInt(line.current))
             
             if Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
-                function_block["Booleans"][boolean_name] = boolean_value
+                self.Dict["Booleans"][boolean_name] = boolean_value
         
         elif FunctionType == "CountOccurrences":
-            function_block["StringToFind"] = ParseLiteral(line.current)
+            self.Dict["StringToFind"] = ParseLiteral(line.current)
 
         elif FunctionType == "CharAt":
-            function_block["CharIndex"] = ParseLiteral(line.current)
+            self.Dict["CharIndex"] = ParseLiteral(line.current)
 
         elif FunctionType == "Substring":
-            function_block["SubstringIndex"] = ParseLiteral(line.current)
-            function_block["SubstringLength"] = ParseLiteral(line.current)
+            self.Dict["SubstringIndex"] = ParseLiteral(line.current)
+            self.Dict["SubstringLength"] = ParseLiteral(line.current)
 
         elif FunctionType == "RSAEncrypt":
-            function_block["RsaN"] = ParseLiteral(line.current)
-            function_block["RsaE"] = ParseLiteral(line.current)
+            self.Dict["RsaN"] = ParseLiteral(line.current)
+            self.Dict["RsaE"] = ParseLiteral(line.current)
             if Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
-                function_block["Booleans"][boolean_name] = boolean_value
+                self.Dict["Booleans"][boolean_name] = boolean_value
 
         elif FunctionType == "RSAPKCS1PAD2":
-            function_block["RsaN"] = ParseLiteral(line.current)
-            function_block["RsaE"] = ParseLiteral(line.current)
+            self.Dict["RsaN"] = ParseLiteral(line.current)
+            self.Dict["RsaE"] = ParseLiteral(line.current)
         
         elif FunctionType == "GetRandomUA":
             if ParseToken(line.current,"Parameter", False, False) == "BROWSER":
                 EnsureIdentifier(line.current,"BROWSER")
-                function_block["Booleans"]["UserAgentSpecifyBrowser"] = True
-                function_block["UserAgentBrowser"] = ParseEnum(line.current)
+                self.Dict["Booleans"]["UserAgentSpecifyBrowser"] = True
+                self.Dict["UserAgentBrowser"] = ParseEnum(line.current)
 
         elif FunctionType == "AESDecrypt":
             pass
 
         elif FunctionType == "AESEncrypt":
-            function_block["AesKey"] = ParseLiteral(line.current)
-            function_block["AesIV"] = ParseLiteral(line.current)
-            function_block["AesMode"] = ParseEnum(line.current)
-            function_block["AesPadding"] = ParseEnum(line.current)
+            self.Dict["AesKey"] = ParseLiteral(line.current)
+            self.Dict["AesIV"] = ParseLiteral(line.current)
+            self.Dict["AesMode"] = ParseEnum(line.current)
+            self.Dict["AesPadding"] = ParseEnum(line.current)
 
         elif FunctionType == "PBKDF2PKCS5":
             if Lookahead(line.current) == "Literal":
-                function_block["KdfSalt"] = ParseLiteral(line.current)
+                self.Dict["KdfSalt"] = ParseLiteral(line.current)
             else:
-                function_block["KdfSaltSize"] = ParseInt(line.current)
-                function_block["KdfIterations"] = ParseInt(line.current)
-                function_block["KdfKeySize"] = ParseInt(line.current)
-                function_block["KdfAlgorithm"] = ParseEnum(line.current)
+                self.Dict["KdfSaltSize"] = ParseInt(line.current)
+                self.Dict["KdfIterations"] = ParseInt(line.current)
+                self.Dict["KdfKeySize"] = ParseInt(line.current)
+                self.Dict["KdfAlgorithm"] = ParseEnum(line.current)
                 
         else:
             pass
         if Lookahead(line.current) == "Literal":
-            function_block["InputString"] = ParseLiteral(line.current)
+            inputString  = ParseLiteral(line.current)
+            self.inputString = inputString
+            self.Dict["InputString"] = inputString
 
         # Try to parse the arrow, otherwise just return the block as is with default var name and var / cap choice
         if not ParseToken(line.current,"Arrow",False,True):
-            return function_block
+            return self.Dict
             
         # Parse the VAR / CAP
         varType = ParseToken(line.current,"Parameter",True,True)
         if str(varType.upper()) == "VAR" or str(varType.upper()) == "CAP":
-            if str(varType.upper()) == "CAP": function_block["IsCapture"] = True
+            if str(varType.upper()) == "CAP":
+                self.Dict["IsCapture"] = True
+                self.isCapture = True
 
         # Parse the variable/capture name
-        function_block["VariableName"] = ParseToken(line.current,"Literal",True,True)
+        VariableName = ParseToken(line.current,"Literal",True,True)
+        self.variableName = VariableName
+        self.Dict["VariableName"] = VariableName
 
-        return function_block
+    def Process(self):
+        localInputStrings = ReplaceValuesRecursive(self.inputString)
+        outputs = []
+
+        i = 0
+        while i < len(localInputStrings):
+            localInputString = localInputStrings[i]
+            outputString = ""
+            if self.functionType == "Constant":
+                outputString = localInputString
+            else:
+                pass
+            outputs.append(outputString)
+            i += 1
+        print(f"Executed function {self.functionType} on input {localInputStrings} with outcome {outputString}")
+        isList = len(outputs) > 1 or "[*]" in self.inputString or "(*)" in self.inputString or "{*}" in self.inputString
+        InsertVariable(self.isCapture,isList,outputs,self.variableName,createEmpty=True)
+
