@@ -24,7 +24,7 @@ BlockMappings2  = {"BYPASSCF": None,
             "SOLVECAPTCHA": None,
             "REPORTCAPTCHA": None,
             "CAPTCHA": None,
-            "FUNCTION": BlockFunction().FromLS,
+            "FUNCTION": BlockFunction(),
             "KEYCHECK": BlockKeycheck().FromLS,
             "PARSE":BlockParse().FromLS ,
             "RECAPTCHA": None,
@@ -63,10 +63,10 @@ def Parse(input_line):
     block = BlockMappings2.get(identifier)
     #Todo blocks
     if block:
-        block = block(line.current)
+        block.FromLS(line.current)
         if block:
-            block["label"] = label
-            block["block_type"] = identifier
+            block.Dict["label"] = label
+            block.Dict["block_type"] = identifier
             return block
         else:
             # ERROR
