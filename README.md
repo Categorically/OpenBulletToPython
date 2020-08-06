@@ -33,7 +33,7 @@ blocks = ToPython(config_text)
   - [ ] Raw
 - PARSE
   - [x] LR
-    - [ ] UseRegexLR
+    - [x] UseRegexLR
   - [ ] CSS
   - [ ] JSON
   - [ ] REGEX
