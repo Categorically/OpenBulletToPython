@@ -2,10 +2,12 @@
 OpenBullet2Python using code from OpenBullet
 
 # Parsing Loliscript
-- [x] PARSE
+- PARSE
+  - [x] LR
 - [x] REQUEST
 - [x] KEYCHECK
 - [x] FUNCTIONS
+
 
 ```Python
 from ToPython import ToPython
