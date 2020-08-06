@@ -7,5 +7,5 @@ def ToPython(config_text):
     compressed = CompressedLines(config_text)
     for c in compressed:
         c = Parse(c)
-        if c: blocks.append(c)
+        if c: blocks.append(c.Dict)
     return blocks
