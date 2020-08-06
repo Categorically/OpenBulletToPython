@@ -1,5 +1,46 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
 from BlockBase import ReplaceValuesRecursive, InsertVariable
+class Function:
+    Constant = "Constant"
+    Base64Encode = "Base64Encode"
+    Base64Decode = "Base64Decode"
+    Hash = "Hash"
+    HMAC = "HMAC"
+    Translate = "Translate"
+    DateToUnixTime = "DateToUnixTime"
+    Length = "Length"
+    ToLowercase = "ToLowercase"
+    ToUppercase = "ToUppercase"
+    Replace = "Replace"
+    RegexMatch = "RegexMatch"
+    URLEncode = "URLEncode"
+    URLDecode = "URLDecode"
+    Unescape = "Unescape"
+    HTMLEntityEncode = "HTMLEntityEncode"
+    HTMLEntityDecode = "HTMLEntityDecode"
+    UnixTimeToDate = "UnixTimeToDate"
+    CurrentUnixTime = "CurrentUnixTime"
+    UnixTimeToISO8601 = "UnixTimeToISO8601"
+    RandomNum = "RandomNum"
+    RandomString = "RandomString"
+    Ceil = "Ceil"
+    Floor = "Floor"
+    Round = "Round"
+    Compute = "Compute"
+    CountOccurrences = "CountOccurrences"
+    ClearCookies = "ClearCookies"
+    RSAEncrypt = "RSAEncrypt"
+    RSADecrypt = "RSADecrypt"
+    RSAPKCS1PAD2 = "RSAPKCS1PAD2"
+    Delay = "Delay"
+    CharAt = "CharAt"
+    Substring = "Substring"
+    ReverseString = "ReverseString"
+    Trim = "Trim"
+    GetRandomUA = "GetRandomUA"
+    AESEncrypt = "AESEncrypt"
+    AESDecrypt = "AESDecrypt"
+    PBKDF2PKCS5 = "PBKDF2PKCS5"
 
 class BlockFunction:
     def __init__(self,variableName=None, isCapture=False,inputString="",functionType=None,Dict=None):
@@ -28,10 +69,10 @@ class BlockFunction:
         self.Dict["FunctionType"] = FunctionType
         self.functionType = FunctionType
 
-        if FunctionType == "Constant":
+        if FunctionType == Function().Constant:
             pass
 
-        elif FunctionType == "Hash":
+        elif FunctionType == Function().Hash:
             HashType = ParseEnum(line.current)
             self.Dict["HashType"] = HashType
 
@@ -39,14 +80,14 @@ class BlockFunction:
                 boolean_name, boolean_value = SetBool(line.current)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
-        elif FunctionType == "HMAC":
+        elif FunctionType == Function().HMAC:
             self.Dict["HashType"] = ParseEnum(line.current)
             self.Dict["HmacKey"] = ParseLiteral(line.current)
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif FunctionType == "Translate":
+        elif FunctionType == Function().Translate:
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
                 self.Dict["Booleans"][boolean_name] = boolean_value
@@ -58,25 +99,25 @@ class BlockFunction:
                 v = ParseLiteral(line.current)
                 self.Dict["TranslationDictionary"][k] = v
 
-        elif FunctionType == "DateToUnixTime":
+        elif FunctionType == Function().DateToUnixTime:
             self.Dict["DateFormat"] = ParseLiteral(line.current)
 
-        elif FunctionType == "UnixTimeToDate":
+        elif FunctionType == Function().UnixTimeToDate:
             self.Dict["DateFormat"] = ParseLiteral(line.current)
             if Lookahead(line.current) != "Literal":
                 self.Dict["InputString"] = "yyyy-MM-dd:HH-mm-ss"
 
-        elif FunctionType == "Replace":
+        elif FunctionType == Function().Replace:
             self.Dict["ReplaceWhat"] = ParseLiteral(line.current)
             self.Dict["ReplaceWith"] = ParseLiteral(line.current)
             if Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif FunctionType == "RegexMatch":
+        elif FunctionType == Function().RegexMatch:
             self.Dict["RegexMatch"] = ParseLiteral(line.current)
 
-        elif FunctionType == "RandomNum":
+        elif FunctionType == Function().RandomNum:
             if Lookahead(line.current) == "Literal":
                 self.Dict["RandomMin"] = ParseLiteral(line.current)
                 self.Dict["RandomMax"] = ParseLiteral(line.current)
@@ -89,43 +130,43 @@ class BlockFunction:
                 boolean_name, boolean_value = SetBool(line.current)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
-        elif FunctionType == "CountOccurrences":
+        elif FunctionType == Function().CountOccurrences:
             self.Dict["StringToFind"] = ParseLiteral(line.current)
 
-        elif FunctionType == "CharAt":
+        elif FunctionType == Function().CharAt:
             self.Dict["CharIndex"] = ParseLiteral(line.current)
 
-        elif FunctionType == "Substring":
+        elif FunctionType == Function().Substring:
             self.Dict["SubstringIndex"] = ParseLiteral(line.current)
             self.Dict["SubstringLength"] = ParseLiteral(line.current)
 
-        elif FunctionType == "RSAEncrypt":
+        elif FunctionType == Function().RSAEncrypt:
             self.Dict["RsaN"] = ParseLiteral(line.current)
             self.Dict["RsaE"] = ParseLiteral(line.current)
             if Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif FunctionType == "RSAPKCS1PAD2":
+        elif FunctionType == Function().RSAPKCS1PAD2:
             self.Dict["RsaN"] = ParseLiteral(line.current)
             self.Dict["RsaE"] = ParseLiteral(line.current)
         
-        elif FunctionType == "GetRandomUA":
+        elif FunctionType == Function().GetRandomUA:
             if ParseToken(line.current,"Parameter", False, False) == "BROWSER":
                 EnsureIdentifier(line.current,"BROWSER")
                 self.Dict["Booleans"]["UserAgentSpecifyBrowser"] = True
                 self.Dict["UserAgentBrowser"] = ParseEnum(line.current)
 
-        elif FunctionType == "AESDecrypt":
+        elif FunctionType == Function().AESDecrypt:
             pass
 
-        elif FunctionType == "AESEncrypt":
+        elif FunctionType == Function().AESEncrypt:
             self.Dict["AesKey"] = ParseLiteral(line.current)
             self.Dict["AesIV"] = ParseLiteral(line.current)
             self.Dict["AesMode"] = ParseEnum(line.current)
             self.Dict["AesPadding"] = ParseEnum(line.current)
 
-        elif FunctionType == "PBKDF2PKCS5":
+        elif FunctionType == Function().PBKDF2PKCS5:
             if Lookahead(line.current) == "Literal":
                 self.Dict["KdfSalt"] = ParseLiteral(line.current)
             else:

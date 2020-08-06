@@ -1,17 +1,20 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier,CheckIdentifier
 class BlockKeycheck:
+    def __init__(self):
+        self.Dict = {}
+
     def FromLS(self,input_line):
         input_line = input_line.strip()
         line.current = input_line
         if str(input_line).startswith("!"):
             return None
         KeyChains = []
-        Keycheck_Block = {}
+        self.Dict = {}
         
-        Keycheck_Block["Booleans"] = {}
+        self.Dict["Booleans"] = {}
         while Lookahead(line.current) == "Boolean":
             boolean_name, boolean_value = SetBool(line.current)
-            Keycheck_Block["Booleans"][boolean_name] = boolean_value
+            self.Dict["Booleans"][boolean_name] = boolean_value
 
         while line.current:
             EnsureIdentifier(line.current,"KEYCHAIN")
@@ -41,5 +44,4 @@ class BlockKeycheck:
 
             KeyChains.append(kc)
 
-        Keycheck_Block["KeyChains"] = KeyChains
-        return Keycheck_Block
+        self.Dict["KeyChains"] = KeyChains
