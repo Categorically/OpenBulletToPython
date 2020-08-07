@@ -98,7 +98,7 @@ class BlockParse:
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
-
+                
         elif parse_type == ParseType().LR:
             LeftString = ParseLiteral(line.current)
             self.Dict["LeftString"] = LeftString

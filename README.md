@@ -41,6 +41,8 @@ blocks = ToPython(config_text)
   - [ ] CSS
   - [ ] JSON
   - [ ] REGEX
+- KEYCHECK
+  - [ ] CUSTOM 
   
 ```Python
 # Temp
@@ -50,7 +52,8 @@ data = BotData()
 # Make sure it is a raw string or python will encode \" as "
 config_text = r"""FUNCTION Constant "test123" -> VAR "test" 
 FUNCTION Constant "<test>" -> VAR "testagain" 
-PARSE "test" LR "t" "t" -> VAR "NewVar"""
+PARSE "test" LR "t" "t" -> VAR "NewVar
+"""
 compressed = CompressedLines(config_text)
 for c in compressed:
   block = Parse(c)
@@ -62,4 +65,25 @@ for c in compressed:
 >>> Parsed ['es'] From test
  ```
  
+```Python
+#Temp
+from BotData import BotData
+from BlockParser import Parse
+data = BotData()
+print(data.Status.value)
+# Make sure it is a raw string or python will encode \" as "
+config_text = r"""KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "test" Contains "test""""
+compressed = CompressedLines(config_text)
+for c in compressed:
+  block = Parse(c)
+  if block:
+    block.Process()
+    print(data.Status.value)
+```
+```
+>>> NONE
+>>> SUCCESS
+```
  https://github.com/openbullet/openbullet
