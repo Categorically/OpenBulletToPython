@@ -28,6 +28,10 @@ blocks = ToPython(config_text)
   - [x] Constant
 - REQUEST
   - [ ] Standard
+    - [x] GET
+    - [x] POST
+    - [ ] PUT
+    - [ ] OPTIONS
   - [ ] BasicAuth
   - [ ] Multipart
   - [ ] Raw
@@ -43,7 +47,8 @@ blocks = ToPython(config_text)
 from BotData import BotData
 from BlockParser import Parse
 data = BotData()
-config_text = """FUNCTION Constant "test123" -> VAR "test" 
+# Make sure it is a raw string or python will encode \" as "
+config_text = r"""FUNCTION Constant "test123" -> VAR "test" 
 FUNCTION Constant "<test>" -> VAR "testagain" 
 PARSE "test" LR "t" "t" -> VAR "NewVar"""
 compressed = CompressedLines(config_text)

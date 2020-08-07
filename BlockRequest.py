@@ -111,6 +111,7 @@ class BlockRequest:
             elif parsed == "CONTENT":
                 PostData = ParseLiteral(line.current)
                 self.Dict["PostData"] = PostData
+                self.PostData = PostData
 
             elif parsed == "RAWDATA":
                 RawData = ParseLiteral(line.current)
@@ -184,8 +185,10 @@ class BlockRequest:
     # https://requests.readthedocs.io/en/master/
     def Process(self):
         import requests
+        req = None
         localUrl = ReplaceValues(self.Url)
 
+        # Headers to be used for the request
         headers = {}
         for h in self.CustomHeaders.items():
             replacedKey = h[0].replace("-","").lower()
@@ -194,22 +197,35 @@ class BlockRequest:
                 pass
             else:
                 headers[ReplaceValues(h[0])] = ReplaceValues(h[1])
-        # Add the content type to headers if it not null
+
+        # Add the content type to headers if ContentType is not null
         if self.ContentType:
             headers["Content-Type"] = self.ContentType
 
         
         if self.RequestType == RequestType().Standard:
             if self.Method.lower() == "post":
-                pass
-            else:
+                pData = self.PostData
+
+                req = requests.post(localUrl,headers=headers,data=pData)
+            elif self.Method.lower() == "get":
                 #Temp
                 print(f"Calling {localUrl}")
+                #Make the GET request
                 req = requests.get(localUrl,headers=headers)
+            #Valid req
+            if req:
+                # Add variables to the the list
                 ResponseCode = str(req.status_code)
                 BotData().ResponseCode().set(CVar("RESPONSECODE",ResponseCode,False,True))
                 Address = str(req.url)
                 BotData().ResponseSource().set(CVar("ADDRESS",Address,False,True))
+                Responce_Headers = dict(req.headers)
+                BotData().ResponseHeaders().set(CVar("HEADERS",Responce_Headers,False,True))
+                Responce_Cookies = dict(req.cookies)
+                BotData().Cookies().set(CVar("COOKIES",Responce_Cookies,False,True))
+
                 if self.ResponseType == ResponseType().String:
                     ResponseSource = str(req.text)
                     BotData().ResponseSource().set(CVar("SOURCE",ResponseSource,False,True))
+                

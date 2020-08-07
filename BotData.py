@@ -19,3 +19,15 @@ class BotData:
             BotData().Variables.GetWithName("RESPONSECODE").Value
         def set(self,variable):
             BotData().Variables.Set(variable)
+
+    class ResponseHeaders():
+        def get(self):
+            BotData().Variables.GetWithName("HEADERS").Value
+        def set(self,variable):
+            BotData().Variables.Set(variable)
+
+    class Cookies():
+        def get(self):
+            BotData().Variables.GetWithName("COOKIES").Value
+        def set(self,variable):
+            BotData().Variables.Set(variable)
