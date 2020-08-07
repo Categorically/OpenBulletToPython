@@ -1,0 +1,47 @@
+from enum import Enum
+import re
+class Comparer(Enum):
+    LessThan = "LessThan"
+    GreaterThan = "GreaterThan"
+    EqualTo = "EqualTo"
+    NotEqualTo = "NotEqualTo"
+    Contains = "Contains"
+    DoesNotContain = "DoesNotContain"
+    Exists = "Exists"
+    DoesNotExist = "DoesNotExist"
+    MatchesRegex = "MatchesRegex"
+    DoesNotMatchRegex = "DoesNotMatchRegex"
+
+# class KeycheckCondition():
+#     def __init__(self,Left,Comparer,Right):
+#         self.Left = Left
+#         self.Right = Right
+#         self.Comparer = Comparer
+def ReplaceAndVerify(Left,comparer,Right):
+    from BlockBase import ReplaceValuesRecursive,ReplaceValues
+    L = ReplaceValuesRecursive(Left)
+    R = ReplaceValues(Right)
+
+    if comparer == Comparer.EqualTo:
+        return any([l for l in L if l == R])
+    elif comparer == Comparer.EqualTo:
+        return any([l for l in L if l != R])
+    elif comparer == Comparer.GreaterThan:
+        return any([l for l in L if float(l.replace(",",".")) > float(R.replace(",","."))])
+    elif comparer == Comparer.LessThan.value:
+        return any([l for l in L if float(l.replace(",",".")) < float(R.replace(",","."))])
+    elif comparer == Comparer.Contains:
+        return any([l for l in L if R in l])
+    elif comparer == Comparer.DoesNotContain:
+        return any([l for l in L if R not in l])
+    elif comparer == Comparer.Exists.value:
+        return any([l for l in L if l != Left])
+    elif comparer == Comparer.DoesNotExist:
+        return any([l for l in L if l == Left])
+    elif comparer == Comparer.MatchesRegex:
+        return any([l for l in L if re.match(l,R)])
+    elif comparer == Comparer.DoesNotMatchRegex:
+        return any([l for l in L if not re.match(l,R)])
+    else:
+        # Todo
+        pass

@@ -1,7 +1,21 @@
 from VariableList import VariableList
 
+from enum import Enum
+
+
 class BotData:
+    class BotStatus(Enum):
+        NONE = "NONE"
+        ERROR = "ERROR"
+        SUCCESS = "SUCCESS"
+        FAIL = "FAIL"
+        BAN = "BAN"
+        RETRY = "RETRY"
+        CUSTOM = "CUSTOM"
+
     Variables = VariableList()
+    Status = BotStatus.NONE
+
     class ResponseSource():
         def get(self):
             BotData().Variables.GetWithName("SOURCE").Value
