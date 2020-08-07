@@ -1,6 +1,7 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-
-
+from BlockBase import ReplaceValues
+from BotData import BotData
+from CVar import CVar
 def ParseString(input_string, separator, count) -> list:
     return [ n.strip() for n in input_string.split(separator,count)]
 class RequestType:
@@ -23,7 +24,7 @@ class ResponseType:
 class BlockRequest:
     def __init__(self):
         self.Url = ""
-        self.RequestType = ""
+        self.RequestType = RequestType().Standard
 
         # Basic Auth
         self.AuthUser = ""
@@ -72,7 +73,7 @@ class BlockRequest:
         MultipartContents = []
         CustomHeaders = {}
         CustomCookies = {}
-        ResponseType = "STRING"
+        ResponseType = "String"
 
         if str(input_line).startswith("!"):
             return None
@@ -179,6 +180,36 @@ class BlockRequest:
                 
         self.Dict["CustomCookies"] = CustomCookies
         self.Dict["CustomHeaders"] = CustomHeaders
+    # Using requests https://pypi.org/project/requests/ 
+    # https://requests.readthedocs.io/en/master/
+    def Process(self):
+        import requests
+        localUrl = ReplaceValues(self.Url)
 
-    def Process():
-        pass
+        headers = {}
+        for h in self.CustomHeaders.items():
+            replacedKey = h[0].replace("-","").lower()
+            # Don't want brotli
+            if replacedKey == "acceptencoding":
+                pass
+            else:
+                headers[ReplaceValues(h[0])] = ReplaceValues(h[1])
+        # Add the content type to headers if it not null
+        if self.ContentType:
+            headers["Content-Type"] = self.ContentType
+
+        
+        if self.RequestType == RequestType().Standard:
+            if self.Method.lower() == "post":
+                pass
+            else:
+                #Temp
+                print(f"Calling {localUrl}")
+                req = requests.get(localUrl,headers=headers)
+                ResponseCode = str(req.status_code)
+                BotData().ResponseCode().set(CVar("RESPONSECODE",ResponseCode,False,True))
+                Address = str(req.url)
+                BotData().ResponseSource().set(CVar("ADDRESS",Address,False,True))
+                if self.ResponseType == ResponseType().String:
+                    ResponseSource = str(req.text)
+                    BotData().ResponseSource().set(CVar("SOURCE",ResponseSource,False,True))
