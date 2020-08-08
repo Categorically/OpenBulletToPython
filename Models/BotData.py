@@ -1,4 +1,4 @@
-from VariableList import VariableList
+from Models.VariableList import VariableList
 
 from enum import Enum
 

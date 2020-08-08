@@ -1,8 +1,8 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier,CheckIdentifier
-from KeyChain import KeychainType, KeychainMode, KeyChain
-from Key import Key
+from Models.KeyChain import KeychainType, KeychainMode, KeyChain
+from Models.Key import Key
 from Condition import Comparer
-from BotData import BotData
+from Models.BotData import BotData
 class BlockKeycheck:
     def __init__(self):
         self.Dict = {}

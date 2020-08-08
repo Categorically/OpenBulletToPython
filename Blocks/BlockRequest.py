@@ -1,7 +1,7 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from BlockBase import ReplaceValues
-from BotData import BotData
-from CVar import CVar
+from Blocks.BlockBase import ReplaceValues
+from Models.BotData import BotData
+from Models.CVar import CVar
 def ParseString(input_string, separator, count) -> list:
     return [ n.strip() for n in input_string.split(separator,count)]
 class RequestType:

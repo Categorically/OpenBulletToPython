@@ -18,7 +18,7 @@ class Comparer(Enum):
 #         self.Right = Right
 #         self.Comparer = Comparer
 def ReplaceAndVerify(Left,comparer,Right):
-    from BlockBase import ReplaceValuesRecursive,ReplaceValues
+    from Blocks.BlockBase import ReplaceValuesRecursive,ReplaceValues
     L = ReplaceValuesRecursive(Left)
     R = ReplaceValues(Right)
 

@@ -1,5 +1,5 @@
-from CVar import CVar
-from CVar import VarType
+from Models.CVar import CVar
+from Models.CVar import VarType
 class VariableList:
 
     # All = [CVar("SOURCE","SOURCE",False,False)]

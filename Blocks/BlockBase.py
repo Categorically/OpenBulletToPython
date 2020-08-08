@@ -1,7 +1,7 @@
 import re
-from BotData import BotData
-from CVar import VarType
-from CVar import CVar
+from Models.BotData import BotData
+from Models.CVar import VarType
+from Models.CVar import CVar
 def ParseArguments(input_string, delimL, delimR):
     output = []
     pattern = "\\" + delimL + "([^\\" + delimR + "]*)\\" + delimR

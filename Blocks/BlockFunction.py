@@ -1,5 +1,5 @@
 from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from BlockBase import ReplaceValuesRecursive, InsertVariable
+from Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable
 class Function:
     Constant = "Constant"
     Base64Encode = "Base64Encode"

@@ -1,5 +1,9 @@
 from LineParser import ParseToken,line
 import re
+from Blocks.BlockParse import BlockParse
+from Blocks.BlockRequest import BlockRequest
+from Blocks.BlockKeycheck import BlockKeycheck
+from Blocks.BlockFunction import BlockFunction
 BlockMappings  = {"BYPASSCF":"BlockBypassCF" ,
              "SOLVECAPTCHA":"BlockSolveCaptcha" ,
              "REPORTCAPTCHA":"BlockReportCaptcha" ,
@@ -16,10 +20,6 @@ BlockMappings  = {"BYPASSCF":"BlockBypassCF" ,
              "EXECUTEJS":"SBlockExecuteJS" ,
              "NAVIGATE":"SBlockNavigate"}
 
-from BlockParse import BlockParse
-from BlockRequest import BlockRequest
-from BlockKeycheck import BlockKeycheck
-from BlockFunction import BlockFunction
 BlockMappings2  = {"BYPASSCF": None,
             "SOLVECAPTCHA": None,
             "REPORTCAPTCHA": None,
