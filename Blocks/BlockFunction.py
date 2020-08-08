@@ -1,4 +1,4 @@
-from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
+from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
 from Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable
 class Function:
     Constant = "Constant"

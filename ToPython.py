@@ -1,6 +1,6 @@
-from Loliscript import CompressedLines
+from LoliScript.Loliscript import CompressedLines
 
-from BlockParser import Parse
+from LoliScript.BlockParser import Parse
 
 def ToPython(config_text):
     blocks = []

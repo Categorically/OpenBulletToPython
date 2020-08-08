@@ -1,7 +1,7 @@
-from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier,CheckIdentifier
+from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier,CheckIdentifier
 from Models.KeyChain import KeychainType, KeychainMode, KeyChain
 from Models.Key import Key
-from Condition import Comparer
+from Functions.Conditions.Condition import Comparer
 from Models.BotData import BotData
 class BlockKeycheck:
     def __init__(self):

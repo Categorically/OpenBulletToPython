@@ -1,8 +1,8 @@
-from LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt
+from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt
 
 from Blocks.BlockBase import ReplaceValues,InsertVariable
 
-from Parse import LR
+from Functions.Parsing.Parse import LR
 class ParseType:
     LR = "LR"
     CSS = "CSS"

@@ -1,3 +1,4 @@
+from Functions.Conditions.Condition import ReplaceAndVerify
 
 
 class Key:
@@ -7,7 +8,6 @@ class Key:
         self.RightTerm = RightTerm
 
     def CheckKey(self):
-        from Condition import ReplaceAndVerify
         try:
             return ReplaceAndVerify(self.LeftTerm,self.Comparer,self.RightTerm)
         except:

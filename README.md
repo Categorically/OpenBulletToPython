@@ -47,7 +47,7 @@ blocks = ToPython(config_text)
 ```Python
 # Temp
 from Models.BotData import BotData
-from BlockParser import Parse
+from LoliScript.BlockParser import Parse
 data = BotData()
 # Make sure it is a raw string or python will encode \" as "
 config_text = r"""FUNCTION Constant "test123" -> VAR "test" 
@@ -68,7 +68,7 @@ for c in compressed:
 ```Python
 #Temp
 from Models.BotData import BotData
-from BlockParser import Parse
+from LoliScript.BlockParser import Parse
 data = BotData()
 print(data.Status.value)
 # Make sure it is a raw string or python will encode \" as "
