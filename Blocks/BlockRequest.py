@@ -22,8 +22,8 @@ class ResponseType:
 
 
 class BlockRequest:
-    def __init__(self):
-        self.Url = ""
+    def __init__(self,Url=None):
+        self.Url = Url
         self.RequestType = RequestType().Standard
 
         # Basic Auth
@@ -137,6 +137,7 @@ class BlockRequest:
             elif parsed == "CONTENTTYPE":
                 ContentType = ParseLiteral(line.current)
                 self.Dict["ContentType"] = ContentType
+                self.ContentType = ContentType
 
             elif parsed == "USERNAME":
                 AuthUser = ParseLiteral(line.current)
@@ -188,13 +189,21 @@ class BlockRequest:
         req = None
         localUrl = ReplaceValues(self.Url)
 
+        cookies = BotData.Cookies().get()
+        if cookies:
+            cookies = cookies.Value
+        else:
+            cookies = {}
+        for c in self.CustomCookies.items():
+            cookies[ReplaceValues(c[0])] = cookies[ReplaceValues(c[1])]
+
         # Headers to be used for the request
         headers = {}
         for h in self.CustomHeaders.items():
             replacedKey = h[0].replace("-","").lower()
             # Don't want brotli
             if replacedKey == "acceptencoding":
-                pass
+                headers["Accept"] = "*/*"
             else:
                 headers[ReplaceValues(h[0])] = ReplaceValues(h[1])
 
@@ -205,27 +214,31 @@ class BlockRequest:
         
         if self.RequestType == RequestType().Standard:
             if self.Method.lower() == "post":
-                pData = self.PostData
+                
+                pData = ReplaceValues(self.PostData).encode("UTF-8","replace")
+                if self.encodeContent == True:
+                    pData = requests.utils.quote(pData)
+                print(f"Posting {pData} to {localUrl}")
 
-                req = requests.post(localUrl,headers=headers,data=pData)
+                req = requests.post(localUrl,headers=headers,data=pData,cookies=cookies)
             elif self.Method.lower() == "get":
                 #Temp
                 print(f"Calling {localUrl}")
                 #Make the GET request
-                req = requests.get(localUrl,headers=headers)
+                req = requests.get(localUrl,headers=headers,cookies=cookies)
             #Valid req
-            if req:
-                # Add variables to the the list
-                ResponseCode = str(req.status_code)
-                BotData().ResponseCode().set(CVar("RESPONSECODE",ResponseCode,False,True))
-                Address = str(req.url)
-                BotData().ResponseSource().set(CVar("ADDRESS",Address,False,True))
-                Responce_Headers = dict(req.headers)
-                BotData().ResponseHeaders().set(CVar("HEADERS",Responce_Headers,False,True))
-                Responce_Cookies = dict(req.cookies)
-                BotData().Cookies().set(CVar("COOKIES",Responce_Cookies,False,True))
+            # if req:
+            # Add variables to the the list
+            ResponseCode = str(req.status_code)
+            BotData.ResponseCode().set(CVar("RESPONSECODE",ResponseCode,False,True))
+            Address = str(req.url)
+            BotData.ResponseSource().set(CVar("ADDRESS",Address,False,True))
+            Responce_Headers = dict(req.headers)
+            BotData.ResponseHeaders().set(CVar("HEADERS",Responce_Headers,False,True))
+            Responce_Cookies = dict(req.cookies)
+            BotData.Cookies().set(CVar("COOKIES",Responce_Cookies,False,True))
 
-                if self.ResponseType == ResponseType().String:
-                    ResponseSource = str(req.text)
-                    BotData().ResponseSource().set(CVar("SOURCE",ResponseSource,False,True))
+            if self.ResponseType == ResponseType().String:
+                ResponseSource = str(req.text)
+                BotData.ResponseSource().set(CVar("SOURCE",ResponseSource,False,True))
                 

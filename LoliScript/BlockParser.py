@@ -24,11 +24,11 @@ BlockMappings2  = {"BYPASSCF": None,
             "SOLVECAPTCHA": None,
             "REPORTCAPTCHA": None,
             "CAPTCHA": None,
-            "FUNCTION": BlockFunction(),
-            "KEYCHECK": BlockKeycheck(),
-            "PARSE":BlockParse() ,
+            "FUNCTION": BlockFunction,
+            "KEYCHECK": BlockKeycheck,
+            "PARSE":BlockParse,
             "RECAPTCHA": None,
-            "REQUEST": BlockRequest(),
+            "REQUEST": BlockRequest,
             "TCP": None,
             "UTILITY": None,
             "BROWSERACTION": None,
@@ -63,6 +63,9 @@ def Parse(input_line):
     block = BlockMappings2.get(identifier)
     #Todo blocks
     if block:
+        # Init the block object here
+        # For some reason it will not init a new object if it's called frin the dict
+        block = block()
         block.FromLS(line.current)
         if block:
             block.Dict["label"] = label
