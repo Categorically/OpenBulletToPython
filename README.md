@@ -46,46 +46,45 @@ blocks = ToPython(config_text)
 - KEYCHECK
   - [ ] CUSTOM 
   
-```Python
-# Temp
-from Models.BotData import BotData
-from LoliScript.BlockParser import Parse
-data = BotData()
-# Make sure it is a raw string or python will encode \" as "
-config_text = r"""FUNCTION Constant "test123" -> VAR "test" 
-FUNCTION Constant "<test>" -> VAR "testagain" 
-PARSE "test" LR "t" "t" -> VAR "NewVar
-"""
-compressed = CompressedLines(config_text)
-for c in compressed:
-  block = Parse(c)
-  block.Process()
-```
-```
->>> Executed function Constant on input ['test123'] with outcome test123
->>> Executed function Constant on input ['test123'] with outcome test123
->>> Parsed ['es'] From test
- ```
  
 ```Python
-#Temp
 from Models.BotData import BotData
-from LoliScript.BlockParser import Parse
+from TestConfig import TestConfig
+from Models.CVar import CVar
+
+# This holds the variable list.
 data = BotData()
+
+# By default Status is set to BotStatus.NONE
 print(data.Status.value)
+
 # Make sure it is a raw string or python will encode \" as "
-config_text = r"""KEYCHECK 
+config_text = r"""REQUEST GET "https://google.com" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+KEYCHECK 
   KEYCHAIN Success OR 
-    KEY "test" Contains "test""""
-compressed = CompressedLines(config_text)
-for c in compressed:
-  block = Parse(c)
-  if block:
-    block.Process()
-    print(data.Status.value)
+    KEY "title>Google" """
+
+# Adding a variable for replacement
+# This will add a variable called "USER" with the value as "username", ect
+BotData.Variables.Set(CVar("USER","username",False,True))
+BotData.Variables.Set(CVar("PASS","password",False,True))
+
+# Run the config
+# If the the status changes to Fail, Ban or an Error then it will return, else it runs until all the blocks are processed.
+# There is no error handling so be careful on what you run.
+TestConfig(config_text)
+
+# The outcome of the config test
+print(data.Status.value)
 ```
 ```
 >>> NONE
+>>> Calling https://google.com
 >>> SUCCESS
 ```
  https://github.com/openbullet/openbullet

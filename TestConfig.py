@@ -6,9 +6,7 @@ from LoliScript.Loliscript import CompressedLines
 from LoliScript.BlockParser import Parse
 
 from Models.CVar import CVar
-def TestConfig(configtext:list,username:str,password:str):
-    BotData.Variables.Set(CVar("USER",username,False,True))
-    BotData.Variables.Set(CVar("PASS",password,False,True))
+def TestConfig(configtext:list):
 
     blocksList = []
     compressed = CompressedLines(configtext)
