@@ -87,14 +87,9 @@ def ReplaceValuesRecursive(input_string):
         name = m
 
         variable = BotData.Variables.GetWithName(name)
-
-        # if not variable:
-        #     variable = bot_data.get("GlobalVariables").get(name)
-        if not variable:
-            pass
-
-        if variable.VarType == VarType().List:
-            variables.append(variable)
+        if variable:
+            if variable.VarType == VarType().List: variables.append(variable)
+        
             
     def theEnd(toReplace):
         toReplace = [ReplaceValues(replace) for replace in toReplace]
@@ -128,9 +123,10 @@ def ReplaceValuesRecursive(input_string):
         name = match.group(1)
 
         theDict = BotData.Variables.GetDictionary(name)
-        # if not theDict: theDict = bot_data.get("GlobalVariables").get(name)
+
         if not theDict: toReplace.append(input_string)
         else:
+            theDict = theDict.Value
             for key in theDict:
                 aDict = {key,theDict[key]}
                 toReplace.append(input_string.replace(full,str(aDict)))
@@ -144,9 +140,10 @@ def ReplaceValuesRecursive(input_string):
         name = match.group(1)
 
         theDict = BotData.Variables.GetWithName(name)
-        # if not theDict: theDict = bot_data.get("GlobalVariables").get(name)
+
         if not theDict: toReplace.append(input_string)
         else:
+            theDict = theDict.Value
             for key in theDict:
                 toReplace.append(input_string.replace(full,str(key)))
         return theEnd(toReplace)

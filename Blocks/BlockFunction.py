@@ -1,5 +1,8 @@
 from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable
+from Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable,ReplaceValues
+from Functions.Encoding.Encode import ToBase64, FromBase64
+from urllib.parse import quote, unquote
+import re
 class Function:
     Constant = "Constant"
     Base64Encode = "Base64Encode"
@@ -50,6 +53,11 @@ class BlockFunction:
         self.FunctionType = ""
         self.CreateEmpty = True
         self.Dict = {}
+        self.UseRegex  = False
+        
+        # Replace
+        self.ReplaceWhat = ""
+        self.ReplaceWith = ""
     def FromLS(self,input_line):
         input_line = input_line.strip()
 
@@ -109,8 +117,14 @@ class BlockFunction:
                 self.Dict["InputString"] = "yyyy-MM-dd:HH-mm-ss"
 
         elif FunctionType == Function().Replace:
-            self.Dict["ReplaceWhat"] = ParseLiteral(line.current)
-            self.Dict["ReplaceWith"] = ParseLiteral(line.current)
+            ReplaceWhat = ParseLiteral(line.current)
+            self.Dict["ReplaceWhat"] = ReplaceWhat
+            self.ReplaceWhat = ReplaceWhat
+            
+            ReplaceWith = ParseLiteral(line.current)
+            self.Dict["ReplaceWith"] = ReplaceWith
+            self.ReplaceWith = ReplaceWith
+
             if Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
@@ -209,6 +223,26 @@ class BlockFunction:
             outputString = ""
             if self.FunctionType == "Constant":
                 outputString = localInputString
+            elif self.FunctionType == "Base64Encode":
+                outputString = ToBase64(localInputString)
+            elif self.FunctionType == "Base64Decode":
+                outputString = FromBase64(localInputString)
+            elif self.FunctionType == "Length":
+                outputString = str(len(localInputString))
+            elif self.FunctionType == "ToLowercase":
+                outputString = localInputString.lower()
+            elif self.FunctionType == "ToUppercase":
+                outputString = localInputString.upper()
+            elif self.FunctionType == "Replace":
+                if self.UseRegex:
+                    pass
+                else:
+                    outputString = localInputString.replace(ReplaceValues(self.ReplaceWhat),ReplaceValues(self.ReplaceWith))
+            elif self.FunctionType == "URLEncode":
+                outputString = quote(localInputString,errors="replace")
+
+            elif self.FunctionType == "URLDecode":
+                outputString = unquote(localInputString)
             else:
                 pass
             outputs.append(outputString)

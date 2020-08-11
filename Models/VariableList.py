@@ -2,9 +2,11 @@ from Models.CVar import CVar
 from Models.CVar import VarType
 class VariableList:
 
-    # All = [CVar("SOURCE","SOURCE",False,False)]
+    # All = [CVar("SOURCE","SOURCE",True,False)]
     All = []
-    Captures = [v for v in All if v.IsCapture == True and v.Hidden == False]
+    # Captures = [v for v in All if v.IsCapture == True and v.Hidden == False]
+    def Captures(self):
+        return [v for v in self.All if v.IsCapture == True and v.Hidden == False]
     Singles = [v for v in All if v.VarType == VarType().Single]
     Lists = [v for v in All if v.VarType == VarType().List]
     Dictionaries = [v for v in All if v.VarType == VarType().Dictionary]
@@ -30,7 +32,7 @@ class VariableList:
         return self.GetWithNameAndType(name,VarType().List).Value
 
     def GetDictionary(self,name):
-        return self.GetWithNameAndType(name,VarType().Dictionary).Value
+        return self.GetWithNameAndType(name,VarType().Dictionary)
 
     def VariableExists(self,name):
         return any([v for v in self.All if v.Name == name])
@@ -39,7 +41,7 @@ class VariableList:
     def VariableExistsWithType(self,name, VarType):
         return any([v for v in self.All if v.Name == name and v.VarType == VarType])
     
-    def Set(self,variable):
+    def Set(self,variable:CVar):
         self.Remove(variable.Name)
 
         self.All.append(variable)
@@ -47,3 +49,6 @@ class VariableList:
         if self.VariableExists(variable.Name) == False: self.Set(variable)
     def Remove(self,name):
         self.All = [v for v in self.All if v.Name != name]
+
+    def ToCaptureString(self):
+        return " | ".join([v.Name + "=" + v.ToString() for v in self.Captures()]) 

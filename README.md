@@ -28,6 +28,15 @@ blocks = ToPython(config_text)
 # Processing Blocks
 - FUNCTION
   - [x] Constant
+  - [x] Base64Encode
+  - [x] Base64Decode
+  - [x] ToUppercase
+  - [x] ToLowercase
+  - [x] Length
+  - [x] Replace
+    - [ ] UseRegex
+  - [x] URLEncode
+  - [x] URLDecode
 - REQUEST
   - [ ] Standard
     - [x] GET
