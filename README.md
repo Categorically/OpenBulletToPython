@@ -50,7 +50,8 @@ blocks = ToPython(config_text)
   - [x] LR
     - [x] UseRegexLR
   - [ ] CSS
-  - [ ] JSON
+  - [x] JSON
+    - [x] JToken
   - [ ] REGEX
 - KEYCHECK
   - [ ] CUSTOM 

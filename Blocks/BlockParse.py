@@ -2,7 +2,7 @@ from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookah
 
 from Blocks.BlockBase import ReplaceValues,InsertVariable
 
-from Functions.Parsing.Parse import LR
+from Functions.Parsing.Parse import LR, JSON
 class ParseType:
     LR = "LR"
     CSS = "CSS"
@@ -20,7 +20,7 @@ class BlockParse:
         self.CaseSensitive  = True
         self.EncodeOutput = False
         self.CreateEmpty = True
-        self.ParseType = ParseType().LR
+        self.ParseType = ""
 
         # LR
         self.LeftString = ""
@@ -61,6 +61,7 @@ class BlockParse:
 
         parse_type = ParseEnum(line.current)
         self.Dict["parse_type"] = parse_type
+        self.ParseType = parse_type
 
         if parse_type == ParseType().REGEX:
             regex_pattern  = ParseLiteral(line.current)
@@ -94,6 +95,7 @@ class BlockParse:
         elif parse_type == ParseType().JSON:
             JsonField = ParseLiteral(line.current)
             self.Dict["JsonField"] = JsonField
+            self.JsonField = JsonField
             self.Dict["Booleans"] = {}
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current,self)
@@ -123,6 +125,7 @@ class BlockParse:
             if str(var_type.upper()) == "CAP": IsCapture = True
         self.Dict["IsCapture"] = IsCapture
         self.IsCapture = IsCapture
+        
         variable_name = ParseLiteral(line.current)
         self.Dict["variable_name"] = variable_name
         self.VariableName = variable_name
@@ -138,9 +141,13 @@ class BlockParse:
     def Process(self):
         original = ReplaceValues(self.ParseTarget)
         List = []
+        print(self.ParseTarget)
         if self.ParseType == ParseType().LR:
             List = LR(original,ReplaceValues(self.LeftString),ReplaceValues(self.RightString),self.Recursive,self.UseRegexLR)
-            print(f"Parsed {List} From {original}")
+            print(f"Parsed LR {List} From {original[0:10]}......")
+        elif self.ParseType == ParseType().JSON:
+            List = JSON(original,ReplaceValues(self.JsonField),self.Recursive,self.JTokenParsing)
+            print(f"Parsed JSON {List} From {original[0:10]}......")
         else:
             pass
 

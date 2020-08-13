@@ -42,7 +42,34 @@ def LR(input_string, left, right,recursive=False,useRegex=False):
             List.append(parsed)
     return List
 
+def JSON(input_string:str,field:str,recursive:bool,useJToken:bool):
+    import json
+    import jsonpath_ng
+    from jsonpath_ng import jsonpath
+    from jsonpath_ng import parse as JTParse
+    listArray = []
+    if useJToken:
 
+        if recursive:
+
+            jsonpath_expr = JTParse(field)
+            jsonList = [match.value for match in jsonpath_expr.find(json.loads(input_string))]
+            for j in jsonList:
+                listArray.append(str(j))
+        else:
+            jsonList = json.loads(input_string)
+            try:
+                listArray.append(str(jsonList[field]))
+            except:
+                listArray.append("")
+    else:
+        jsonList = json.loads(input_string)
+        for key,value in jsonList.items():
+            if key == field:
+                listArray.append(value)
+        if not recursive and len(listArray) > 1: listArray = [listArray[0]]
+    return listArray
+    
 def BuildLRPattern(ls,rs):
     left = ls
     right = rs
