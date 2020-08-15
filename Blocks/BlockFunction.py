@@ -1,7 +1,9 @@
 from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
 from Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable,ReplaceValues
 from Functions.Encoding.Encode import ToBase64, FromBase64
+from Functions.Crypto.Crypto import Crypto
 from urllib.parse import quote, unquote
+import base64
 import re
 class Function:
     Constant = "Constant"
@@ -58,6 +60,10 @@ class BlockFunction:
         # Replace
         self.ReplaceWhat = ""
         self.ReplaceWith = ""
+
+        # Hashing 
+        self.HashType = ""
+        self.InputBase64 = False
     def FromLS(self,input_line):
         input_line = input_line.strip()
 
@@ -84,6 +90,7 @@ class BlockFunction:
         elif FunctionType == Function().Hash:
             HashType = ParseEnum(line.current)
             self.Dict["HashType"] = HashType
+            self.HashType = HashType
 
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current,self)
@@ -243,6 +250,8 @@ class BlockFunction:
 
             elif self.FunctionType == "URLDecode":
                 outputString = unquote(localInputString)
+            elif self.FunctionType == "Hash":
+                outputString = self.GetHash(localInputString,self.HashType,self.InputBase64).lower()
             else:
                 pass
             outputs.append(outputString)
@@ -251,3 +260,24 @@ class BlockFunction:
         isList = len(outputs) > 1 or "[*]" in self.InputString or "(*)" in self.InputString or "{*}" in self.InputString
         InsertVariable(self.IsCapture,isList,outputs,self.VariableName,self.CreateEmpty)
 
+    def GetHash(self,baseString:str,hashAlg:str,inputBase64:bool):
+        if not inputBase64:
+            rawInput = baseString.encode('utf-8')
+        else:
+            try:
+                rawInput = base64.b64decode(baseString.encode('utf-8'))
+            except:
+                # In case the input is not base64 encoded
+                return ""
+        digest = bytearray()
+        if hashAlg == "MD5":
+            digest = Crypto().MD5(rawInput)
+        elif hashAlg == "SHA1":
+            digest = Crypto().SHA1(rawInput)
+        elif hashAlg == "SHA256":
+            digest = Crypto().SHA256(rawInput)
+        elif hashAlg == "SHA384":
+            digest = Crypto().SHA384(rawInput)
+        elif hashAlg == "SHA512":
+            digest = Crypto().SHA512(rawInput)
+        return digest.hex()
