@@ -64,6 +64,9 @@ class BlockFunction:
         # Hashing 
         self.HashType = ""
         self.InputBase64 = False
+
+        self.KeyBase64 = False
+        self.HmacBase64 = False
     def FromLS(self,input_line):
         input_line = input_line.strip()
 
@@ -97,8 +100,12 @@ class BlockFunction:
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
         elif FunctionType == Function().HMAC:
-            self.Dict["HashType"] = ParseEnum(line.current)
-            self.Dict["HmacKey"] = ParseLiteral(line.current)
+            HashType = ParseEnum(line.current)
+            self.Dict["HashType"] = HashType
+            self.HashType = HashType
+            HmacKey = ParseLiteral(line.current)
+            self.Dict["HmacKey"] = HmacKey
+            self.HmacKey = HmacKey
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
@@ -230,28 +237,39 @@ class BlockFunction:
             outputString = ""
             if self.FunctionType == "Constant":
                 outputString = localInputString
+
             elif self.FunctionType == "Base64Encode":
                 outputString = ToBase64(localInputString)
+
             elif self.FunctionType == "Base64Decode":
                 outputString = FromBase64(localInputString)
+
             elif self.FunctionType == "Length":
                 outputString = str(len(localInputString))
+
             elif self.FunctionType == "ToLowercase":
                 outputString = localInputString.lower()
+
             elif self.FunctionType == "ToUppercase":
                 outputString = localInputString.upper()
+
             elif self.FunctionType == "Replace":
                 if self.UseRegex:
                     pass
                 else:
                     outputString = localInputString.replace(ReplaceValues(self.ReplaceWhat),ReplaceValues(self.ReplaceWith))
+
             elif self.FunctionType == "URLEncode":
                 outputString = quote(localInputString,errors="replace")
 
             elif self.FunctionType == "URLDecode":
                 outputString = unquote(localInputString)
+
             elif self.FunctionType == "Hash":
                 outputString = self.GetHash(localInputString,self.HashType,self.InputBase64).lower()
+
+            elif self.FunctionType == "HMAC":
+                 outputString = self.Hmac(localInputString,self.HashType,self.HmacKey,self.InputBase64,self.KeyBase64,self.HmacBase64)
             else:
                 pass
             outputs.append(outputString)
@@ -281,3 +299,38 @@ class BlockFunction:
         elif hashAlg == "SHA512":
             digest = Crypto().SHA512(rawInput)
         return digest.hex()
+
+    def Hmac(self, baseString:str,hashAlg,key:str,inputBase64:bool,keyBase64:bool,outputBase64:bool):
+        rawInput = bytearray()
+        rawKey = bytearray()
+        signature = bytearray()
+        if inputBase64:
+            rawInput = base64.b64decode(baseString.encode('utf-8'))
+        else:
+            rawInput = baseString.encode('utf-8')
+
+        if keyBase64:
+            rawKey = base64.b64decode(key.encode('utf-8'))
+        else:
+            rawKey = key.encode('utf-8')
+
+        if hashAlg == "MD5":
+            signature  = Crypto().HMACMD5(rawInput,rawKey)
+
+        elif hashAlg == "SHA1":
+            signature  = Crypto().HMACSHA1(rawInput,rawKey)
+
+        elif hashAlg == "SHA256":
+            signature  = Crypto().HMACSHA256(rawInput,rawKey)
+
+        elif hashAlg == "SHA384":
+            signature  = Crypto().HMACSHA384(rawInput,rawKey)
+
+        elif hashAlg == "SHA512":
+            signature  = Crypto().HMACSHA512(rawInput,rawKey)
+        else:
+            return ""
+        if outputBase64:
+           return base64.b64encode(signature).decode("utf-8")
+        else:
+            return signature.hex().upper()

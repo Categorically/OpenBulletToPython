@@ -37,6 +37,10 @@ blocks = ToPython(config_text)
     - [ ] UseRegex
   - [x] URLEncode
   - [x] URLDecode
+  - [x] Hash
+    - [ ] MD4
+  - [x] HMAC
+    - [ ] MD4
 - REQUEST
   - [ ] Standard
     - [x] GET
