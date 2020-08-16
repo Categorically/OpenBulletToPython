@@ -141,7 +141,6 @@ class BlockParse:
     def Process(self):
         original = ReplaceValues(self.ParseTarget)
         List = []
-        print(self.ParseTarget)
         if self.ParseType == ParseType().LR:
             List = LR(original,ReplaceValues(self.LeftString),ReplaceValues(self.RightString),self.Recursive,self.UseRegexLR)
             print(f"Parsed LR {List} From {original[0:10]}......")
