@@ -2,6 +2,9 @@ from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookah
 from Blocks.BlockBase import ReplaceValues
 from Models.BotData import BotData
 from Models.CVar import CVar
+
+import requests
+from requests import Timeout
 def ParseString(input_string, separator, count) -> list:
     return [ n.strip() for n in input_string.split(separator,count)]
 class RequestType:
@@ -64,7 +67,7 @@ class BlockRequest:
 
         self.SaveAsScreenshot = False
 
-
+        self.RequestTimeout = 60
         self.Dict = {}
 
     def FromLS(self,input_line):
@@ -185,7 +188,6 @@ class BlockRequest:
     # Using requests https://pypi.org/project/requests/ 
     # https://requests.readthedocs.io/en/master/
     def Process(self):
-        import requests
         req = None
         localUrl = ReplaceValues(self.Url)
 
@@ -219,16 +221,21 @@ class BlockRequest:
                 if self.encodeContent == True:
                     pData = requests.utils.quote(pData)
                 print(f"Posting {pData} to {localUrl}")
-
-                req = requests.post(localUrl,headers=headers,data=pData,cookies=cookies)
+                try:
+                    req = requests.post(localUrl,headers=headers,data=pData,cookies=cookies,timeout=self.RequestTimeout)
+                except Timeout:
+                    print("Connection Timeout")
+                    return
             elif self.Method.lower() == "get":
                 #Temp
                 print(f"Calling {localUrl}")
                 #Make the GET request
-                req = requests.get(localUrl,headers=headers,cookies=cookies)
-            #Valid req
-            # if req:
-            # Add variables to the the list
+                try:
+                    req = requests.get(localUrl,headers=headers,cookies=cookies,timeout=self.RequestTimeout)
+                except Timeout:
+                    print("Connection Timeout")
+                    return
+
             ResponseCode = str(req.status_code)
             BotData.ResponseCode().set(CVar("RESPONSECODE",ResponseCode,False,True))
             Address = str(req.url)
@@ -236,6 +243,13 @@ class BlockRequest:
             Responce_Headers = dict(req.headers)
             BotData.ResponseHeaders().set(CVar("HEADERS",Responce_Headers,False,True))
             Responce_Cookies = dict(req.cookies)
+            cookies = BotData.Cookies().get()
+            if cookies:
+                cookies = cookies.Value
+            else:
+                cookies = {}
+            for cN,cV in Responce_Cookies.items():
+                cookies[cN] = cV
             BotData.Cookies().set(CVar("COOKIES",Responce_Cookies,False,True))
 
             if self.ResponseType == ResponseType().String:
