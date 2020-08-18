@@ -5,6 +5,63 @@ from Functions.Crypto.Crypto import Crypto
 from urllib.parse import quote, unquote
 import base64
 import re
+from random import randint
+import random
+def RandomString(localInputString:str):
+    _lowercase = "abcdefghijklmnopqrstuvwxyz"
+    _uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    _digits = "0123456789"
+    _symbols = "\\!\"£$%&/()=?^'{}[]@#,;.:-_*+"
+    _hex = _digits + "abcdef"
+    _udChars = _uppercase + _digits
+    _ldChars = _lowercase + _digits
+    _upperlwr = _lowercase + _uppercase
+    _ludChars = _lowercase + _uppercase + _digits
+    _allChars = _lowercase + _uppercase + _digits + _symbols
+    outputString = localInputString
+    if "?l" in str(outputString):
+        while "?l" in str(outputString):
+            outputString = outputString.replace("?l",random.choice(list(_lowercase)),1)
+    if "?u" in str(outputString):
+        while "?u" in str(outputString):
+            outputString = outputString.replace("?u",random.choice(list(_uppercase)),1)
+    if "?d" in str(outputString):
+        while "?d" in str(outputString):
+            outputString = outputString.replace("?d",random.choice(list(_digits)),1)
+    if "?s" in str(outputString):
+        while "?s" in str(outputString):
+            outputString = outputString.replace("?s",random.choice(list(_symbols)),1)
+    if "?h" in str(outputString):
+        while "?h" in str(outputString):
+            outputString = outputString.replace("?h",random.choice(list(_hex)),1)
+    if "?a" in str(outputString):
+        while "?a" in str(outputString):
+            outputString = outputString.replace("?a",random.choice(list(_allChars)),1)
+    if "?m" in str(outputString):
+        while "?m" in str(outputString):
+            outputString = outputString.replace("?m",random.choice(list(_udChars)),1)
+    if "?n" in str(outputString):
+        while "?n" in str(outputString):
+            outputString = outputString.replace("?n",random.choice(list(_ldChars)),1)
+    if "?i" in str(outputString):
+        while "?i" in str(outputString):
+            outputString = outputString.replace("?i",random.choice(list(_ludChars)),1)
+    if "?f" in str(outputString):
+        while "?f" in str(outputString):
+            outputString = outputString.replace("?f",random.choice(list(_upperlwr)),1)
+    return outputString
+
+def RandomNum(minNum,maxNum,padNum:bool):
+                try:
+                    randomNumString = str(randint(int(minNum),int(maxNum)))
+                except:
+                    print("Failed to parse int")
+                    return ""
+                
+                if padNum: randomNumString = randomNumString.rjust(len(str(maxNum)),"0")
+                return randomNumString
+
+                
 class Function:
     Constant = "Constant"
     Base64Encode = "Base64Encode"
@@ -281,17 +338,10 @@ class BlockFunction:
             elif self.FunctionType == "HMAC":
                  outputString = self.Hmac(localInputString,self.HashType,self.HmacKey,self.InputBase64,self.KeyBase64,self.HmacBase64)
             elif self.FunctionType == "RandomNum":
-                def RandomNum(minNum,maxNum,padNum:bool):
-                    from random import randint
-                    try:
-                        randomNumString = str(randint(int(minNum),int(maxNum)))
-                    except:
-                        print("Failed to parse int")
-                        return ""
-                    
-                    if padNum: randomNumString = randomNumString.rjust(len(str(maxNum)),"0")
-                    return randomNumString
                 outputString = RandomNum(ReplaceValues(self.RandomMin),ReplaceValues(self.RandomMax),self.RandomZeroPad)
+            elif self.FunctionType == "RandomString":
+                outputString = localInputString
+                outputString = RandomString(outputString)
             else:
                 pass
             outputs.append(outputString)
