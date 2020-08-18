@@ -250,7 +250,7 @@ class BlockRequest:
                 cookies = {}
             for cN,cV in Responce_Cookies.items():
                 cookies[cN] = cV
-            BotData.Cookies().set(CVar("COOKIES",Responce_Cookies,False,True))
+            BotData.Cookies().set(CVar("COOKIES",cookies,False,True))
 
             if self.ResponseType == ResponseType().String:
                 ResponseSource = str(req.text)
