@@ -67,6 +67,8 @@ class BlockFunction:
 
         self.KeyBase64 = False
         self.HmacBase64 = False
+
+        self.RandomZeroPad = False
     def FromLS(self,input_line):
         input_line = input_line.strip()
 
@@ -148,12 +150,20 @@ class BlockFunction:
 
         elif FunctionType == Function().RandomNum:
             if Lookahead(line.current) == "Literal":
-                self.Dict["RandomMin"] = ParseLiteral(line.current)
-                self.Dict["RandomMax"] = ParseLiteral(line.current)
+                RandomMin = ParseLiteral(line.current)
+                RandomMax = ParseLiteral(line.current)
+                self.Dict["RandomMin"] = RandomMin
+                self.Dict["RandomMax"] = RandomMax
+                self.RandomMin = RandomMin
+                self.RandomMax = RandomMax
             # Support for old integer definition of Min and Max
             else:
-                self.Dict["RandomMin"] = str(ParseInt(line.current))
-                self.Dict["RandomMax"] = str(ParseInt(line.current))
+                RandomMin = ParseLiteral(line.current)
+                RandomMax = ParseLiteral(line.current)
+                self.Dict["RandomMin"] = RandomMin
+                self.Dict["RandomMax"] = RandomMax
+                self.RandomMin = RandomMin
+                self.RandomMax = RandomMax
             
             if Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current,self)
@@ -270,6 +280,18 @@ class BlockFunction:
 
             elif self.FunctionType == "HMAC":
                  outputString = self.Hmac(localInputString,self.HashType,self.HmacKey,self.InputBase64,self.KeyBase64,self.HmacBase64)
+            elif self.FunctionType == "RandomNum":
+                def RandomNum(minNum,maxNum,padNum:bool):
+                    from random import randint
+                    try:
+                        randomNumString = str(randint(int(minNum),int(maxNum)))
+                    except:
+                        print("Failed to parse int")
+                        return ""
+                    
+                    if padNum: randomNumString = randomNumString.rjust(len(str(maxNum)),"0")
+                    return randomNumString
+                outputString = RandomNum(self.RandomMin,self.RandomMax,self.RandomZeroPad)
             else:
                 pass
             outputs.append(outputString)
