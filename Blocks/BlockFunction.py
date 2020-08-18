@@ -291,7 +291,7 @@ class BlockFunction:
                     
                     if padNum: randomNumString = randomNumString.rjust(len(str(maxNum)),"0")
                     return randomNumString
-                outputString = RandomNum(self.RandomMin,self.RandomMax,self.RandomZeroPad)
+                outputString = RandomNum(ReplaceValues(self.RandomMin),ReplaceValues(self.RandomMax),self.RandomZeroPad)
             else:
                 pass
             outputs.append(outputString)
