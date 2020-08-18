@@ -45,7 +45,9 @@ blocks = ToPython(config_text)
   - [x] RandomString
 - REQUEST
   - [x] Standard
-  - [ ] BasicAuth
+    - [x] AutoRedirect
+    - [x] EncodeContent
+  - [x] BasicAuth # Not tested
   - [ ] Multipart
   - [ ] Raw
 - PARSE

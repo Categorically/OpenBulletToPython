@@ -149,11 +149,12 @@ class BlockRequest:
             elif parsed == "USERNAME":
                 AuthUser = ParseLiteral(line.current)
                 self.Dict["AuthUser"] = AuthUser
+                self.AuthUser = AuthUser
 
             elif parsed == "PASSWORD":
                 AuthPass = ParseLiteral(line.current)
                 self.Dict["AuthUser"] = AuthPass
-
+                self.AuthPass = AuthPass
 
             elif parsed == "BOUNDARY":
                 MultipartBoundary = ParseLiteral(line.current)
@@ -214,12 +215,17 @@ class BlockRequest:
         if self.ContentType:
             headers["Content-Type"] = self.ContentType
         localUrl = ReplaceValues(self.Url)
-        if self.RequestType == RequestType().Standard:
+        if self.RequestType == RequestType().Standard or self.RequestType == RequestType().BasicAuth:
+            username = ReplaceValues(self.AuthUser)
+            password = ReplaceValues(self.AuthPass)
             if self.Method in ["GET","HEAD","DELETE"]:
                 print(f"{self.Method} {localUrl}")
 
                 s = Session()
-                req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies)
+                if self.RequestType == RequestType().BasicAuth:
+                    req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies,auth=(username,password))
+                else:
+                    req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies)
                 prepped = s.prepare_request(req)
                 try:
                     req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
@@ -234,7 +240,10 @@ class BlockRequest:
                 print(f"{self.Method} {localUrl}")
 
                 s = Session()
-                req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies)
+                if self.RequestType == RequestType().BasicAuth:
+                    req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies,auth=(username,password))
+                else:
+                    req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies)
                 prepped = s.prepare_request(req)
                 try:
                     req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
