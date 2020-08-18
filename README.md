@@ -42,6 +42,7 @@ blocks = ToPython(config_text)
   - [x] HMAC
     - [ ] MD4
   - [x] RandomNum
+  - [x] RandomString
 - REQUEST
   - [ ] Standard
     - [x] GET
