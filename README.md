@@ -44,11 +44,7 @@ blocks = ToPython(config_text)
   - [x] RandomNum
   - [x] RandomString
 - REQUEST
-  - [ ] Standard
-    - [x] GET
-    - [x] POST
-    - [ ] PUT
-    - [ ] OPTIONS
+  - [x] Standard
   - [ ] BasicAuth
   - [ ] Multipart
   - [ ] Raw

@@ -5,6 +5,7 @@ from Models.CVar import CVar
 
 import requests
 from requests import Timeout
+from requests import Request, Session
 def ParseString(input_string, separator, count) -> list:
     return [ n.strip() for n in input_string.split(separator,count)]
 class RequestType:
@@ -68,6 +69,9 @@ class BlockRequest:
         self.SaveAsScreenshot = False
 
         self.RequestTimeout = 60
+
+        self.AutoRedirect = True
+
         self.Dict = {}
 
     def FromLS(self,input_line):
@@ -188,9 +192,6 @@ class BlockRequest:
     # Using requests https://pypi.org/project/requests/ 
     # https://requests.readthedocs.io/en/master/
     def Process(self):
-        req = None
-        localUrl = ReplaceValues(self.Url)
-
         cookies = BotData.Cookies().get()
         if cookies:
             cookies = cookies.Value
@@ -212,29 +213,34 @@ class BlockRequest:
         # Add the content type to headers if ContentType is not null
         if self.ContentType:
             headers["Content-Type"] = self.ContentType
-
-        
+        localUrl = ReplaceValues(self.Url)
         if self.RequestType == RequestType().Standard:
-            if self.Method.lower() == "post":
+            if self.Method in ["GET","HEAD","DELETE"]:
+                print(f"{self.Method} {localUrl}")
+
+                s = Session()
+                req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies)
+                prepped = s.prepare_request(req)
+                try:
+                    req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
+                except:
+                    return
+
+            elif self.Method in ["POST","PUT","PATCH"]:
                 
                 pData = ReplaceValues(self.PostData).encode("UTF-8","replace")
                 if self.encodeContent == True:
                     pData = requests.utils.quote(pData)
-                print(f"Posting {pData} to {localUrl}")
+                print(f"{self.Method} {localUrl}")
+
+                s = Session()
+                req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies)
+                prepped = s.prepare_request(req)
                 try:
-                    req = requests.post(localUrl,headers=headers,data=pData,cookies=cookies,timeout=self.RequestTimeout)
-                except Timeout:
-                    print("Connection Timeout")
+                    req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
+                except:
                     return
-            elif self.Method.lower() == "get":
-                #Temp
-                print(f"Calling {localUrl}")
-                #Make the GET request
-                try:
-                    req = requests.get(localUrl,headers=headers,cookies=cookies,timeout=self.RequestTimeout)
-                except Timeout:
-                    print("Connection Timeout")
-                    return
+        
 
             ResponseCode = str(req.status_code)
             BotData.ResponseCode().set(CVar("RESPONSECODE",ResponseCode,False,True))
