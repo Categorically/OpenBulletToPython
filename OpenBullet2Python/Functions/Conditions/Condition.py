@@ -1,5 +1,6 @@
 from enum import Enum
 import re
+from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive,ReplaceValues
 class Comparer(Enum):
     LessThan = "LessThan"
     GreaterThan = "GreaterThan"
@@ -18,7 +19,6 @@ class Comparer(Enum):
 #         self.Right = Right
 #         self.Comparer = Comparer
 def ReplaceAndVerify(Left,comparer,Right):
-    from Blocks.BlockBase import ReplaceValuesRecursive,ReplaceValues
     L = ReplaceValuesRecursive(Left)
     R = ReplaceValues(Right)
 

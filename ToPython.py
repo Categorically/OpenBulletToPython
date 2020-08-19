@@ -1,6 +1,6 @@
-from LoliScript.Loliscript import CompressedLines
+from OpenBullet2Python.LoliScript.Loliscript import CompressedLines
 
-from LoliScript.BlockParser import Parse
+from OpenBullet2Python.LoliScript.BlockParser import Parse
 
 def ToPython(config_text):
     blocks = []

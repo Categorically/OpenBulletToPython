@@ -1,8 +1,8 @@
-from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt
+from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt
 
-from Blocks.BlockBase import ReplaceValues,InsertVariable
+from OpenBullet2Python.Blocks.BlockBase import ReplaceValues,InsertVariable
 
-from Functions.Parsing.Parse import LR, JSON
+from OpenBullet2Python.Functions.Parsing.Parse import LR, JSON
 class ParseType:
     LR = "LR"
     CSS = "CSS"

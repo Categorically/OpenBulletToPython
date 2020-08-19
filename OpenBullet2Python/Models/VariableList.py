@@ -1,5 +1,5 @@
-from Models.CVar import CVar
-from Models.CVar import VarType
+from OpenBullet2Python.Models.CVar import CVar
+from OpenBullet2Python.Models.CVar import VarType
 class VariableList:
 
     # All = [CVar("SOURCE","SOURCE",True,False)]

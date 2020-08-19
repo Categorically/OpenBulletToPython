@@ -1,7 +1,7 @@
-from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable,ReplaceValues
-from Functions.Encoding.Encode import ToBase64, FromBase64
-from Functions.Crypto.Crypto import Crypto
+from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
+from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable,ReplaceValues
+from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, FromBase64
+from OpenBullet2Python.Functions.Crypto.Crypto import Crypto
 from urllib.parse import quote, unquote
 import base64
 import re

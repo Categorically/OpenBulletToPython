@@ -1,7 +1,7 @@
-from LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from Blocks.BlockBase import ReplaceValues
-from Models.BotData import BotData
-from Models.CVar import CVar
+from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
+from OpenBullet2Python.Blocks.BlockBase import ReplaceValues
+from OpenBullet2Python.Models.BotData import BotData
+from OpenBullet2Python.Models.CVar import CVar
 
 import requests
 from requests import Timeout

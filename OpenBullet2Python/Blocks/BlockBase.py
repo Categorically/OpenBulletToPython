@@ -1,7 +1,7 @@
 import re
-from Models.BotData import BotData
-from Models.CVar import VarType
-from Models.CVar import CVar
+from OpenBullet2Python.Models.BotData import BotData
+from OpenBullet2Python.Models.CVar import VarType
+from OpenBullet2Python.Models.CVar import CVar
 def ParseArguments(input_string, delimL, delimR):
     output = []
     pattern = "\\" + delimL + "([^\\" + delimR + "]*)\\" + delimR

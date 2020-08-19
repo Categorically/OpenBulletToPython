@@ -1,4 +1,4 @@
-from Functions.Conditions.Condition import ReplaceAndVerify
+from OpenBullet2Python.Functions.Conditions.Condition import ReplaceAndVerify
 
 
 class Key:
