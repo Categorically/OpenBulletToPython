@@ -192,14 +192,14 @@ class BlockRequest:
         self.Dict["CustomHeaders"] = CustomHeaders
     # Using requests https://pypi.org/project/requests/ 
     # https://requests.readthedocs.io/en/master/
-    def Process(self):
-        cookies = BotData.Cookies().get()
+    def Process(self,BotData):
+        cookies = BotData.CookiesGet()
         if cookies:
             cookies = cookies.Value
         else:
             cookies = {}
         for c in self.CustomCookies.items():
-            cookies[ReplaceValues(c[0])] = cookies[ReplaceValues(c[1])]
+            cookies[ReplaceValues(c[0],BotData)] = cookies[ReplaceValues(c[1],BotData)]
 
         # Headers to be used for the request
         headers = {}
@@ -209,15 +209,15 @@ class BlockRequest:
             if replacedKey == "acceptencoding":
                 headers["Accept"] = "*/*"
             else:
-                headers[ReplaceValues(h[0])] = ReplaceValues(h[1])
+                headers[ReplaceValues(h[0],BotData)] = ReplaceValues(h[1],BotData)
 
         # Add the content type to headers if ContentType is not null
         if self.ContentType:
             headers["Content-Type"] = self.ContentType
-        localUrl = ReplaceValues(self.Url)
+        localUrl = ReplaceValues(self.Url,BotData)
         if self.RequestType == RequestType().Standard or self.RequestType == RequestType().BasicAuth:
-            username = ReplaceValues(self.AuthUser)
-            password = ReplaceValues(self.AuthPass)
+            username = ReplaceValues(self.AuthUser,BotData)
+            password = ReplaceValues(self.AuthPass,BotData)
             if self.Method in ["GET","HEAD","DELETE"]:
                 print(f"{self.Method} {localUrl}")
 
@@ -234,7 +234,7 @@ class BlockRequest:
 
             elif self.Method in ["POST","PUT","PATCH"]:
                 
-                pData = ReplaceValues(self.PostData).encode("UTF-8","replace")
+                pData = ReplaceValues(self.PostData,BotData).encode("UTF-8","replace")
                 if self.encodeContent == True:
                     pData = requests.utils.quote(pData)
                 print(f"{self.Method} {localUrl}")
@@ -252,22 +252,22 @@ class BlockRequest:
         
 
             ResponseCode = str(req.status_code)
-            BotData.ResponseCode().set(CVar("RESPONSECODE",ResponseCode,False,True))
+            BotData.ResponseCodeSet(CVar("RESPONSECODE",ResponseCode,False,True))
             Address = str(req.url)
-            BotData.ResponseSource().set(CVar("ADDRESS",Address,False,True))
+            BotData.ResponseSourceSet(CVar("ADDRESS",Address,False,True))
             Responce_Headers = dict(req.headers)
-            BotData.ResponseHeaders().set(CVar("HEADERS",Responce_Headers,False,True))
+            BotData.ResponseHeadersSet(CVar("HEADERS",Responce_Headers,False,True))
             Responce_Cookies = dict(req.cookies)
-            cookies = BotData.Cookies().get()
+            cookies = BotData.CookiesGet()
             if cookies:
                 cookies = cookies.Value
             else:
                 cookies = {}
             for cN,cV in Responce_Cookies.items():
                 cookies[cN] = cV
-            BotData.Cookies().set(CVar("COOKIES",cookies,False,True))
+            BotData.CookiesSet(CVar("COOKIES",cookies,False,True))
 
             if self.ResponseType == ResponseType().String:
                 ResponseSource = str(req.text)
-                BotData.ResponseSource().set(CVar("SOURCE",ResponseSource,False,True))
+                BotData.ResponseSourceSet(CVar("SOURCE",ResponseSource,False,True))
                 

@@ -138,16 +138,16 @@ class BlockParse:
         self.Dict["suffix"] = suffix
         self.Suffix = suffix
 
-    def Process(self):
-        original = ReplaceValues(self.ParseTarget)
+    def Process(self,BotData):
+        original = ReplaceValues(self.ParseTarget,BotData)
         List = []
         if self.ParseType == ParseType().LR:
-            List = LR(original,ReplaceValues(self.LeftString),ReplaceValues(self.RightString),self.Recursive,self.UseRegexLR)
+            List = LR(original,ReplaceValues(self.LeftString,BotData),ReplaceValues(self.RightString,BotData),self.Recursive,self.UseRegexLR)
             print(f"Parsed LR {List} From {original[0:10]}......")
         elif self.ParseType == ParseType().JSON:
-            List = JSON(original,ReplaceValues(self.JsonField),self.Recursive,self.JTokenParsing)
+            List = JSON(original,ReplaceValues(self.JsonField,BotData),self.Recursive,self.JTokenParsing)
             print(f"Parsed JSON {List} From {original[0:10]}......")
         else:
             pass
 
-        InsertVariable(self.IsCapture,self.Recursive,List,self.VariableName,self.Prefix,self.Suffix,self.EncodeOutput,self.CreateEmpty)
+        InsertVariable(BotData,self.IsCapture,self.Recursive,List,self.VariableName,self.Prefix,self.Suffix,self.EncodeOutput,self.CreateEmpty)

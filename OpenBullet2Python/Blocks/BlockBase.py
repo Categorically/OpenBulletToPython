@@ -10,7 +10,7 @@ def ParseArguments(input_string, delimL, delimR):
         output.append(match)
     return output
 
-def ReplaceValues(input_string):
+def ReplaceValues(input_string,BotData):
     if "<" not in input_string and ">" not in input_string: return input_string
 
     previous = ""
@@ -73,7 +73,7 @@ def ReplaceValues(input_string):
     return output
 
 
-def ReplaceValuesRecursive(input_string):
+def ReplaceValuesRecursive(input_string,BotData):
 
 
     toReplace = []
@@ -91,8 +91,8 @@ def ReplaceValuesRecursive(input_string):
             if variable.VarType == VarType().List: variables.append(variable)
         
             
-    def theEnd(toReplace):
-        toReplace = [ReplaceValues(replace) for replace in toReplace]
+    def theEnd(toReplace,BotData):
+        toReplace = [ReplaceValues(replace,BotData) for replace in toReplace]
         return toReplace
 
     if len(variables) > 0:
@@ -112,7 +112,7 @@ def ReplaceValuesRecursive(input_string):
 
             toReplace.append(replaced)
             i += 1
-        return theEnd(toReplace)
+        return theEnd(toReplace,BotData)
 
 
     r = re.compile("<([^\\(]*)\\(\\*\\)>")
@@ -130,7 +130,7 @@ def ReplaceValuesRecursive(input_string):
             for key in theDict:
                 aDict = {key,theDict[key]}
                 toReplace.append(input_string.replace(full,str(aDict)))
-        return theEnd(toReplace)
+        return theEnd(toReplace,BotData)
     
     r = re.compile("<([^\\{]*)\\{\\*\\}>")
     match = r.match(input_string)
@@ -146,11 +146,11 @@ def ReplaceValuesRecursive(input_string):
             theDict = theDict.Value
             for key in theDict:
                 toReplace.append(input_string.replace(full,str(key)))
-        return theEnd(toReplace)
+        return theEnd(toReplace,BotData)
     toReplace.append(input_string)
-    return theEnd(toReplace)
+    return theEnd(toReplace,BotData)
 
-def InsertVariable(isCapture,recursive,values,variableName,prefix="" ,suffix="" ,urlEncode=False ,createEmpty=True):
+def InsertVariable(BotData,isCapture,recursive,values,variableName,prefix="" ,suffix="" ,urlEncode=False ,createEmpty=True):
     # thisList = [ReplaceValues(prefix, bot_data) + str(v).strip() + ReplaceValues(suffix,bot_data) for v in values]
     thisList = values
     if urlEncode == False: pass

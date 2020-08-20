@@ -7,9 +7,9 @@ class Key:
         self.Comparer = Comparer
         self.RightTerm = RightTerm
 
-    def CheckKey(self):
+    def CheckKey(self,BotData):
         try:
-            return ReplaceAndVerify(self.LeftTerm,self.Comparer,self.RightTerm)
+            return ReplaceAndVerify(self.LeftTerm,self.Comparer,self.RightTerm,BotData)
         except:
             # Return false if e.g. we can't parse the number for a LessThan/GreaterThan comparison. 
             return False

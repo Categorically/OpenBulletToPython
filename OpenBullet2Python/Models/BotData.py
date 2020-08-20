@@ -4,6 +4,8 @@ from enum import Enum
 
 
 class BotData:
+    def __init__(self):
+        self.Variables = VariableList()
     class BotStatus(Enum):
         NONE = "NONE"
         ERROR = "ERROR"
@@ -12,36 +14,33 @@ class BotData:
         BAN = "BAN"
         RETRY = "RETRY"
         CUSTOM = "CUSTOM"
-
-    Variables = VariableList()
+        
     Status = BotStatus.NONE
 
-    class ResponseSource():
+    def ResponseSource(self):
         def get(self):
-            return BotData.Variables.GetWithName("SOURCE").Value
-        def set(self,variable):
-            BotData.Variables.Set(variable)
+            return self.Variables.GetWithName("SOURCE").Value
+    def ResponseSourceSet(self,variable):
+        self.Variables.Set(variable)
 
-    class Address():
+    def Address(self):
         def get(self):
-            return BotData.Variables.GetWithName("ADDRESS").Value
-        def set(self,variable):
-            BotData.Variables.Set(variable)
+            return self.Variables.GetWithName("ADDRESS").Value
+    def AddressSet(self,variable):
+        self.Variables.Set(variable)
 
-    class ResponseCode():
+    def ResponseCode(self):
         def get(self):
-            return BotData.Variables.GetWithName("RESPONSECODE").Value
-        def set(self,variable):
-            BotData.Variables.Set(variable)
+            return self.Variables.GetWithName("RESPONSECODE").Value
+    def ResponseCodeSet(self,variable):
+        self.Variables.Set(variable)
 
-    class ResponseHeaders():
-        def get(self):
-            return BotData.Variables.GetWithName("HEADERS").Value
-        def set(self,variable):
-            BotData.Variables.Set(variable)
+    def ResponseHeadersGet(self):
+        return self.Variables.GetWithName("HEADERS").Value
+    def ResponseHeadersSet(self,variable):
+        self.Variables.Set(variable)
 
-    class Cookies():
-        def get(self):
-            return BotData.Variables.GetWithName("COOKIES")
-        def set(self,variable):
-            BotData.Variables.Set(variable)
+    def CookiesGet(self):
+        return self.Variables.GetWithName("COOKIES")
+    def CookiesSet(self,variable):
+        self.Variables.Set(variable)

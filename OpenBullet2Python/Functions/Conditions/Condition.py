@@ -18,9 +18,9 @@ class Comparer(Enum):
 #         self.Left = Left
 #         self.Right = Right
 #         self.Comparer = Comparer
-def ReplaceAndVerify(Left,comparer,Right):
-    L = ReplaceValuesRecursive(Left)
-    R = ReplaceValues(Right)
+def ReplaceAndVerify(Left,comparer,Right,BotData):
+    L = ReplaceValuesRecursive(Left,BotData)
+    R = ReplaceValues(Right,BotData)
 
     if comparer == Comparer.EqualTo:
         return any([l for l in L if l == R])

@@ -6,7 +6,7 @@ from OpenBullet2Python.LoliScript.Loliscript import CompressedLines
 from OpenBullet2Python.LoliScript.BlockParser import Parse
 
 from OpenBullet2Python.Models.CVar import CVar
-def TestConfig(configtext:list):
+def TestConfig(configtext:list,BotData):
 
     blocksList = []
     compressed = CompressedLines(configtext)
@@ -18,6 +18,6 @@ def TestConfig(configtext:list):
         # print(block)
         if BotData.Status.value == BotData.BotStatus.FAIL or BotData.Status.value == BotData.BotStatus.BAN or BotData.Status.value == BotData.BotStatus.ERROR:
             return
-        block.Process()
+        block.Process(BotData)
         
     

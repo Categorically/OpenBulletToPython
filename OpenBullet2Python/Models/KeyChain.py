@@ -16,14 +16,14 @@ class KeyChain:
         self.Mode = KeychainMode.AND
         self.Keys = []
 
-    def CheckKeys(self):
+    def CheckKeys(self,BotData):
         if self.Mode == KeychainMode.OR:
             for key in self.Keys:
-                if key.CheckKey():
+                if key.CheckKey(BotData):
                     return True
             return False
         elif self.Mode == KeychainMode.AND:
             for key in self.Keys:
-                if not key.CheckKey():
+                if not key.CheckKey(BotData):
                     return False
             return True

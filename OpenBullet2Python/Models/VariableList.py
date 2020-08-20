@@ -1,15 +1,11 @@
 from OpenBullet2Python.Models.CVar import CVar
 from OpenBullet2Python.Models.CVar import VarType
 class VariableList:
-
-    # All = [CVar("SOURCE","SOURCE",True,False)]
-    All = []
+    def __init__(self):
+        self.All = []
     # Captures = [v for v in All if v.IsCapture == True and v.Hidden == False]
     def Captures(self):
         return [v for v in self.All if v.IsCapture == True and v.Hidden == False]
-    Singles = [v for v in All if v.VarType == VarType().Single]
-    Lists = [v for v in All if v.VarType == VarType().List]
-    Dictionaries = [v for v in All if v.VarType == VarType().Dictionary]
 
     def VariableList(self):
         self.All = []
