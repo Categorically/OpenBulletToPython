@@ -11,7 +11,7 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
 
 
 ```Python
-from ToPython import ToPython
+from OpenBullet2Python.ToPython import ToPython
 config_text = """REQUEST GET "https://google.com" 
   
   HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" 
@@ -62,9 +62,9 @@ blocks = ToPython(config_text)
   
  
 ```Python
-from Models.BotData import BotData
+from OpenBullet2Python.Models.BotData import BotData
 from TestConfig import TestConfig
-from Models.CVar import CVar
+from OpenBullet2Python.Models.CVar import CVar
 
 # This holds the variable list.
 data = BotData()
@@ -91,7 +91,7 @@ BotData.Variables.Set(CVar("PASS","password",False,True))
 # Run the config
 # If the the status changes to Fail, Ban or an Error then it will return, else it runs until all the blocks are processed.
 # There is no error handling so be careful on what you run.
-TestConfig(config_text)
+TestConfig(config_text,data)
 
 # The outcome of the config test
 print(data.Status.value)
