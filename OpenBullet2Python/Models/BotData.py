@@ -4,8 +4,6 @@ from enum import Enum
 
 
 class BotData:
-    def __init__(self):
-        self.Variables = VariableList()
     class BotStatus(Enum):
         NONE = "NONE"
         ERROR = "ERROR"
@@ -14,24 +12,24 @@ class BotData:
         BAN = "BAN"
         RETRY = "RETRY"
         CUSTOM = "CUSTOM"
+    def __init__(self,Status=BotStatus.NONE):
+        self.Variables = VariableList()
+        self.Status = Status
         
-    Status = BotStatus.NONE
+    # Status = BotStatus.NONE
 
-    def ResponseSource(self):
-        def get(self):
-            return self.Variables.GetWithName("SOURCE").Value
+    def ResponseSourceGet(self):
+        return self.Variables.GetWithName("SOURCE").Value
     def ResponseSourceSet(self,variable):
         self.Variables.Set(variable)
 
-    def Address(self):
-        def get(self):
-            return self.Variables.GetWithName("ADDRESS").Value
+    def AddressGet(self):
+        return self.Variables.GetWithName("ADDRESS").Value
     def AddressSet(self,variable):
         self.Variables.Set(variable)
 
-    def ResponseCode(self):
-        def get(self):
-            return self.Variables.GetWithName("RESPONSECODE").Value
+    def ResponseCodeGet(self):
+        return self.Variables.GetWithName("RESPONSECODE").Value
     def ResponseCodeSet(self,variable):
         self.Variables.Set(variable)
 
