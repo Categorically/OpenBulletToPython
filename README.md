@@ -63,7 +63,7 @@ blocks = ToPython(config_text)
  
 ```Python
 from OpenBullet2Python.Models.BotData import BotData
-from TestConfig import TestConfig
+from OpenBullet2Python.TestConfig import TestConfig
 from OpenBullet2Python.Models.CVar import CVar
 
 # This holds the variable list.
