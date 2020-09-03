@@ -56,7 +56,9 @@ blocks = ToPython(config_text)
   - [ ] CSS
   - [x] JSON
     - [x] JToken
-  - [ ] REGEX
+  - [x] REGEX
+    - [ ] EncodeOutput
+    - [ ] DotMatches
 - KEYCHECK
   - [ ] CUSTOM 
   
