@@ -63,7 +63,7 @@ blocks = ToPython(config_text)
  
 ```Python
 from OpenBullet2Python.Models.BotData import BotData
-from TestConfig import TestConfig
+from OpenBullet2Python.TestConfig import TestConfig
 from OpenBullet2Python.Models.CVar import CVar
 
 # This holds the variable list.
@@ -85,8 +85,8 @@ KEYCHECK
 
 # Adding a variable for replacement
 # This will add a variable called "USER" with the value as "username", ect
-BotData.Variables.Set(CVar("USER","username",False,True))
-BotData.Variables.Set(CVar("PASS","password",False,True))
+data.Variables.Set(CVar("USER","username",False,True))
+data.Variables.Set(CVar("PASS","password",False,True))
 
 # Run the config
 # If the the status changes to Fail, Ban or an Error then it will return, else it runs until all the blocks are processed.
