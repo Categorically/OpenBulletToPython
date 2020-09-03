@@ -102,38 +102,32 @@ def REGEX(inputString:str, pattern:str, output:str, recursive=False):
     List = []
     if recursive:
         r = re.compile(pattern)
-        matches = r.finditer(inputString)
-        for match in matches:
-            matchGroups = []
-            # matchGroups.append(match.string)
-            # for group in match.groups():
-            #     matchGroups.append(group)
+        mers = r.finditer(inputString)
+        for m in mers:
             final = output
             i = 0
-            # print(matchGroups)
-            while i < len(match.group()):
-                final = final.replace("[" + str(i) + "]", str(match.group(i)))
+            while 1:
+                try:
+                    final = final.replace("[" + str(i) + "]", str(m[i]))
+                except:
+                    break
                 i += 1
             List.append(final)
-
     else:
         r = re.compile(pattern)
-        match = r.match(inputString)
-        matchGroups = []
-        if match:
-            matchGroups.append(match.string)
-            for group in match.groups():
-                matchGroups.append(group)
-            final = output
-            i = 0
-            while i < len(matchGroups):
-                final = final.replace("[" + str(i) + "]", str(matchGroups[i]))
-                i += 1
-            List.append(final)
+        m = r.search(inputString)
+        final = output
+        i = 0
+        while 1:
+            try:
+                final = final.replace("[" + str(i) + "]", str(m[i]))
+            except:
+                break
+            i += 1
+        List.append(final)
 
     return List
 
-# print(REGEX("test","(t)","[0] [1]",True))
 def BuildLRPattern(ls,rs):
     left = ls
     right = rs

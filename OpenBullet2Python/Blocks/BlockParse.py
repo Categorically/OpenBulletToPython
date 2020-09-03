@@ -2,7 +2,7 @@ from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLi
 
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValues,InsertVariable
 
-from OpenBullet2Python.Functions.Parsing.Parse import LR, JSON
+from OpenBullet2Python.Functions.Parsing.Parse import LR, JSON, REGEX
 class ParseType:
     LR = "LR"
     CSS = "CSS"
@@ -66,9 +66,11 @@ class BlockParse:
         if parse_type == ParseType().REGEX:
             regex_pattern  = ParseLiteral(line.current)
             self.Dict["regex_pattern"] = regex_pattern
+            self.RegexString = regex_pattern
 
             regex_output = ParseLiteral(line.current)
             self.Dict["regex_output"] = regex_output
+            self.RegexOutput = regex_output
 
             self.Dict["Booleans"] = {}
             while Lookahead(line.current) == "Boolean":
@@ -147,6 +149,9 @@ class BlockParse:
         elif self.ParseType == ParseType().JSON:
             List = JSON(original,ReplaceValues(self.JsonField,BotData),self.Recursive,self.JTokenParsing)
             print(f"Parsed JSON {List} From {original[0:10]}......")
+        elif self.ParseType == ParseType().REGEX:
+            List = REGEX(original,ReplaceValues(self.RegexString,BotData),ReplaceValues(self.RegexOutput,BotData),self.Recursive)
+            print(f"Parsed REGEX {List} From {original[0:10]}......")
         else:
             pass
 
