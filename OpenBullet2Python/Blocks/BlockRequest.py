@@ -1,5 +1,5 @@
 from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from OpenBullet2Python.Blocks.BlockBase import ReplaceValues
+from OpenBullet2Python.Blocks.BlockBase import ReplaceValues, ReplaceValuesRecursive
 from OpenBullet2Python.Models.BotData import BotData
 from OpenBullet2Python.Models.CVar import CVar
 
@@ -80,7 +80,6 @@ class BlockRequest:
         MultipartContents = []
         CustomHeaders = {}
         CustomCookies = {}
-        ResponseType = "String"
 
         if str(input_line).startswith("!"):
             return None
@@ -172,10 +171,10 @@ class BlockRequest:
             outType = ParseToken(line.current,"Parameter",True,True)
 
             if outType.upper() == "STRING":
-                ResponseType = "String"
+                self.ResponseType = ResponseType.string
 
-            elif outType.upper() == "File":
-                ResponseType = "FILE"
+            elif outType.upper() == "FILE":
+                self.ResponseType = ResponseType.file
                 DownloadPath  = ParseLiteral(line.current)
                 self.Dict["DownloadPath"] = DownloadPath
                 while Lookahead(line.current) == "Boolean":
@@ -184,7 +183,7 @@ class BlockRequest:
                     self.Dict["Booleans"][boolean_name] = boolean_value
 
             elif outType.upper() == "BASE64":
-                ResponseType = "BASE64"
+                self.ResponseType = ResponseType.Base64String
                 OutputVariable = ParseLiteral(line.current)
                 self.Dict["OutputVariable"] = OutputVariable
                 
@@ -218,38 +217,35 @@ class BlockRequest:
         if self.RequestType == RequestType().Standard or self.RequestType == RequestType().BasicAuth:
             username = ReplaceValues(self.AuthUser,BotData)
             password = ReplaceValues(self.AuthPass,BotData)
-            if self.Method in ["GET","HEAD","DELETE"]:
-                print(f"{self.Method} {localUrl}")
+            s = Session()
+            try:
+                if self.Method in ["GET","HEAD","DELETE"]:
+                    print(f"{self.Method} {localUrl}")
 
-                s = Session()
-                if self.RequestType == RequestType().BasicAuth:
-                    req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies,auth=(username,password))
-                else:
-                    req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies)
-                prepped = s.prepare_request(req)
-                try:
+                    if self.RequestType == RequestType().BasicAuth:
+                        req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies,auth=(username,password))
+                    else:
+                        req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies)
+                    prepped = s.prepare_request(req)
+
                     req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
-                except Exception:
-                    return
 
-            elif self.Method in ["POST","PUT","PATCH"]:
-                
-                pData = ReplaceValues(self.PostData,BotData).encode("UTF-8","replace")
-                if self.encodeContent == True:
-                    pData = requests.utils.quote(pData)
-                print(f"{self.Method} {localUrl}")
+                elif self.Method in ["POST","PUT","PATCH"]:
+                    
+                    pData = ReplaceValues(self.PostData,BotData).encode("UTF-8","replace")
+                    if self.encodeContent == True:
+                        pData = requests.utils.quote(pData)
+                    print(f"{self.Method} {localUrl}")
 
-                s = Session()
-                if self.RequestType == RequestType().BasicAuth:
-                    req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies,auth=(username,password))
-                else:
-                    req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies)
-                prepped = s.prepare_request(req)
-                try:
+                    if self.RequestType == RequestType().BasicAuth:
+                        req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies,auth=(username,password))
+                    else:
+                        req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies)
+                    prepped = s.prepare_request(req)
+
                     req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
-                except Exception:
-                    return
-        
+            except Exception:
+                return
 
             ResponseCode = str(req.status_code)
             BotData.ResponseCodeSet(CVar("RESPONSECODE",ResponseCode,False,True))
