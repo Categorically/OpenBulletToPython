@@ -11,7 +11,7 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
 
 
 ```Python
-from OpenBullet2Python.ToPython import ToPython
+from OpenBullet2Python.auxiliary_functions import ToPython
 config_text = """REQUEST GET "https://google.com" 
   
   HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" 
