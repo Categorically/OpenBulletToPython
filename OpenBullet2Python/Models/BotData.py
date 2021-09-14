@@ -12,11 +12,10 @@ class BotData:
         BAN = "BAN"
         RETRY = "RETRY"
         CUSTOM = "CUSTOM"
-    def __init__(self,Status=BotStatus.NONE):
+    def __init__(self,status=BotStatus.NONE):
         self.Variables = VariableList()
-        self.Status = Status
+        self.status = status
         
-    # Status = BotStatus.NONE
 
     def ResponseSourceGet(self):
         return self.Variables.GetWithName("SOURCE").Value

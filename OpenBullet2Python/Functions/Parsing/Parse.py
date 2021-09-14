@@ -60,7 +60,7 @@ def JSON(input_string:str,field:str,recursive:bool,useJToken:bool):
             jsonList = json.loads(input_string)
             try:
                 listArray.append(str(jsonList[field]))
-            except:
+            except Exception:
                 listArray.append("")
     else:
         jsonlist = []
@@ -84,7 +84,7 @@ def parseJSON(a,b,jsonlist:list):
         array = []
         try:
             array = json.loads(b)
-        except:
+        except Exception:
             return
         for x in array:
             parseJSON("",json.dumps(x),jsonlist)
@@ -92,7 +92,7 @@ def parseJSON(a,b,jsonlist:list):
         obj = None
         try:
             obj = json.loads(b)
-        except:
+        except Exception:
             return
         for key,value in obj.items():
             parseJSON(key,json.dumps(value),jsonlist)
@@ -109,7 +109,7 @@ def REGEX(inputString:str, pattern:str, output:str, recursive=False):
             while 1:
                 try:
                     final = final.replace("[" + str(i) + "]", str(m[i]))
-                except:
+                except Exception:
                     break
                 i += 1
             List.append(final)
@@ -121,7 +121,7 @@ def REGEX(inputString:str, pattern:str, output:str, recursive=False):
         while 1:
             try:
                 final = final.replace("[" + str(i) + "]", str(m[i]))
-            except:
+            except Exception:
                 break
             i += 1
         List.append(final)
