@@ -1,21 +1,19 @@
 
 
 class VarType:
-    def __init__(self):
-        self.Single = "Single"
-        self.List = "List"
-        self.Dictionary = "Dictionary"
+    Single = "Single"
+    List = "List"
+    Dictionary = "Dictionary"
 class CVar:
 
     def __init__(self, Name, Value,IsCapture,Hidden=False):
-        # Not sure how this is done in c#
 
         if type(Value) == list:
-            self.VarType = VarType().List
+            self.var_type = VarType.List
         elif type(Value) == str:
-            self.VarType = VarType().Single
+            self.var_type = VarType.Single
         elif type(Value) == dict:
-            self.VarType = VarType().Dictionary
+            self.var_type = VarType.Dictionary
 
         self.Name = Name
         self.Value = Value
@@ -23,16 +21,16 @@ class CVar:
         self.Hidden = Hidden
     
     def ToString(self):
-        if self.VarType == VarType().Single:
+        if self.var_type == VarType.Single:
             return self.Value
-        elif self.VarType == VarType().List:
+        elif self.var_type == VarType.List:
             if type(self.Value == list): return "[" + ",".join(self.Value) + "]"
             else: return ""
-        elif self.VarType == VarType().Dictionary:
+        elif self.var_type == VarType.Dictionary:
             return "{" + ",".join(["(" + v[0] + ", " + v[1] + ")" for v in self.Value.items()]) + "}"
     
     def GetListItem(self,index):
-        if self.VarType != VarType().List: return None
+        if self.var_type != VarType.List: return None
 
         List = list(self.Value)
 
