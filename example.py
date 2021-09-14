@@ -24,10 +24,15 @@ KEYCHECK
 data.Variables.Set(CVar("USER","username",False,True))
 data.Variables.Set(CVar("PASS","password",False,True))
 
+for variable in data.Variables.all:
+    print(f"Name: {variable.Name}, Value: {variable.Value}" )
+
+
 # Run the config
 # If the the status changes to Fail, Ban or an Error then it will return, else it runs until all the blocks are processed.
 # There is no error handling so be careful on what you run.
 TestConfig(config_text,data)
+
 
 # The outcome of the config test
 print(data.Status.value)
