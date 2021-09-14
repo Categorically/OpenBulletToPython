@@ -45,7 +45,7 @@ def ParseEnum(line_input) -> str:
 def ParseInt(line_input) -> int:
     try:
         return int(ParseToken(line_input,"Parameter",True,True))
-    except:
+    except Exception:
         print("Expected Integer value")
         return 0
 
@@ -84,5 +84,5 @@ def CheckIdentifier(input_string, id_string):
     try:
         token = ParseToken(input_string,"Parameter",True,False)
         return token.upper() == id_string.upper()
-    except:
+    except Exception:
         return False

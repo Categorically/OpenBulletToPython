@@ -229,7 +229,7 @@ class BlockRequest:
                 prepped = s.prepare_request(req)
                 try:
                     req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
-                except:
+                except Exception:
                     return
 
             elif self.Method in ["POST","PUT","PATCH"]:
@@ -247,7 +247,7 @@ class BlockRequest:
                 prepped = s.prepare_request(req)
                 try:
                     req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
-                except:
+                except Exception:
                     return
         
 

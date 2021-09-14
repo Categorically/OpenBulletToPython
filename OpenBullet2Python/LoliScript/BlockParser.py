@@ -38,7 +38,7 @@ BlockMappings2  = {"BYPASSCF": None,
 def GetBlockType(line):
     try:
         return re.match('^!?(#[^ ]* )?([^ ]*)',line).group(2) 
-    except:
+    except Exception:
         return ""
 
 

@@ -74,7 +74,7 @@ class BlockKeycheck:
             if BotData.ResponseCodeGet().startswith("4") and self.banOn4XX:
                 BotData.Status = BotData.BotStatus.BAN
                 return
-        except:
+        except Exception:
             pass
         
 

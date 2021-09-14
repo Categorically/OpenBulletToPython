@@ -54,7 +54,7 @@ def RandomString(localInputString:str):
 def RandomNum(minNum,maxNum,padNum:bool):
                 try:
                     randomNumString = str(randint(int(minNum),int(maxNum)))
-                except:
+                except Exception:
                     print("Failed to parse int")
                     return ""
                 
@@ -356,7 +356,7 @@ class BlockFunction:
         else:
             try:
                 rawInput = base64.b64decode(baseString.encode('utf-8'))
-            except:
+            except Exception:
                 # In case the input is not base64 encoded
                 return ""
         digest = bytearray()

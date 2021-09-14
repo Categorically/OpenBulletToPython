@@ -55,7 +55,7 @@ def ReplaceValues(input_string,BotData):
                         item = v.GetListItem(index)
                         if item:
                             output = output.replace(full,item)
-                    except:
+                    except Exception:
                         pass
             elif v.VarType == VarType().Dictionary:
 

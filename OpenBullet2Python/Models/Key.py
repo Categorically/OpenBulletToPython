@@ -10,7 +10,7 @@ class Key:
     def CheckKey(self,BotData):
         try:
             return ReplaceAndVerify(self.LeftTerm,self.Comparer,self.RightTerm,BotData)
-        except:
+        except Exception:
             # Return false if e.g. we can't parse the number for a LessThan/GreaterThan comparison. 
             return False
         
