@@ -41,10 +41,10 @@ def ReplaceValues(input_string,BotData):
 
             args = m.replace(name,"")
             
-            if v.VarType == VarType().Single:
+            if v.var_type == VarType.Single:
                 output = output.replace(full, v.Value)
 
-            elif v.VarType == VarType().List:
+            elif v.var_type == VarType.List:
                 if not args: # If it's just the list name, replace it with its string representation
                     output = output.replace(full,v.ToString())
                     # It would break the case here
@@ -57,7 +57,7 @@ def ReplaceValues(input_string,BotData):
                             output = output.replace(full,item)
                     except Exception:
                         pass
-            elif v.VarType == VarType().Dictionary:
+            elif v.var_type == VarType.Dictionary:
 
                 if "(" in args and ")" in args:
                     dicKey = ParseArguments(args, "(", ")")[0]
@@ -88,7 +88,7 @@ def ReplaceValuesRecursive(input_string,BotData):
 
         variable = BotData.Variables.GetWithName(name)
         if variable:
-            if variable.VarType == VarType().List: variables.append(variable)
+            if variable.var_type == VarType.List: variables.append(variable)
         
             
     def theEnd(toReplace,BotData):

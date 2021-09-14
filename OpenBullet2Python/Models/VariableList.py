@@ -18,24 +18,24 @@ class VariableList:
         return next((v for v in self.all if v.Name == name),None)
 
     # Renamed from Get
-    def GetWithNameAndType(self,name,VarType):
-        return next((v for v in self.all if v.VarType == VarType and v.Name == name),None)
+    def GetWithNameAndType(self,name,var_type):
+        return next((v for v in self.all if v.VarType == var_type and v.Name == name),None)
         
     def GetSingle(self,name):
-        return self.GetWithNameAndType(name,VarType().Single).Value
+        return self.GetWithNameAndType(name,VarType.Single).Value
     
     def GetList(self,name):
-        return self.GetWithNameAndType(name,VarType().List).Value
+        return self.GetWithNameAndType(name,VarType.List).Value
 
     def GetDictionary(self,name):
-        return self.GetWithNameAndType(name,VarType().Dictionary)
+        return self.GetWithNameAndType(name,VarType.Dictionary)
 
     def VariableExists(self,name):
         return any([v for v in self.all if v.Name == name])
 
     # Renamed from VariableExists
-    def VariableExistsWithType(self,name, VarType):
-        return any([v for v in self.all if v.Name == name and v.VarType == VarType])
+    def VariableExistsWithType(self,name, var_type):
+        return any([v for v in self.all if v.Name == name and v.VarType == var_type])
     
     def Set(self,variable:CVar):
         self.Remove(variable.Name)
