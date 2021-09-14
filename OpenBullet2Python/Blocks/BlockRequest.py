@@ -26,73 +26,71 @@ class ResponseType:
 
 
 class BlockRequest:
-    def __init__(self,Url=None):
-        self.Url = Url
-        self.RequestType = RequestType().Standard
+    def __init__(self,url=None):
+        self.url = url
+        self.request_type = RequestType.Standard
 
         # Basic Auth
-        self.AuthUser = ""
-        self.AuthPass = ""
+        self.auth_user = ""
+        self.auth_pass = ""
 
         # Standard
-        self.PostData = ""
+        self.post_data = ""
 
         # Raw
-        self.RawData = ""
+        self.raw_data = ""
 
-        self.Method = "GET"
+        self.method = "GET"
 
-        self.CustomCookies = {}
+        self.custom_cookies = {}
 
-        self.CustomHeaders = {}
+        self.custom_headers = {}
 
         self.ContentType = "application/x-www-form-urlencoded"
 
-        self.AutoRedirect = True
+        self.auto_redirect = True
 
-        self.ReadResponseSource = True
+        self.read_response_source = True
 
-        self.encodeContent = False
+        self.encode_content = False
 
-        self.AcceptEncoding = True
+        self.accept_encoding = True
 
-        self.MultipartBoundary = ""
+        self.multipart_boundary = ""
 
-        self.MultipartContents = []
+        self.multipart_contents = []
 
-        self.ResponseType = ResponseType().String
+        self.response_type = ResponseType.String
 
-        self.DownloadPath = ""
+        self.download_path = ""
 
-        self.OutputVariable = ""
+        self.output_variable = ""
 
-        self.SaveAsScreenshot = False
+        self.save_as_screenshot = False
 
-        self.RequestTimeout = 60
-
-        self.AutoRedirect = True
+        self.request_timeout = 60
 
         self.Dict = {}
 
     def FromLS(self,input_line):
         input_line = input_line.strip()
         line.current = input_line
-        MultipartContents = []
-        CustomHeaders = {}
-        CustomCookies = {}
+        multipart_contents = []
+        custom_headers = {}
+        custom_cookies = {}
 
         if str(input_line).startswith("!"):
             return None
 
         self.Dict = {}
 
-        Method = ParseEnum(line.current)
-        self.Dict["Method"] = Method
-        self.Method = Method
+        method = ParseEnum(line.current)
+        self.Dict["method"] = method
+        self.method = method
 
-        Url = ParseLiteral(line.current)
-        self.Dict["Url"] = Url
-        self.Url = Url
+        url = ParseLiteral(line.current)
+        self.Dict["url"] = url
+        self.url = url
 
         self.Dict["Booleans"] = {}
         while Lookahead(line.current) == "Boolean":
@@ -102,43 +100,43 @@ class BlockRequest:
         while len(str(line.current)) != 0 and line.current.startswith("->") == False:
             parsed = ParseToken(line.current,"Parameter",True,True).upper()
             if parsed == "MULTIPART":
-                self.Dict["RequestType"] = "Multipart"
+                self.Dict["request_type"] = "Multipart"
 
             elif parsed == "BASICAUTH":
-                self.Dict["RequestType"] = "BasicAuth"
+                self.Dict["request_type"] = "BasicAuth"
 
             elif parsed == "STANDARD":
-                self.Dict["RequestType"] = "Standard"
-                self.RequestType = RequestType.Standard
+                self.Dict["request_type"] = "Standard"
+                self.request_type = RequestType.Standard
 
             elif parsed == "RAW":
-                self.Dict["RequestType"] = "Raw"
+                self.Dict["request_type"] = "Raw"
 
             elif parsed == "CONTENT":
-                PostData = ParseLiteral(line.current)
-                self.Dict["PostData"] = PostData
-                self.PostData = PostData
+                post_data = ParseLiteral(line.current)
+                self.Dict["post_data"] = post_data
+                self.post_data = post_data
 
             elif parsed == "RAWDATA":
-                RawData = ParseLiteral(line.current)
-                self.Dict["RawData"] = RawData
+                raw_data = ParseLiteral(line.current)
+                self.Dict["raw_data"] = raw_data
 
             elif parsed == "STRINGCONTENT":
                 stringContentPair = ParseString(ParseLiteral(line.current), ':', 2)
-                MultipartContents.append({"Type": "STRING","Name":stringContentPair[0],"Value": stringContentPair[1] })
+                multipart_contents.append({"Type": "STRING","Name":stringContentPair[0],"Value": stringContentPair[1] })
                 
             elif parsed == "FILECONTENT":
                 stringContentPair = ParseString(ParseLiteral(line.current), ':', 3)
-                MultipartContents.append({"Type": "FILE","Name":stringContentPair[0],"Value": stringContentPair[1] })
+                multipart_contents.append({"Type": "FILE","Name":stringContentPair[0],"Value": stringContentPair[1] })
 
             elif parsed == "COOKIE":
                 cookiePair = ParseString(ParseLiteral(line.current), ':', 2)
-                CustomCookies[cookiePair[0]] = cookiePair[1]
+                custom_cookies[cookiePair[0]] = cookiePair[1]
 
             elif parsed == "HEADER":
                 headerPair = ParseString(ParseLiteral(line.current), ':', 2)
-                CustomHeaders[headerPair[0]] = headerPair[1]
-                self.CustomHeaders[headerPair[0]] = headerPair[1]
+                custom_headers[headerPair[0]] = headerPair[1]
+                self.custom_headers[headerPair[0]] = headerPair[1]
 
             elif parsed == "CONTENTTYPE":
                 ContentType = ParseLiteral(line.current)
@@ -146,18 +144,18 @@ class BlockRequest:
                 self.ContentType = ContentType
 
             elif parsed == "USERNAME":
-                AuthUser = ParseLiteral(line.current)
-                self.Dict["AuthUser"] = AuthUser
-                self.AuthUser = AuthUser
+                auth_user = ParseLiteral(line.current)
+                self.Dict["auth_user"] = auth_user
+                self.auth_user = auth_user
 
             elif parsed == "PASSWORD":
-                AuthPass = ParseLiteral(line.current)
-                self.Dict["AuthUser"] = AuthPass
-                self.AuthPass = AuthPass
+                auth_pass = ParseLiteral(line.current)
+                self.Dict["auth_pass"] = auth_pass
+                self.auth_pass = auth_pass
 
             elif parsed == "BOUNDARY":
-                MultipartBoundary = ParseLiteral(line.current)
-                self.Dict["MultipartBoundary"] = MultipartBoundary
+                multipart_boundary = ParseLiteral(line.current)
+                self.Dict["multipart_boundary"] = multipart_boundary
 
             elif parsed == "SECPROTO":
                 SecurityProtocol = ParseLiteral(line.current)
@@ -171,24 +169,24 @@ class BlockRequest:
             outType = ParseToken(line.current,"Parameter",True,True)
 
             if outType.upper() == "STRING":
-                self.ResponseType = ResponseType.string
+                self.response_type = ResponseType.string
 
             elif outType.upper() == "FILE":
-                self.ResponseType = ResponseType.file
-                DownloadPath  = ParseLiteral(line.current)
-                self.Dict["DownloadPath"] = DownloadPath
+                self.response_type = ResponseType.file
+                download_path  = ParseLiteral(line.current)
+                self.Dict["download_path"] = download_path
                 while Lookahead(line.current) == "Boolean":
                         
                     boolean_name, boolean_value = SetBool(line.current,self)
                     self.Dict["Booleans"][boolean_name] = boolean_value
 
             elif outType.upper() == "BASE64":
-                self.ResponseType = ResponseType.Base64String
-                OutputVariable = ParseLiteral(line.current)
-                self.Dict["OutputVariable"] = OutputVariable
+                self.response_type = ResponseType.Base64String
+                output_variable = ParseLiteral(line.current)
+                self.Dict["output_variable"] = output_variable
                 
-        self.Dict["CustomCookies"] = CustomCookies
-        self.Dict["CustomHeaders"] = CustomHeaders
+        self.Dict["custom_cookies"] = custom_cookies
+        self.Dict["custom_headers"] = custom_headers
     # Using requests https://pypi.org/project/requests/ 
     # https://requests.readthedocs.io/en/master/
     def Process(self,BotData):
@@ -197,12 +195,12 @@ class BlockRequest:
             cookies = cookies.Value
         else:
             cookies = {}
-        for c in self.CustomCookies.items():
+        for c in self.custom_cookies.items():
             cookies[ReplaceValues(c[0],BotData)] = cookies[ReplaceValues(c[1],BotData)]
 
         # Headers to be used for the request
         headers = {}
-        for h in self.CustomHeaders.items():
+        for h in self.custom_headers.items():
             replacedKey = h[0].replace("-","").lower()
             # Don't want brotli
             if replacedKey == "acceptencoding":
@@ -213,37 +211,37 @@ class BlockRequest:
         # Add the content type to headers if ContentType is not null
         if self.ContentType:
             headers["Content-Type"] = self.ContentType
-        localUrl = ReplaceValues(self.Url,BotData)
-        if self.RequestType == RequestType().Standard or self.RequestType == RequestType().BasicAuth:
-            username = ReplaceValues(self.AuthUser,BotData)
-            password = ReplaceValues(self.AuthPass,BotData)
+        local_url = ReplaceValues(self.url,BotData)
+        if self.request_type == RequestType.Standard or self.request_type == RequestType.BasicAuth:
+            username = ReplaceValues(self.auth_user,BotData)
+            password = ReplaceValues(self.auth_pass,BotData)
             s = Session()
             try:
-                if self.Method in ["GET","HEAD","DELETE"]:
-                    print(f"{self.Method} {localUrl}")
+                if self.method in ["GET","HEAD","DELETE"]:
+                    print(f"{self.method} {local_url}")
 
-                    if self.RequestType == RequestType().BasicAuth:
-                        req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies,auth=(username,password))
+                    if self.request_type == RequestType.BasicAuth:
+                        req = Request(self.method,  url=local_url, headers=headers,cookies=cookies,auth=(username,password))
                     else:
-                        req = Request(self.Method,  url=localUrl, headers=headers,cookies=cookies)
+                        req = Request(self.method,  url=local_url, headers=headers,cookies=cookies)
                     prepped = s.prepare_request(req)
 
-                    req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
+                    req = s.send(prepped,timeout=self.request_timeout,allow_redirects=self.auto_redirect)
 
-                elif self.Method in ["POST","PUT","PATCH"]:
+                elif self.method in ["POST","PUT","PATCH"]:
                     
-                    pData = ReplaceValues(self.PostData,BotData).encode("UTF-8","replace")
-                    if self.encodeContent == True:
+                    pData = ReplaceValues(self.post_data,BotData).encode("UTF-8","replace")
+                    if self.encode_content == True:
                         pData = requests.utils.quote(pData)
-                    print(f"{self.Method} {localUrl}")
+                    print(f"{self.method} {local_url}")
 
-                    if self.RequestType == RequestType().BasicAuth:
-                        req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies,auth=(username,password))
+                    if self.request_type == RequestType.BasicAuth:
+                        req = Request(self.method,  url=local_url,data=pData, headers=headers,cookies=cookies,auth=(username,password))
                     else:
-                        req = Request(self.Method,  url=localUrl,data=pData, headers=headers,cookies=cookies)
+                        req = Request(self.method,  url=local_url,data=pData, headers=headers,cookies=cookies)
                     prepped = s.prepare_request(req)
 
-                    req = s.send(prepped,timeout=self.RequestTimeout,allow_redirects=self.AutoRedirect)
+                    req = s.send(prepped,timeout=self.request_timeout,allow_redirects=self.auto_redirect)
             except Exception:
                 return
 
@@ -263,7 +261,7 @@ class BlockRequest:
                 cookies[cN] = cV
             BotData.CookiesSet(CVar("COOKIES",cookies,False,True))
 
-            if self.ResponseType == ResponseType().String:
+            if self.response_type == ResponseType().String:
                 ResponseSource = str(req.text)
                 BotData.ResponseSourceSet(CVar("SOURCE",ResponseSource,False,True))
                 
