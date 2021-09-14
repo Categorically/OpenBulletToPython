@@ -6,7 +6,7 @@ from OpenBullet2Python.Models.CVar import CVar
 data = BotData()
 
 # By default Status is set to BotStatus.NONE
-print(data.Status.value)
+print(data.status.value)
 
 # Make sure it is a raw string or python will encode \" as "
 config_text = r"""REQUEST GET "https://google.com" 
