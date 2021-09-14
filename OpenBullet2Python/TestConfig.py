@@ -16,7 +16,7 @@ def TestConfig(configtext:list,BotData):
 
     for block in blocksList:
         # print(block)
-        if BotData.status.value == BotData.BotStatus.FAIL or BotData.Status.value == BotData.BotStatus.BAN or BotData.Status.value == BotData.BotStatus.ERROR:
+        if BotData.status.value == BotData.BotStatus.FAIL or BotData.status.value == BotData.BotStatus.BAN or BotData.status.value == BotData.BotStatus.ERROR:
             return
         block.Process(BotData)
         
