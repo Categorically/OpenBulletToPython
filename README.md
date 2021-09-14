@@ -93,7 +93,7 @@ data.Variables.Set(CVar("PASS","password",False,True))
 # Run the config
 # If the the status changes to Fail, Ban or an Error then it will return, else it runs until all the blocks are processed.
 # There is no error handling so be careful on what you run.
-TestConfig(config_text,data)
+process_blocks(config_text,data)
 
 # The outcome of the config test
 print(data.status.value)
