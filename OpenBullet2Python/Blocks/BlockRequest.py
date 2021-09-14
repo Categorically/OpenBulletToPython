@@ -261,7 +261,7 @@ class BlockRequest:
                 cookies[cN] = cV
             BotData.CookiesSet(CVar("COOKIES",cookies,False,True))
 
-            if self.response_type == ResponseType().String:
+            if self.response_type == ResponseType.String:
                 ResponseSource = str(req.text)
                 BotData.ResponseSourceSet(CVar("SOURCE",ResponseSource,False,True))
                 

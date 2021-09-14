@@ -72,7 +72,7 @@ class BlockKeycheck:
     def Process(self,BotData):
         try:
             if BotData.ResponseCodeGet().startswith("4") and self.banOn4XX:
-                BotData.Status = BotData.BotStatus.BAN
+                BotData.status = BotData.BotStatus.BAN
                 return
         except Exception:
             pass
@@ -84,11 +84,11 @@ class BlockKeycheck:
             if keychain.CheckKeys(BotData):
                 found = True
                 if keychain.Type == KeychainType.Success:
-                    BotData.Status = BotData.BotStatus.SUCCESS
+                    BotData.status = BotData.BotStatus.SUCCESS
                 elif keychain.Type == KeychainType.Failure:
-                    BotData.Status = BotData.BotStatus.FAIL
+                    BotData.status = BotData.BotStatus.FAIL
                 elif keychain.Type == KeychainType.Ban:
-                    BotData.Status = BotData.BotStatus.BAN
+                    BotData.status = BotData.BotStatus.BAN
 
         if not found and self.banOnToCheck:
-            BotData.Status = BotData().BotStatus.BAN
+            BotData.status = BotData.BotStatus.BAN

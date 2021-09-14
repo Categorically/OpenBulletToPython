@@ -65,7 +65,7 @@ blocks = ToPython(config_text)
  
 ```Python
 from OpenBullet2Python.Models.BotData import BotData
-from OpenBullet2Python.TestConfig import TestConfig
+from OpenBullet2Python.auxiliary_functions import process_blocks
 from OpenBullet2Python.Models.CVar import CVar
 
 # This holds the variable list.
@@ -96,7 +96,7 @@ data.Variables.Set(CVar("PASS","password",False,True))
 TestConfig(config_text,data)
 
 # The outcome of the config test
-print(data.Status.value)
+print(data.status.value)
 ```
 ```
 >>> NONE
