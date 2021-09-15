@@ -322,7 +322,7 @@ class BlockFunction:
 
             elif self.function_type == "Replace":
                 if self.UseRegex:
-                    pass
+                    outputString = re.sub(ReplaceValues(self.ReplaceWhat,BotData), ReplaceValues(self.ReplaceWith,BotData), localInputString)
                 else:
                     outputString = localInputString.replace(ReplaceValues(self.ReplaceWhat,BotData),ReplaceValues(self.ReplaceWith,BotData))
 

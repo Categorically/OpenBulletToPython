@@ -34,7 +34,6 @@ blocks = ToPython(config_text)
   - [x] ToLowercase
   - [x] Length
   - [x] Replace
-    - [ ] UseRegex
   - [x] URLEncode
   - [x] URLDecode
   - [x] Hash
