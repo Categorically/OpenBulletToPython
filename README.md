@@ -42,6 +42,19 @@ blocks = ToPython(config_text)
     - [ ] MD4
   - [x] RandomNum
   - [x] RandomString
+  - [ ] CurrentUnixTime
+  - [ ] UnixTimeToDate
+  - [ ] Ceil
+  - [ ] Floor
+  - [ ] Round
+  - [ ] Compute
+  - [ ] CountOccurrences
+  - [ ] CharAt
+  - [ ] Substring
+  - [ ] ReverseString
+  - [ ] Trim
+  - [ ] GetRandomUA
+
 - REQUEST
   - [x] Standard
   - [x] BasicAuth # Not tested
