@@ -7,6 +7,9 @@ import base64
 import re
 from random import randint
 import random
+import time
+
+
 def RandomString(localInputString:str):
     _lowercase = "abcdefghijklmnopqrstuvwxyz"
     _uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -270,7 +273,6 @@ class BlockFunction:
                 self.Dict["KdfIterations"] = ParseInt(line.current)
                 self.Dict["KdfKeySize"] = ParseInt(line.current)
                 self.Dict["KdfAlgorithm"] = ParseEnum(line.current)
-                
         else:
             pass
         if Lookahead(line.current) == "Literal":
@@ -342,6 +344,8 @@ class BlockFunction:
             elif self.function_type == "RandomString":
                 outputString = localInputString
                 outputString = RandomString(outputString)
+            elif self.function_type == FunctionType.CurrentUnixTime:
+                outputString = str(int(time.time()))
             else:
                 pass
             outputs.append(outputString)
