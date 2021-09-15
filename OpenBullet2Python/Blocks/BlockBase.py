@@ -21,11 +21,10 @@ def ReplaceValues(input_string,BotData):
         r = re.compile('<([^<>]*)>')
         full = ""
         m = ""
-        # Findall returns a list of str unless it has more than 1 group then it returns as list of match objects. Match is not counted as a group??
         matches = r.findall(output)
 
         for match in matches:
-            # How to return findall with re objects?
+
             full = "<" + match + ">"
 
             m = match
@@ -35,8 +34,7 @@ def ReplaceValues(input_string,BotData):
             
 
             v = BotData.Variables.GetWithName(name)
-            # To do
-            # if not v: v = bot_data.get("GlobalVariables").get(name)
+
             if not v: return output
 
             args = m.replace(name,"")
@@ -45,10 +43,11 @@ def ReplaceValues(input_string,BotData):
                 output = output.replace(full, v.Value)
 
             elif v.var_type == VarType.List:
-                if not args: # If it's just the list name, replace it with its string representation
+                # If it's just the list name, replace it with its string representation
+                if not args: 
                     output = output.replace(full,v.ToString())
-                    # It would break the case here
-                if "[" in args and "]" in args:
+
+                elif "[" in args and "]" in args:
                     index = 0
                     try:
                         index = int(ParseArguments(args, "[", "]")[0])
@@ -57,6 +56,7 @@ def ReplaceValues(input_string,BotData):
                             output = output.replace(full,item)
                     except Exception:
                         pass
+
             elif v.var_type == VarType.Dictionary:
 
                 if "(" in args and ")" in args:
@@ -67,7 +67,8 @@ def ReplaceValues(input_string,BotData):
                     dicVal = ParseArguments(args, "{", "}")[0]
                     output = output.replace(full, v.GetDictKey(dicVal))
 
-                else: # If it's just the dictionary name, replace it with its string representation
+                # If it's just the dictionary name, replace it with its string representation
+                else: 
                     output = output.replace(full,v.ToString())
         
     return output

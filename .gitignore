@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 #Testing
-test.py
+debug.py
 .vscode/launch.json

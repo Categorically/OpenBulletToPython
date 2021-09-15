@@ -13,11 +13,7 @@ class Comparer(Enum):
     MatchesRegex = "MatchesRegex"
     DoesNotMatchRegex = "DoesNotMatchRegex"
 
-# class KeycheckCondition():
-#     def __init__(self,Left,Comparer,Right):
-#         self.Left = Left
-#         self.Right = Right
-#         self.Comparer = Comparer
+
 def ReplaceAndVerify(Left,comparer,Right,BotData):
     L = ReplaceValuesRecursive(Left,BotData)
     R = ReplaceValues(Right,BotData)
