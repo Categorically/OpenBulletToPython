@@ -50,7 +50,7 @@ blocks = ToPython(config_text)
   - [ ] Compute
   - [x] CountOccurrences
   - [x] CharAt
-  - [ ] Substring
+  - [x] Substring
   - [x] ReverseString
   - [ ] Trim
   - [ ] GetRandomUA

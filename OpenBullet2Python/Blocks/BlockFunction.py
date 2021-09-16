@@ -240,8 +240,12 @@ class BlockFunction:
             self.Dict["CharIndex"] = charIndex
 
         elif function_type == FunctionType.Substring:
-            self.Dict["SubstringIndex"] = ParseLiteral(line.current)
-            self.Dict["SubstringLength"] = ParseLiteral(line.current)
+            SubstringIndex = ParseLiteral(line.current)
+            SubstringLength = ParseLiteral(line.current)
+            self.SubstringIndex = SubstringIndex
+            self.SubstringLength = SubstringLength
+            self.Dict["SubstringIndex"] = SubstringIndex
+            self.Dict["SubstringLength"] = SubstringLength
 
         elif function_type == FunctionType.RSAEncrypt:
             self.Dict["RsaN"] = ParseLiteral(line.current)
@@ -364,6 +368,8 @@ class BlockFunction:
                 charArray = list(localInputString)
                 charArray.reverse()
                 outputString = "".join(charArray)
+            elif self.function_type == FunctionType.Substring:
+                outputString = localInputString[int(ReplaceValues(self.SubstringIndex,BotData)): int(ReplaceValues(self.SubstringIndex,BotData)) + int(ReplaceValues(self.SubstringLength, BotData))]
             else:
                 pass
             outputs.append(outputString)
