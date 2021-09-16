@@ -235,7 +235,9 @@ class BlockFunction:
             self.Dict["StringToFind"] = StringToFind
 
         elif function_type == FunctionType.CharAt:
-            self.Dict["CharIndex"] = ParseLiteral(line.current)
+            charIndex = ParseLiteral(line.current)
+            self.charIndex = charIndex
+            self.Dict["CharIndex"] = charIndex
 
         elif function_type == FunctionType.Substring:
             self.Dict["SubstringIndex"] = ParseLiteral(line.current)
@@ -356,6 +358,12 @@ class BlockFunction:
                 outputString = str(round(float(localInputString)))
             elif self.function_type == FunctionType.CountOccurrences:
                 outputString = str(localInputString.count(self.StringToFind))
+            elif self.function_type == FunctionType.CharAt:
+                outputString = str(localInputString[int(ReplaceValues(self.charIndex,BotData))])
+            elif self.function_type == FunctionType.ReverseString:
+                charArray = list(localInputString)
+                charArray.reverse()
+                outputString = "".join(charArray)
             else:
                 pass
             outputs.append(outputString)

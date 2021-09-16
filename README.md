@@ -49,9 +49,9 @@ blocks = ToPython(config_text)
   - [x] Round
   - [ ] Compute
   - [x] CountOccurrences
-  - [ ] CharAt
+  - [x] CharAt
   - [ ] Substring
-  - [ ] ReverseString
+  - [x] ReverseString
   - [ ] Trim
   - [ ] GetRandomUA
 
