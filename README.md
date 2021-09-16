@@ -48,7 +48,7 @@ blocks = ToPython(config_text)
   - [x] Floor
   - [x] Round
   - [ ] Compute
-  - [ ] CountOccurrences
+  - [x] CountOccurrences
   - [ ] CharAt
   - [ ] Substring
   - [ ] ReverseString

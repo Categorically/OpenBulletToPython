@@ -230,7 +230,9 @@ class BlockFunction:
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
         elif function_type == FunctionType.CountOccurrences:
-            self.Dict["StringToFind"] = ParseLiteral(line.current)
+            StringToFind = ParseLiteral(line.current)
+            self.StringToFind = StringToFind
+            self.Dict["StringToFind"] = StringToFind
 
         elif function_type == FunctionType.CharAt:
             self.Dict["CharIndex"] = ParseLiteral(line.current)
@@ -352,6 +354,8 @@ class BlockFunction:
                 outputString = str(math.floor(float(localInputString)))
             elif self.function_type == FunctionType.Round:
                 outputString = str(round(float(localInputString)))
+            elif self.function_type == FunctionType.CountOccurrences:
+                outputString = str(localInputString.count(self.StringToFind))
             else:
                 pass
             outputs.append(outputString)
