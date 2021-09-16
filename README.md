@@ -42,11 +42,11 @@ blocks = ToPython(config_text)
     - [ ] MD4
   - [x] RandomNum
   - [x] RandomString
-  - [ ] CurrentUnixTime
+  - [x] CurrentUnixTime
   - [ ] UnixTimeToDate
-  - [ ] Ceil
-  - [ ] Floor
-  - [ ] Round
+  - [x] Ceil
+  - [x] Floor
+  - [x] Round
   - [ ] Compute
   - [ ] CountOccurrences
   - [ ] CharAt

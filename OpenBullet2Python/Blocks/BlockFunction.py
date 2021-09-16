@@ -8,7 +8,7 @@ import re
 from random import randint
 import random
 import time
-
+import math
 
 def RandomString(localInputString:str):
     _lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -346,6 +346,12 @@ class BlockFunction:
                 outputString = RandomString(outputString)
             elif self.function_type == FunctionType.CurrentUnixTime:
                 outputString = str(int(time.time()))
+            elif self.function_type == FunctionType.Ceil:
+                outputString = str(math.ceil(float(localInputString)))
+            elif self.function_type == FunctionType.Floor:
+                outputString = str(math.floor(float(localInputString)))
+            elif self.function_type == FunctionType.Round:
+                outputString = str(round(float(localInputString)))
             else:
                 pass
             outputs.append(outputString)
