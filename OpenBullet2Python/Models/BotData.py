@@ -4,7 +4,7 @@ from enum import Enum
 
 
 class BotData:
-    class BotStatus(Enum):
+    class BotStatus(str,Enum):
         NONE = "NONE"
         ERROR = "ERROR"
         SUCCESS = "SUCCESS"
