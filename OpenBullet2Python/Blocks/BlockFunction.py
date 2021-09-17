@@ -2,6 +2,7 @@ from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLi
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable,ReplaceValues
 from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, FromBase64
 from OpenBullet2Python.Functions.Crypto.Crypto import Crypto
+from OpenBullet2Python.Functions.UserAgent.UserAgent import UserAgent
 from urllib.parse import quote, unquote
 import base64
 import re
@@ -129,6 +130,9 @@ class BlockFunction:
         self.HmacBase64 = False
 
         self.RandomZeroPad = False
+
+        self.UserAgentBrowser = "Chrome"
+        self.UserAgentSpecifyBrowser = False
     def FromLS(self,input_line):
         input_line = input_line.strip()
 
@@ -261,8 +265,11 @@ class BlockFunction:
         elif function_type == FunctionType.GetRandomUA:
             if ParseToken(line.current,"Parameter", False, False) == "BROWSER":
                 EnsureIdentifier(line.current,"BROWSER")
+                UserAgentBrowser = ParseEnum(line.current)
+                self.UserAgentBrowser = UserAgentBrowser
+                self.UserAgentSpecifyBrowser = True
+                self.Dict["UserAgentBrowser"] = UserAgentBrowser
                 self.Dict["Booleans"]["UserAgentSpecifyBrowser"] = True
-                self.Dict["UserAgentBrowser"] = ParseEnum(line.current)
 
         elif function_type == FunctionType.AESDecrypt:
             pass
@@ -370,6 +377,11 @@ class BlockFunction:
                 outputString = "".join(charArray)
             elif self.function_type == FunctionType.Substring:
                 outputString = localInputString[int(ReplaceValues(self.SubstringIndex,BotData)): int(ReplaceValues(self.SubstringIndex,BotData)) + int(ReplaceValues(self.SubstringLength, BotData))]
+            elif self.function_type == FunctionType.GetRandomUA:
+                if self.UserAgentSpecifyBrowser:
+                    outputString = UserAgent.ForBrowser(self.UserAgentBrowser)
+                else:
+                    outputString = UserAgent.Random()
             else:
                 pass
             outputs.append(outputString)
