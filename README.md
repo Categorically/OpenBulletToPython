@@ -34,7 +34,6 @@ blocks = ToPython(config_text)
   - [x] ToLowercase
   - [x] Length
   - [x] Replace
-    - [ ] UseRegex
   - [x] URLEncode
   - [x] URLDecode
   - [x] Hash
@@ -43,6 +42,19 @@ blocks = ToPython(config_text)
     - [ ] MD4
   - [x] RandomNum
   - [x] RandomString
+  - [x] CurrentUnixTime
+  - [ ] UnixTimeToDate
+  - [x] Ceil
+  - [x] Floor
+  - [x] Round
+  - [ ] Compute
+  - [x] CountOccurrences
+  - [x] CharAt
+  - [x] Substring
+  - [x] ReverseString
+  - [x] Trim
+  - [x] GetRandomUA
+
 - REQUEST
   - [x] Standard
   - [x] BasicAuth # Not tested

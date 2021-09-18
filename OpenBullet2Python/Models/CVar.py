@@ -5,8 +5,14 @@ class VarType:
     List = "List"
     Dictionary = "Dictionary"
 class CVar:
+    """
+    Name: str
+    Value: [str, list, dict]
+    IsCapture: bool
+    Hidde: bool
+    """
 
-    def __init__(self, Name, Value,IsCapture,Hidden=False):
+    def __init__(self, Name:str, Value,IsCapture:bool,Hidden=False):
 
         if type(Value) == list:
             self.var_type = VarType.List

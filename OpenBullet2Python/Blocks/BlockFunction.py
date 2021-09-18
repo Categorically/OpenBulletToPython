@@ -1,12 +1,20 @@
-from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable,ReplaceValues
-from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, FromBase64
+from OpenBullet2Python.LoliScript.LineParser import ParseLabel, \
+    ParseEnum, ParseLiteral, line, Lookahead, SetBool, ParseToken, \
+    ParseInt, EnsureIdentifier
+from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, \
+    InsertVariable, ReplaceValues
+from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, \
+    FromBase64
 from OpenBullet2Python.Functions.Crypto.Crypto import Crypto
+from OpenBullet2Python.Functions.UserAgent.UserAgent import UserAgent
 from urllib.parse import quote, unquote
 import base64
 import re
 from random import randint
 import random
+import time
+import math
+
 def RandomString(localInputString:str):
     _lowercase = "abcdefghijklmnopqrstuvwxyz"
     _uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -62,7 +70,7 @@ def RandomNum(minNum,maxNum,padNum:bool):
                 return randomNumString
 
                 
-class Function:
+class FunctionType:
     Constant = "Constant"
     Base64Encode = "Base64Encode"
     Base64Decode = "Base64Decode"
@@ -109,7 +117,7 @@ class BlockFunction:
         self.VariableName = "" 
         self.IsCapture = False 
         self.InputString = "" 
-        self.FunctionType = ""
+        self.function_type = ""
         self.CreateEmpty = True
         self.Dict = {}
         self.UseRegex  = False
@@ -126,6 +134,9 @@ class BlockFunction:
         self.HmacBase64 = False
 
         self.RandomZeroPad = False
+
+        self.UserAgentBrowser = "Chrome"
+        self.UserAgentSpecifyBrowser = False
     def FromLS(self,input_line):
         input_line = input_line.strip()
 
@@ -142,14 +153,14 @@ class BlockFunction:
 
         self.Dict["Booleans"] = {}
 
-        FunctionType  = ParseEnum(line.current)
-        self.Dict["FunctionType"] = FunctionType
-        self.FunctionType = FunctionType
+        function_type  = ParseEnum(line.current)
+        self.Dict["function_type"] = function_type
+        self.function_type = function_type
 
-        if FunctionType == Function().Constant:
+        if function_type == FunctionType.Constant:
             pass
 
-        elif FunctionType == Function().Hash:
+        elif function_type == FunctionType.Hash:
             HashType = ParseEnum(line.current)
             self.Dict["HashType"] = HashType
             self.HashType = HashType
@@ -158,7 +169,7 @@ class BlockFunction:
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
-        elif FunctionType == Function().HMAC:
+        elif function_type == FunctionType.HMAC:
             HashType = ParseEnum(line.current)
             self.Dict["HashType"] = HashType
             self.HashType = HashType
@@ -169,7 +180,7 @@ class BlockFunction:
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif FunctionType == Function().Translate:
+        elif function_type == FunctionType.Translate:
             while Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
@@ -181,15 +192,19 @@ class BlockFunction:
                 v = ParseLiteral(line.current)
                 self.Dict["TranslationDictionary"][k] = v
 
-        elif FunctionType == Function().DateToUnixTime:
+        elif function_type == FunctionType.DateToUnixTime:
             self.Dict["DateFormat"] = ParseLiteral(line.current)
 
-        elif FunctionType == Function().UnixTimeToDate:
-            self.Dict["DateFormat"] = ParseLiteral(line.current)
+        elif function_type == FunctionType.UnixTimeToDate:
+            DateFormat = ParseLiteral(line.current)
+            self.DateFormat = DateFormat
+            self.Dict["DateFormat"] = DateFormat
             if Lookahead(line.current) != "Literal":
+                self.InputString = DateFormat
+                self.DateFormat ="yyyy-MM-dd:HH-mm-ss"
                 self.Dict["InputString"] = "yyyy-MM-dd:HH-mm-ss"
 
-        elif FunctionType == Function().Replace:
+        elif function_type == FunctionType.Replace:
             ReplaceWhat = ParseLiteral(line.current)
             self.Dict["ReplaceWhat"] = ReplaceWhat
             self.ReplaceWhat = ReplaceWhat
@@ -202,10 +217,10 @@ class BlockFunction:
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif FunctionType == Function().RegexMatch:
+        elif function_type == FunctionType.RegexMatch:
             self.Dict["RegexMatch"] = ParseLiteral(line.current)
 
-        elif FunctionType == Function().RandomNum:
+        elif function_type == FunctionType.RandomNum:
             if Lookahead(line.current) == "Literal":
                 RandomMin = ParseLiteral(line.current)
                 RandomMax = ParseLiteral(line.current)
@@ -226,43 +241,54 @@ class BlockFunction:
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
-        elif FunctionType == Function().CountOccurrences:
-            self.Dict["StringToFind"] = ParseLiteral(line.current)
+        elif function_type == FunctionType.CountOccurrences:
+            StringToFind = ParseLiteral(line.current)
+            self.StringToFind = StringToFind
+            self.Dict["StringToFind"] = StringToFind
 
-        elif FunctionType == Function().CharAt:
-            self.Dict["CharIndex"] = ParseLiteral(line.current)
+        elif function_type == FunctionType.CharAt:
+            charIndex = ParseLiteral(line.current)
+            self.charIndex = charIndex
+            self.Dict["CharIndex"] = charIndex
 
-        elif FunctionType == Function().Substring:
-            self.Dict["SubstringIndex"] = ParseLiteral(line.current)
-            self.Dict["SubstringLength"] = ParseLiteral(line.current)
+        elif function_type == FunctionType.Substring:
+            SubstringIndex = ParseLiteral(line.current)
+            SubstringLength = ParseLiteral(line.current)
+            self.SubstringIndex = SubstringIndex
+            self.SubstringLength = SubstringLength
+            self.Dict["SubstringIndex"] = SubstringIndex
+            self.Dict["SubstringLength"] = SubstringLength
 
-        elif FunctionType == Function().RSAEncrypt:
+        elif function_type == FunctionType.RSAEncrypt:
             self.Dict["RsaN"] = ParseLiteral(line.current)
             self.Dict["RsaE"] = ParseLiteral(line.current)
             if Lookahead(line.current) == "Boolean":
                 boolean_name, boolean_value = SetBool(line.current,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif FunctionType == Function().RSAPKCS1PAD2:
+        elif function_type == FunctionType.RSAPKCS1PAD2:
             self.Dict["RsaN"] = ParseLiteral(line.current)
             self.Dict["RsaE"] = ParseLiteral(line.current)
         
-        elif FunctionType == Function().GetRandomUA:
+        elif function_type == FunctionType.GetRandomUA:
             if ParseToken(line.current,"Parameter", False, False) == "BROWSER":
                 EnsureIdentifier(line.current,"BROWSER")
+                UserAgentBrowser = ParseEnum(line.current)
+                self.UserAgentBrowser = UserAgentBrowser
+                self.UserAgentSpecifyBrowser = True
+                self.Dict["UserAgentBrowser"] = UserAgentBrowser
                 self.Dict["Booleans"]["UserAgentSpecifyBrowser"] = True
-                self.Dict["UserAgentBrowser"] = ParseEnum(line.current)
 
-        elif FunctionType == Function().AESDecrypt:
+        elif function_type == FunctionType.AESDecrypt:
             pass
 
-        elif FunctionType == Function().AESEncrypt:
+        elif function_type == FunctionType.AESEncrypt:
             self.Dict["AesKey"] = ParseLiteral(line.current)
             self.Dict["AesIV"] = ParseLiteral(line.current)
             self.Dict["AesMode"] = ParseEnum(line.current)
             self.Dict["AesPadding"] = ParseEnum(line.current)
 
-        elif FunctionType == Function().PBKDF2PKCS5:
+        elif function_type == FunctionType.PBKDF2PKCS5:
             if Lookahead(line.current) == "Literal":
                 self.Dict["KdfSalt"] = ParseLiteral(line.current)
             else:
@@ -270,7 +296,6 @@ class BlockFunction:
                 self.Dict["KdfIterations"] = ParseInt(line.current)
                 self.Dict["KdfKeySize"] = ParseInt(line.current)
                 self.Dict["KdfAlgorithm"] = ParseEnum(line.current)
-                
         else:
             pass
         if Lookahead(line.current) == "Literal":
@@ -302,51 +327,78 @@ class BlockFunction:
         while i < len(localInputStrings):
             localInputString = localInputStrings[i]
             outputString = ""
-            if self.FunctionType == "Constant":
+            if self.function_type == "Constant":
                 outputString = localInputString
 
-            elif self.FunctionType == "Base64Encode":
+            elif self.function_type == "Base64Encode":
                 outputString = ToBase64(localInputString)
 
-            elif self.FunctionType == "Base64Decode":
+            elif self.function_type == "Base64Decode":
                 outputString = FromBase64(localInputString)
 
-            elif self.FunctionType == "Length":
+            elif self.function_type == "Length":
                 outputString = str(len(localInputString))
 
-            elif self.FunctionType == "ToLowercase":
+            elif self.function_type == "ToLowercase":
                 outputString = localInputString.lower()
 
-            elif self.FunctionType == "ToUppercase":
+            elif self.function_type == "ToUppercase":
                 outputString = localInputString.upper()
 
-            elif self.FunctionType == "Replace":
+            elif self.function_type == "Replace":
                 if self.UseRegex:
-                    pass
+                    outputString = re.sub(ReplaceValues(self.ReplaceWhat,BotData), ReplaceValues(self.ReplaceWith,BotData), localInputString)
                 else:
                     outputString = localInputString.replace(ReplaceValues(self.ReplaceWhat,BotData),ReplaceValues(self.ReplaceWith,BotData))
 
-            elif self.FunctionType == "URLEncode":
+            elif self.function_type == "URLEncode":
                 outputString = quote(localInputString,errors="replace")
 
-            elif self.FunctionType == "URLDecode":
+            elif self.function_type == "URLDecode":
                 outputString = unquote(localInputString)
 
-            elif self.FunctionType == "Hash":
+            elif self.function_type == "Hash":
                 outputString = self.GetHash(localInputString,self.HashType,self.InputBase64).lower()
 
-            elif self.FunctionType == "HMAC":
+            elif self.function_type == "HMAC":
                  outputString = self.Hmac(localInputString,self.HashType,self.HmacKey,self.InputBase64,self.KeyBase64,self.HmacBase64)
-            elif self.FunctionType == "RandomNum":
+            elif self.function_type == "RandomNum":
                 outputString = RandomNum(ReplaceValues(self.RandomMin,BotData),ReplaceValues(self.RandomMax,BotData),self.RandomZeroPad)
-            elif self.FunctionType == "RandomString":
+            elif self.function_type == "RandomString":
                 outputString = localInputString
                 outputString = RandomString(outputString)
+            elif self.function_type == FunctionType.CurrentUnixTime:
+                outputString = str(int(time.time()))
+            elif self.function_type == FunctionType.Ceil:
+                outputString = str(math.ceil(float(localInputString)))
+            elif self.function_type == FunctionType.Floor:
+                outputString = str(math.floor(float(localInputString)))
+            elif self.function_type == FunctionType.Round:
+                outputString = str(round(float(localInputString)))
+            elif self.function_type == FunctionType.CountOccurrences:
+                outputString = str(localInputString.count(self.StringToFind))
+            elif self.function_type == FunctionType.CharAt:
+                outputString = str(localInputString[int(ReplaceValues(self.charIndex,BotData))])
+            elif self.function_type == FunctionType.ReverseString:
+                charArray = list(localInputString)
+                charArray.reverse()
+                outputString = "".join(charArray)
+            elif self.function_type == FunctionType.Substring:
+                outputString = localInputString[int(ReplaceValues(self.SubstringIndex,BotData)): int(ReplaceValues(self.SubstringIndex,BotData)) + int(ReplaceValues(self.SubstringLength, BotData))]
+            elif self.function_type == FunctionType.GetRandomUA:
+                if self.UserAgentSpecifyBrowser:
+                    outputString = UserAgent.ForBrowser(self.UserAgentBrowser)
+                else:
+                    outputString = UserAgent.Random()
+            elif self.function_type == FunctionType.Trim:
+                outputString = localInputString.strip()
+            elif self.function_type == FunctionType.UnixTimeToDate:
+                pass
             else:
                 pass
             outputs.append(outputString)
             i += 1
-        print(f"Executed function {self.FunctionType} on input {localInputStrings} with outcome {outputString}")
+        print(f"Executed function {self.function_type} on input {localInputStrings} with outcome {outputString}")
         isList = len(outputs) > 1 or "[*]" in self.InputString or "(*)" in self.InputString or "{*}" in self.InputString
         InsertVariable(BotData,self.IsCapture,isList,outputs,self.VariableName,self.CreateEmpty)
 

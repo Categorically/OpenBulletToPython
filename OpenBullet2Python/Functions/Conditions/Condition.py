@@ -1,7 +1,7 @@
 from enum import Enum
 import re
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive,ReplaceValues
-class Comparer(Enum):
+class Comparer(str,Enum):
     LessThan = "LessThan"
     GreaterThan = "GreaterThan"
     EqualTo = "EqualTo"
@@ -13,11 +13,7 @@ class Comparer(Enum):
     MatchesRegex = "MatchesRegex"
     DoesNotMatchRegex = "DoesNotMatchRegex"
 
-# class KeycheckCondition():
-#     def __init__(self,Left,Comparer,Right):
-#         self.Left = Left
-#         self.Right = Right
-#         self.Comparer = Comparer
+
 def ReplaceAndVerify(Left,comparer,Right,BotData):
     L = ReplaceValuesRecursive(Left,BotData)
     R = ReplaceValues(Right,BotData)

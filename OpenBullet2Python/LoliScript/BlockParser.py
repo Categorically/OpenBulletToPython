@@ -60,11 +60,11 @@ def Parse(input_line):
     identifier = ""
     identifier = ParseToken(line.current,"Parameter", True, True)
 
+    # Get the class for the matching identifier
     block = BlockMappings2.get(identifier)
     #Todo blocks
     if block:
-        # Init the block object here
-        # For some reason it will not init a new object if it's called frin the dict
+        # Init a new class
         block = block()
         block.FromLS(line.current)
         if block:
