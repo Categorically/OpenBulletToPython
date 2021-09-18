@@ -8,6 +8,7 @@ from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, \
 from OpenBullet2Python.Functions.Crypto.Crypto import Crypto
 from OpenBullet2Python.Functions.UserAgent.UserAgent import UserAgent
 from urllib.parse import quote, unquote
+from datetime import datetime
 import base64
 import re
 from random import randint
@@ -393,7 +394,8 @@ class BlockFunction:
             elif self.function_type == FunctionType.Trim:
                 outputString = localInputString.strip()
             elif self.function_type == FunctionType.UnixTimeToDate:
-                pass
+                # Static dateformat because dates
+                outputString = datetime.fromtimestamp(int(localInputString)).strftime("%Y-%m-%d:%H-%M-%S")
             else:
                 pass
             outputs.append(outputString)
