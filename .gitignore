@@ -130,4 +130,5 @@ dmypy.json
 
 #Testing
 debug.py
+test.py
 .vscode/launch.json

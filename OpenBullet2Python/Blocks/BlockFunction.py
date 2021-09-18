@@ -1,6 +1,10 @@
-from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, InsertVariable,ReplaceValues
-from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, FromBase64
+from OpenBullet2Python.LoliScript.LineParser import ParseLabel, \
+    ParseEnum, ParseLiteral, line, Lookahead, SetBool, ParseToken, \
+    ParseInt, EnsureIdentifier
+from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, \
+    InsertVariable, ReplaceValues
+from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, \
+    FromBase64
 from OpenBullet2Python.Functions.Crypto.Crypto import Crypto
 from OpenBullet2Python.Functions.UserAgent.UserAgent import UserAgent
 from urllib.parse import quote, unquote
@@ -192,8 +196,12 @@ class BlockFunction:
             self.Dict["DateFormat"] = ParseLiteral(line.current)
 
         elif function_type == FunctionType.UnixTimeToDate:
-            self.Dict["DateFormat"] = ParseLiteral(line.current)
+            DateFormat = ParseLiteral(line.current)
+            self.DateFormat = DateFormat
+            self.Dict["DateFormat"] = DateFormat
             if Lookahead(line.current) != "Literal":
+                self.InputString = DateFormat
+                self.DateFormat ="yyyy-MM-dd:HH-mm-ss"
                 self.Dict["InputString"] = "yyyy-MM-dd:HH-mm-ss"
 
         elif function_type == FunctionType.Replace:
@@ -382,6 +390,10 @@ class BlockFunction:
                     outputString = UserAgent.ForBrowser(self.UserAgentBrowser)
                 else:
                     outputString = UserAgent.Random()
+            elif self.function_type == FunctionType.Trim:
+                outputString = localInputString.strip()
+            elif self.function_type == FunctionType.UnixTimeToDate:
+                pass
             else:
                 pass
             outputs.append(outputString)

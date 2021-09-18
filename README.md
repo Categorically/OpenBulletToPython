@@ -52,7 +52,7 @@ blocks = ToPython(config_text)
   - [x] CharAt
   - [x] Substring
   - [x] ReverseString
-  - [ ] Trim
+  - [x] Trim
   - [x] GetRandomUA
 
 - REQUEST
