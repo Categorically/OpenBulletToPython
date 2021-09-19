@@ -4,6 +4,7 @@ from OpenBullet2Python.Blocks.BlockParse import BlockParse
 from OpenBullet2Python.Blocks.BlockRequest import BlockRequest
 from OpenBullet2Python.Blocks.BlockKeycheck import BlockKeycheck
 from OpenBullet2Python.Blocks.BlockFunction import BlockFunction
+from OpenBullet2Python.Blocks.BlockUtility import BlockUtility
 BlockMappings  = {"BYPASSCF":"BlockBypassCF" ,
              "SOLVECAPTCHA":"BlockSolveCaptcha" ,
              "REPORTCAPTCHA":"BlockReportCaptcha" ,
@@ -30,7 +31,7 @@ BlockMappings2  = {"BYPASSCF": None,
             "RECAPTCHA": None,
             "REQUEST": BlockRequest,
             "TCP": None,
-            "UTILITY": None,
+            "UTILITY": BlockUtility,
             "BROWSERACTION": None,
             "ELEMENTACTION": None,
             "EXECUTEJS": None,
@@ -68,6 +69,8 @@ def Parse(input_line):
         block = block()
         block.FromLS(line.current)
         if block:
+            block.label = label
+            block.block_type = identifier
             block.Dict["label"] = label
             block.Dict["block_type"] = identifier
             return block

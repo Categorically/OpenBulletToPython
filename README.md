@@ -61,7 +61,7 @@ blocks = ToPython(config_text)
   - [x] BasicAuth # Not tested
   - [ ] Multipart
   - [ ] Raw
-  
+
 - PARSE
   - [x] LR
   - [ ] CSS
@@ -74,7 +74,7 @@ blocks = ToPython(config_text)
   - [ ] CUSTOM
 
 - UTILITY
-  - [ ] List
+  - [x] List
   - [ ] Variable
   - [ ] Conversion
   - [ ] File
