@@ -9,6 +9,7 @@ from OpenBullet2Python.Models.CVar import CVar
 from OpenBullet2Python.Models.CVar import VarType
 from OpenBullet2Python.Functions.Conditions.Condition import Verify
 from random import choice, shuffle
+
 class UtilityGroup(str, Enum):
     List = "List"
     Variable = "Variable"
@@ -92,6 +93,7 @@ class BlockUtility:
         # All
         self.isCapture = False
         self.group = None
+        self.VariableName = ""
 
     def FromLS(self, input_line) -> None:
         input_line = input_line.strip()
@@ -131,7 +133,7 @@ class BlockUtility:
         elif self.group == UtilityGroup.Variable:
             self.VarName = ParseLiteral(line.current)
             self.var_action  = ParseEnum(line.current)
-            if self.var_action == VarAction.split:
+            if self.var_action == VarAction.Split:
                 self.SplitSeparator = ParseLiteral(line.current)
 
         elif self.group == UtilityGroup.Conversion:
@@ -174,6 +176,7 @@ class BlockUtility:
             list2 = BotData.Variables.GetList(self.SecondListName)
             item = ReplaceValues(self.ListItem, BotData)
             index  = int(ReplaceValues(self.ListIndex, BotData))
+
             if self.list_action == ListAction.Create:
                 output = ["1","2","3"]
                 BotData.Variables.Set(CVar(self.VariableName, output, self.isCapture))
@@ -234,7 +237,9 @@ class BlockUtility:
                 print(f"ACTION: {ListAction.Remove}, output: {variable.Value}")
 
             elif self.list_action == ListAction.RemoveValues:
-                output = [l for l in list1 if not Verify(ReplaceValues(l, BotData), self.ListElementComparer, self.ListComparisonTerm)] 
+                output = [l for l in list1 if not Verify(
+                    ReplaceValues(l, BotData), self.ListElementComparer, self.ListComparisonTerm
+                )] 
                 BotData.Variables.Set(CVar(self.VariableName, output, self.isCapture))
                 print(f"ACTION: {ListAction.RemoveValues}, output: {output}")
 
@@ -254,6 +259,61 @@ class BlockUtility:
                 BotData.Variables.Set(CVar(self.VariableName, output, self.isCapture))
                 print(f"ACTION: {ListAction.Shuffle}, output: {output}")
 
-                
+        elif self.group == UtilityGroup.Variable:
+
+            if self.var_action == VarAction.Split:
+                single = BotData.Variables.GetSingle(self.VarName)
+                output = single.split(
+                    ReplaceValues(self.SplitSeparator, BotData)
+                )
+                BotData.Variables.Set(CVar(self.VariableName, output, self.isCapture))
+                print(f"Executed action {self.var_action} on variable {self.VarName} with outcome {output}")
 
 
+        elif self.group == UtilityGroup.Conversion:
+
+            if self.var_action == VarAction.Split:
+                pass
+
+        elif self.group == UtilityGroup.File:
+
+            if self.file_action == FileAction.Exists:
+                pass
+            
+            elif self.file_action == FileAction.Read:
+                pass
+
+            elif self.file_action == FileAction.ReadLines:
+                pass
+
+            elif self.file_action == FileAction.Write:
+                pass
+
+            elif self.file_action == FileAction.WriteLines:
+                pass
+
+            elif self.file_action == FileAction.Append:
+                pass
+
+            elif self.file_action == FileAction.AppendLines:
+                pass
+
+            elif self.file_action == FileAction.Copy:
+                pass
+
+            elif self.file_action == FileAction.Move:
+                pass
+
+            elif self.file_action == FileAction.Delete:
+                pass
+
+        elif self.group == UtilityGroup.Folder:
+
+            if self.folder_action == FolderAction.Exists:
+                pass
+
+            elif self.folder_action == FolderAction.Create:
+                pass
+
+            elif self.folder_action == FolderAction.Delete:
+                pass
