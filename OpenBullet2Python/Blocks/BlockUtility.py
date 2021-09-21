@@ -1,3 +1,4 @@
+from os import replace
 from OpenBullet2Python.Models.BotData import BotData
 from enum import Enum
 from OpenBullet2Python.LoliScript.LineParser import ParseLabel, \
@@ -8,6 +9,8 @@ from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, \
 from OpenBullet2Python.Models.CVar import CVar
 from OpenBullet2Python.Models.CVar import VarType
 from OpenBullet2Python.Functions.Conditions.Condition import Verify
+from OpenBullet2Python.Functions.Conversion.Conversion import Conversion
+
 from random import choice, shuffle
 
 class UtilityGroup(str, Enum):
@@ -271,9 +274,10 @@ class BlockUtility:
 
 
         elif self.group == UtilityGroup.Conversion:
-
-            if self.var_action == VarAction.Split:
-                pass
+            conversionInputBytes = Conversion().ConvertFrom(replacedInput,self.ConversionFrom)
+            conversionResult  = Conversion().ConvertTo(conversionInputBytes,self.ConversionTo)
+            BotData.Variables.Set(CVar(self.VariableName, conversionResult, self.isCapture))
+            print(f"Executed conversion {self.ConversionFrom} to {self.ConversionTo} on input {replacedInput} with outcome {conversionResult}")
 
         elif self.group == UtilityGroup.File:
 
