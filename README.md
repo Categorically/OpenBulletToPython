@@ -43,7 +43,8 @@ blocks = ToPython(config_text)
   - [x] RandomNum
   - [x] RandomString
   - [x] CurrentUnixTime
-  - [ ] UnixTimeToDate
+  - [x] UnixTimeToDate
+    - [ ] Dynamic DateFormat
   - [x] Ceil
   - [x] Floor
   - [x] Round
@@ -60,6 +61,7 @@ blocks = ToPython(config_text)
   - [x] BasicAuth # Not tested
   - [ ] Multipart
   - [ ] Raw
+
 - PARSE
   - [x] LR
   - [ ] CSS
@@ -67,8 +69,16 @@ blocks = ToPython(config_text)
   - [x] REGEX
     - [ ] EncodeOutput
     - [ ] DotMatches
+
 - KEYCHECK
-  - [ ] CUSTOM 
+  - [ ] CUSTOM
+
+- UTILITY
+  - [x] List
+  - [x] Variable
+  - [x] Conversion
+  - [ ] File
+  - [ ] Folder
   
  
 ```Python

@@ -11,6 +11,7 @@ def ParseArguments(input_string, delimL, delimR):
     return output
 
 def ReplaceValues(input_string,BotData):
+    if input_string == None: return input_string
     if "<" not in input_string and ">" not in input_string: return input_string
 
     previous = ""
