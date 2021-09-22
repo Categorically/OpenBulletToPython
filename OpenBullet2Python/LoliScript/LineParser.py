@@ -1,8 +1,8 @@
 import re
 
-#Class is used as a replacement for ref
-class line:
-    current = ""
+class LineParser:
+    def __init__(self) -> None:
+        self.current = ""
 
 
 def GetPattern(TokenType):
@@ -13,15 +13,15 @@ def GetPattern(TokenType):
     return tokens.get(TokenType)
 
 
-def ParseToken(line_input,TokenType,essential,proceed):
+def ParseToken(line:LineParser,TokenType,essential,proceed):
     pattern = GetPattern(TokenType)
     token = ""
     r = re.compile(pattern)
-    m = r.match(line_input)
+    m = r.match(line.current)
     if m:
         token = m.group(0)
         if proceed:
-            line.current = line_input[len(token):].strip()
+            line.current = line.current[len(token):].strip()
         if TokenType == "Literal":
             token = token[1:len(token) - 1].replace("\\\\", "\\").replace("\\\"", "\"")
     else:
@@ -30,29 +30,29 @@ def ParseToken(line_input,TokenType,essential,proceed):
     return token
 
 
-def ParseLabel(line_input) -> str:
-    return ParseToken(line_input,"Label",True,True)
+def ParseLabel(line:LineParser) -> str:
+    return ParseToken(line,"Label",True,True)
 
 
-def ParseLiteral(line_input) -> str:
-    return ParseToken(line_input,"Literal",True,True)
+def ParseLiteral(line:LineParser) -> str:
+    return ParseToken(line,"Literal",True,True)
 
     
-def ParseEnum(line_input) -> str:
-    return ParseToken(line_input,"Parameter",True,True)
+def ParseEnum(line:LineParser) -> str:
+    return ParseToken(line,"Parameter",True,True)
 
 
-def ParseInt(line_input) -> int:
+def ParseInt(line:LineParser) -> int:
     try:
-        return int(ParseToken(line_input,"Parameter",True,True))
+        return int(ParseToken(line,"Parameter",True,True))
     except Exception:
         print("Expected Integer value")
         return 0
 
 
 
-def Lookahead(line_input):
-    token = ParseToken(line_input,"Parameter",True,False)
+def Lookahead(line:LineParser):
+    token = ParseToken(line,"Parameter",True,False)
     if '\"' in token:
         return "Literal"
     elif '->' in token:
@@ -67,22 +67,22 @@ def Lookahead(line_input):
         return "Parameter"
 
 
-def SetBool(line_input,object):
-    name, value  = ParseToken(line_input,"Parameter",True,True).split("=")
+def SetBool(line:LineParser,object):
+    name, value  = ParseToken(line,"Parameter",True,True).split("=")
     if "TRUE" in value.upper():
         setattr(object,name,True)
     elif "FALSE" in value.upper():
         setattr(object,name,False)
     return name, value
 
-def EnsureIdentifier(input_string, id_string):
-    token = ParseToken(input_string,"Parameter",True,True)
+def EnsureIdentifier(line:LineParser, id_string):
+    token = ParseToken(line,"Parameter",True,True)
     if token.upper() != id_string.upper():
         print(f"Expected identifier '{id_string}")
 
-def CheckIdentifier(input_string, id_string):
+def CheckIdentifier(line:LineParser, id_string):
     try:
-        token = ParseToken(input_string,"Parameter",True,False)
+        token = ParseToken(line,"Parameter",True,False)
         return token.upper() == id_string.upper()
     except Exception:
         return False

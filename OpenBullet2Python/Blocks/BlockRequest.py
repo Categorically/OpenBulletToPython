@@ -1,4 +1,4 @@
-from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
+from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValues, ReplaceValuesRecursive
 from OpenBullet2Python.Models.BotData import BotData
 from OpenBullet2Python.Models.CVar import CVar
@@ -72,33 +72,32 @@ class BlockRequest:
 
         self.Dict = {}
 
-    def FromLS(self,input_line):
-        input_line = input_line.strip()
-        line.current = input_line
+    def FromLS(self,line:LineParser):
+        
         multipart_contents = []
         custom_headers = {}
         custom_cookies = {}
 
-        if str(input_line).startswith("!"):
+        if str(line.current).startswith("!"):
             return None
 
         self.Dict = {}
 
-        method = ParseEnum(line.current)
+        method = ParseEnum(line)
         self.Dict["method"] = method
         self.method = method
 
-        url = ParseLiteral(line.current)
+        url = ParseLiteral(line)
         self.Dict["url"] = url
         self.url = url
 
         self.Dict["Booleans"] = {}
-        while Lookahead(line.current) == "Boolean":
-            boolean_name, boolean_value = SetBool(line.current,self)
+        while Lookahead(line) == "Boolean":
+            boolean_name, boolean_value = SetBool(line,self)
             self.Dict["Booleans"][boolean_name] = boolean_value
 
         while len(str(line.current)) != 0 and line.current.startswith("->") == False:
-            parsed = ParseToken(line.current,"Parameter",True,True).upper()
+            parsed = ParseToken(line,"Parameter",True,True).upper()
             if parsed == "MULTIPART":
                 self.Dict["request_type"] = "Multipart"
 
@@ -113,76 +112,76 @@ class BlockRequest:
                 self.Dict["request_type"] = "Raw"
 
             elif parsed == "CONTENT":
-                post_data = ParseLiteral(line.current)
+                post_data = ParseLiteral(line)
                 self.Dict["post_data"] = post_data
                 self.post_data = post_data
 
             elif parsed == "RAWDATA":
-                raw_data = ParseLiteral(line.current)
+                raw_data = ParseLiteral(line)
                 self.Dict["raw_data"] = raw_data
 
             elif parsed == "STRINGCONTENT":
-                stringContentPair = ParseString(ParseLiteral(line.current), ':', 2)
+                stringContentPair = ParseString(ParseLiteral(line), ':', 2)
                 multipart_contents.append({"Type": "STRING","Name":stringContentPair[0],"Value": stringContentPair[1] })
                 
             elif parsed == "FILECONTENT":
-                stringContentPair = ParseString(ParseLiteral(line.current), ':', 3)
+                stringContentPair = ParseString(ParseLiteral(line), ':', 3)
                 multipart_contents.append({"Type": "FILE","Name":stringContentPair[0],"Value": stringContentPair[1] })
 
             elif parsed == "COOKIE":
-                cookiePair = ParseString(ParseLiteral(line.current), ':', 2)
+                cookiePair = ParseString(ParseLiteral(line), ':', 2)
                 custom_cookies[cookiePair[0]] = cookiePair[1]
 
             elif parsed == "HEADER":
-                headerPair = ParseString(ParseLiteral(line.current), ':', 2)
+                headerPair = ParseString(ParseLiteral(line), ':', 2)
                 custom_headers[headerPair[0]] = headerPair[1]
                 self.custom_headers[headerPair[0]] = headerPair[1]
 
             elif parsed == "CONTENTTYPE":
-                ContentType = ParseLiteral(line.current)
+                ContentType = ParseLiteral(line)
                 self.Dict["ContentType"] = ContentType
                 self.ContentType = ContentType
 
             elif parsed == "USERNAME":
-                auth_user = ParseLiteral(line.current)
+                auth_user = ParseLiteral(line)
                 self.Dict["auth_user"] = auth_user
                 self.auth_user = auth_user
 
             elif parsed == "PASSWORD":
-                auth_pass = ParseLiteral(line.current)
+                auth_pass = ParseLiteral(line)
                 self.Dict["auth_pass"] = auth_pass
                 self.auth_pass = auth_pass
 
             elif parsed == "BOUNDARY":
-                multipart_boundary = ParseLiteral(line.current)
+                multipart_boundary = ParseLiteral(line)
                 self.Dict["multipart_boundary"] = multipart_boundary
 
             elif parsed == "SECPROTO":
-                SecurityProtocol = ParseLiteral(line.current)
+                SecurityProtocol = ParseLiteral(line)
                 self.Dict["SecurityProtocol"] = SecurityProtocol
 
             else:
                 pass
 
         if line.current.startswith("->"):
-            EnsureIdentifier(line.current, "->")
-            outType = ParseToken(line.current,"Parameter",True,True)
+            EnsureIdentifier(line, "->")
+            outType = ParseToken(line,"Parameter",True,True)
 
             if outType.upper() == "STRING":
                 self.response_type = ResponseType.string
 
             elif outType.upper() == "FILE":
                 self.response_type = ResponseType.file
-                download_path  = ParseLiteral(line.current)
+                download_path  = ParseLiteral(line)
                 self.Dict["download_path"] = download_path
-                while Lookahead(line.current) == "Boolean":
+                while Lookahead(line) == "Boolean":
                         
-                    boolean_name, boolean_value = SetBool(line.current,self)
+                    boolean_name, boolean_value = SetBool(line,self)
                     self.Dict["Booleans"][boolean_name] = boolean_value
 
             elif outType.upper() == "BASE64":
                 self.response_type = ResponseType.Base64String
-                output_variable = ParseLiteral(line.current)
+                output_variable = ParseLiteral(line)
                 self.Dict["output_variable"] = output_variable
                 
         self.Dict["custom_cookies"] = custom_cookies

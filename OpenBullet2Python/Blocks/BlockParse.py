@@ -1,4 +1,4 @@
-from OpenBullet2Python.LoliScript.LineParser import ParseLabel,ParseEnum,ParseLiteral, line,Lookahead, SetBool,ParseToken,ParseInt
+from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt
 
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValues,InsertVariable
 
@@ -44,83 +44,79 @@ class BlockParse:
 
         self.Dict = None
 
-    def FromLS(self,input_line) -> dict:
-        """
-        "<SOURCE>" REGEX "" "" CreateEmpty=FALSE -> VAR ""
-        """
-        input_line = input_line.strip()
+    def FromLS(self, line:LineParser):
 
-        if str(input_line).startswith("!"):
+        if str(line.current).startswith("!"):
             return None
-        line.current = input_line
+
         self.Dict = {}
 
-        ParseTarget = ParseLiteral(line.current)
+        ParseTarget = ParseLiteral(line)
         self.Dict["ParseTarget"] = ParseTarget
         self.ParseTarget = ParseTarget
 
-        parse_type = ParseEnum(line.current)
+        parse_type = ParseEnum(line)
         self.Dict["parse_type"] = parse_type
         self.ParseType = parse_type
 
         if parse_type == ParseType().REGEX:
-            regex_pattern  = ParseLiteral(line.current)
+            regex_pattern  = ParseLiteral(line)
             self.Dict["regex_pattern"] = regex_pattern
             self.RegexString = regex_pattern
 
-            regex_output = ParseLiteral(line.current)
+            regex_output = ParseLiteral(line)
             self.Dict["regex_output"] = regex_output
             self.RegexOutput = regex_output
 
             self.Dict["Booleans"] = {}
-            while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current,self)
+            while Lookahead(line) == "Boolean":
+                boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
         elif parse_type == ParseType().CSS:
-            CssSelector =  ParseLiteral(line.current)
+            CssSelector =  ParseLiteral(line)
             self.Dict["CssSelector"] = CssSelector
 
-            AttributeName = ParseLiteral(line.current)
+            AttributeName = ParseLiteral(line)
             self.Dict["AttributeName"] = AttributeName
 
-            if Lookahead(line.current) == "Boolean":
-                SetBool(line.current,self)
-            elif Lookahead(line.current) == "Integer":
-                CssElementIndex = ParseInt(line.current)
+            if Lookahead(line) == "Boolean":
+                SetBool(line,self)
+            elif Lookahead(line) == "Integer":
+                CssElementIndex = ParseInt(line)
                 self.Dict["CssElementIndex"] = CssElementIndex
             self.Dict["Booleans"] = {}
-            while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current,self)
+            while Lookahead(line) == "Boolean":
+                boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
         elif parse_type == ParseType().JSON:
-            JsonField = ParseLiteral(line.current)
+            JsonField = ParseLiteral(line)
             self.Dict["JsonField"] = JsonField
             self.JsonField = JsonField
             self.Dict["Booleans"] = {}
-            while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current,self)
+            while Lookahead(line) == "Boolean":
+                boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
                 
         elif parse_type == ParseType().LR:
-            LeftString = ParseLiteral(line.current)
+            LeftString = ParseLiteral(line)
             self.Dict["LeftString"] = LeftString
             self.LeftString = LeftString
-            RightString = ParseLiteral(line.current)
+            RightString = ParseLiteral(line)
             self.RightString = RightString
             self.Dict["RightString"] = RightString
             self.Dict["Booleans"] = {}
-            while Lookahead(line.current) == "Boolean":
-                boolean_name, boolean_value = SetBool(line.current,self)
+            while Lookahead(line) == "Boolean":
+                boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
         else:
             return None
 
-        arrow = ParseToken(line.current,"Arrow",True,True)
+        arrow = ParseToken(line,"Arrow",True,True)
 
-        var_type = ParseToken(line.current,"Parameter",True,True)
+        var_type = ParseToken(line,"Parameter",True,True)
 
         IsCapture = False
         if str(var_type.upper()) == "VAR" or str(var_type.upper()) == "CAP":
@@ -128,15 +124,15 @@ class BlockParse:
         self.Dict["IsCapture"] = IsCapture
         self.IsCapture = IsCapture
         
-        variable_name = ParseLiteral(line.current)
+        variable_name = ParseLiteral(line)
         self.Dict["variable_name"] = variable_name
         self.VariableName = variable_name
 
-        prefix = ParseLiteral(line.current)
+        prefix = ParseLiteral(line)
         self.Dict["prefix"] = prefix
         self.Prefix = prefix
 
-        suffix = ParseLiteral(line.current)
+        suffix = ParseLiteral(line)
         self.Dict["suffix"] = suffix
         self.Suffix = suffix
 
