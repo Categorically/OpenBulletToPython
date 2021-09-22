@@ -1,8 +1,8 @@
 from os import replace
 from OpenBullet2Python.Models.BotData import BotData
 from enum import Enum
-from OpenBullet2Python.LoliScript.LineParser import ParseLabel, \
-    ParseEnum, ParseLiteral, line, Lookahead, SetBool, ParseToken, \
+from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel, \
+    ParseEnum, ParseLiteral, Lookahead, SetBool, ParseToken, \
     ParseInt, EnsureIdentifier
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, \
     InsertVariable, ReplaceValues
@@ -98,76 +98,77 @@ class BlockUtility:
         self.group = None
         self.VariableName = ""
 
-    def FromLS(self, input_line) -> None:
-        input_line = input_line.strip()
+    def FromLS(self, line:LineParser) -> None:
+        if str(line.current).startswith("!"):
+            return None
 
-        self.group = ParseEnum(line.current)
+        self.group = ParseEnum(line)
 
         if self.group == UtilityGroup.List:
 
-            self.list_name = ParseLiteral(line.current)
-            self.list_action = ParseEnum(line.current)
+            self.list_name = ParseLiteral(line)
+            self.list_action = ParseEnum(line)
 
             if self.list_action == ListAction.Join:
-                self.Separator = ParseLiteral(line.current)
+                self.Separator = ParseLiteral(line)
 
             elif self.list_action == ListAction.Sort:
-                while Lookahead(line.current) == "Boolean":
-                    boolean_name, boolean_value = SetBool(line.current,self)
+                while Lookahead(line) == "Boolean":
+                    boolean_name, boolean_value = SetBool(line,self)
                     
             elif self.list_action == ListAction.Map or \
                 self.list_action == ListAction.Zip or \
                 self.list_action == ListAction.Concat:
-                self.SecondListName = ParseLiteral(line.current)
+                self.SecondListName = ParseLiteral(line)
 
             elif self.list_action == ListAction.Add:
-                self.ListItem = ParseLiteral(line.current)
-                self.ListIndex = ParseLiteral(line.current)
+                self.ListItem = ParseLiteral(line)
+                self.ListIndex = ParseLiteral(line)
 
             elif self.list_action == ListAction.Remove:
-                self.ListIndex = ParseLiteral(line.current)
+                self.ListIndex = ParseLiteral(line)
 
             elif self.list_action == ListAction.RemoveValues:
-                self.ListElementComparer  = ParseEnum(line.current)
-                self.ListComparisonTerm = ParseLiteral(line.current)
+                self.ListElementComparer  = ParseEnum(line)
+                self.ListComparisonTerm = ParseLiteral(line)
             else:
                 pass
 
         elif self.group == UtilityGroup.Variable:
-            self.VarName = ParseLiteral(line.current)
-            self.var_action  = ParseEnum(line.current)
+            self.VarName = ParseLiteral(line)
+            self.var_action  = ParseEnum(line)
             if self.var_action == VarAction.Split:
-                self.SplitSeparator = ParseLiteral(line.current)
+                self.SplitSeparator = ParseLiteral(line)
 
         elif self.group == UtilityGroup.Conversion:
-            self.ConversionFrom =ParseEnum(line.current)
-            self.ConversionTo = ParseEnum(line.current)
-            self.InputString = ParseLiteral(line.current)
+            self.ConversionFrom =ParseEnum(line)
+            self.ConversionTo = ParseEnum(line)
+            self.InputString = ParseLiteral(line)
         
         elif self.group == UtilityGroup.File:
-            self.FilePath = ParseLiteral(line.current)
-            self.file_action = ParseEnum(line.current)
+            self.FilePath = ParseLiteral(line)
+            self.file_action = ParseEnum(line)
 
             if self.file_action == FileAction.Move:
-                self.InputString = ParseLiteral(line.current)
+                self.InputString = ParseLiteral(line)
 
         elif self.group == UtilityGroup.Folder:
-            self.FolderPath = ParseLiteral(line.current)
-            self.folder_action = ParseEnum(line.current)
+            self.FolderPath = ParseLiteral(line)
+            self.folder_action = ParseEnum(line)
 
         # Try to parse the arrow, otherwise just return the block as is with default var name and var / cap choice
-        if not ParseToken(line.current,"Arrow",False,True):
+        if not ParseToken(line,"Arrow",False,True):
             return self.Dict
             
         # Parse the VAR / CAP
-        varType = ParseToken(line.current,"Parameter",True,True)
+        varType = ParseToken(line,"Parameter",True,True)
         if str(varType.upper()) == "VAR" or str(varType.upper()) == "CAP":
             if str(varType.upper()) == "CAP":
                 self.Dict["IsCapture"] = True
                 self.isCapture = True
 
         # Parse the variable/capture name
-        VariableName = ParseToken(line.current,"Literal",True,True)
+        VariableName = ParseToken(line,"Literal",True,True)
         self.VariableName = VariableName
 
     def Process(self, BotData):

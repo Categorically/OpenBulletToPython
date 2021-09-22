@@ -1,4 +1,4 @@
-from OpenBullet2Python.LoliScript.LineParser import ParseToken,line
+from OpenBullet2Python.LoliScript.LineParser import ParseToken,LineParser
 import re
 from OpenBullet2Python.Blocks.BlockParse import BlockParse
 from OpenBullet2Python.Blocks.BlockRequest import BlockRequest
@@ -51,15 +51,16 @@ def IsBlock(line) -> bool:
 
 def Parse(input_line):
     input_line = input_line.strip()
+    line = LineParser()
     line.current = input_line
 
     disabled = input_line.startswith("!")
     if disabled: line.current[1:]
 
-    label = ParseToken(line.current,"Label", False, True)
+    label = ParseToken(line,"Label", False, True)
     
     identifier = ""
-    identifier = ParseToken(line.current,"Parameter", True, True)
+    identifier = ParseToken(line,"Parameter", True, True)
 
     # Get the class for the matching identifier
     block = BlockMappings2.get(identifier)
@@ -67,7 +68,7 @@ def Parse(input_line):
     if block:
         # Init a new class
         block = block()
-        block.FromLS(line.current)
+        block.FromLS(line)
         if block:
             block.label = label
             block.block_type = identifier
@@ -79,4 +80,3 @@ def Parse(input_line):
             return False
     else:
         return None
-    
