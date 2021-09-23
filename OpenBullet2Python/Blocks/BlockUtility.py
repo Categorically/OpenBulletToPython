@@ -176,13 +176,13 @@ class BlockUtility:
 
         replacedInput = ReplaceValues(self.InputString,BotData)
         if self.group == UtilityGroup.List:
-            list1 = BotData.Variables.GetList(self.list_name)
-            list2 = BotData.Variables.GetList(self.SecondListName)
+            list1 = BotData.Variables.GetList(self.list_name) or []
+            list2 = BotData.Variables.GetList(self.SecondListName) or []
             item = ReplaceValues(self.ListItem, BotData)
             index  = int(ReplaceValues(self.ListIndex, BotData))
 
             if self.list_action == ListAction.Create:
-                output = ["1","2","3"]
+                output = list1
                 BotData.Variables.Set(CVar(self.VariableName, output, self.isCapture))
                 print(f"ACTION: {ListAction.Create}, output: {output}")
 
