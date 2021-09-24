@@ -61,8 +61,8 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
   - [x] List
   - [x] Variable
   - [x] Conversion
-  - [ ] File
-  - [ ] Folder
+  - [x] File
+  - [x] Folder
   
  
 ```Python

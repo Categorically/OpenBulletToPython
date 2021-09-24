@@ -1,4 +1,5 @@
-from os import replace
+from genericpath import isdir
+import types
 from OpenBullet2Python.Models.BotData import BotData
 from enum import Enum
 from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel, \
@@ -10,9 +11,16 @@ from OpenBullet2Python.Models.CVar import CVar
 from OpenBullet2Python.Models.CVar import VarType
 from OpenBullet2Python.Functions.Conditions.Condition import Verify
 from OpenBullet2Python.Functions.Conversion.Conversion import Conversion
-
 from random import choice, shuffle
+import os
+from OpenBullet2Python.Functions.Files.Files import NotInCWD
+from shutil import copyfile, move, rmtree
 
+def string_escape(s, encoding='utf-8'):
+    return (s.encode('latin1')
+             .decode('unicode-escape')
+             .encode('latin1')
+             .decode(encoding))
 class UtilityGroup(str, Enum):
     List = "List"
     Variable = "Variable"
@@ -149,7 +157,10 @@ class BlockUtility:
             self.FilePath = ParseLiteral(line)
             self.file_action = ParseEnum(line)
 
-            if self.file_action == FileAction.Move:
+            if self.file_action in [
+                FileAction.Write, FileAction.WriteLines,
+                FileAction.Append, FileAction.AppendLines,
+                FileAction.Copy, FileAction.Move]:
                 self.InputString = ParseLiteral(line)
 
         elif self.group == UtilityGroup.Folder:
@@ -281,44 +292,125 @@ class BlockUtility:
             print(f"Executed conversion {self.ConversionFrom} to {self.ConversionTo} on input {replacedInput} with outcome {conversionResult}")
 
         elif self.group == UtilityGroup.File:
+            
+            file = ReplaceValues(self.FilePath, BotData)
+            # If the file is not in the current dir, do nothing
+            if NotInCWD(BotData.cwd, file) == True:
+                print("File path is out of bounds")
+                return
 
             if self.file_action == FileAction.Exists:
-                pass
+                output = os.path.isfile(file)
+                BotData.Variables.Set(CVar(self.VariableName, str(output), self.isCapture))
             
             elif self.file_action == FileAction.Read:
-                pass
+                try:
+                    with open(file, "r", errors="ignore") as f:
+                        output = f.read()
+                        BotData.Variables.Set(CVar(self.VariableName, str(output), self.isCapture))
+
+                except Exception as e:
+                    print(e)
+                    return
 
             elif self.file_action == FileAction.ReadLines:
-                pass
+                try:
+                    with open(file, "r", errors="ignore") as f:
+                        output = f.readlines()
+                        BotData.Variables.Set(CVar(self.VariableName, output, self.isCapture))
+
+                except Exception as e:
+                    print(e)
+                    return
 
             elif self.file_action == FileAction.Write:
-                pass
+                try:
+                    with open(file, "w", errors="ignore") as f:
+                        f.write(string_escape(replacedInput))
+                except Exception as e:
+                    print(e)
+                    return
 
             elif self.file_action == FileAction.WriteLines:
-                pass
+                try:
+                    with open(file, "w", errors="ignore") as f:
+                        output = ReplaceValuesRecursive(self.InputString, BotData)
+                        if type(output) == str:
+                            f.writelines(string_escape(output))
+                        elif type(output) == list:
+                            f.writelines([string_escape(line) + "\n" for line in output])
+                except Exception as e:
+                    print(e)
+                    return
 
             elif self.file_action == FileAction.Append:
-                pass
+                try:
+                    with open(file, "a", errors="ignore") as f:
+                        f.write(string_escape(replacedInput))
+
+                except Exception as e:
+                    print(e)
+                    return
 
             elif self.file_action == FileAction.AppendLines:
-                pass
+                try:
+                    with open(file, "a", errors="ignore") as f:
+                        output = ReplaceValuesRecursive(self.InputString, BotData)
+                        if type(output) == str:
+                            f.writelines(string_escape(output))
+                        elif type(output) == list:
+                            f.writelines([string_escape(line) + "\n" for line in output])
+                except Exception as e:
+                    print(e)
+                    return
 
             elif self.file_action == FileAction.Copy:
-                pass
+                fileCopyLocation = ReplaceValues(self.InputString, BotData)
+                if NotInCWD(BotData.cwd,fileCopyLocation) == True:
+                    print("File path is out of bounds")
+                    return
+                try:
+                    copyfile(file, fileCopyLocation)
+                except Exception as e:
+                    print(e)
+                    return
 
             elif self.file_action == FileAction.Move:
-                pass
+                fileMoveLocation = ReplaceValues(self.InputString, BotData)
+                if NotInCWD(BotData.cwd,fileMoveLocation) == True:
+                    print("File path is out of bounds")
+                    return
+                try:
+                    move(file, fileMoveLocation)
+                except Exception as e:
+                    print(e)
+                    return
 
             elif self.file_action == FileAction.Delete:
-                pass
-
+                if os.path.isfile(file):
+                    os.remove(file)
+                else:
+                    return
+            print(f"Executed action {self.file_action} on file {file}")
         elif self.group == UtilityGroup.Folder:
+            folder = ReplaceValues(self.FolderPath, BotData)
+            if NotInCWD(BotData.cwd, folder):
+                print("File path is out of bounds")
+                return
 
             if self.folder_action == FolderAction.Exists:
-                pass
+                output = os.path.isdir(folder)
+                BotData.Variables.Set(CVar(self.VariableName, str(output), self.isCapture))
+                print(f"Executed action {self.folder_action} on file {folder}")
 
             elif self.folder_action == FolderAction.Create:
-                pass
+                if os.path.isdir(folder) == False:
+                    os.mkdir(folder)
+                    BotData.Variables.Set(CVar(self.VariableName, str(folder), self.isCapture))
+                    print(f"Executed action {self.folder_action} on file {folder}")
 
             elif self.folder_action == FolderAction.Delete:
-                pass
+                if os.path.isdir(folder):
+                    if input(f"Are you sure you want to remove \"{folder}\" [y/n]: ").lower() == "y":
+                        rmtree(folder)
+                        print(f"Executed action {self.folder_action} on file {folder}")
