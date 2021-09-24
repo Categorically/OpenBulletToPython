@@ -152,4 +152,4 @@ class UserAgent:
         if random_number > 91 and random_number <= 96:
             return UserAgent.OperaUserAgent()
         
-        return UserAgent.OperaMiniUserAgent
+        return UserAgent.OperaMiniUserAgent()
