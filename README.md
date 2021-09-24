@@ -8,6 +8,7 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
 - [x] REQUEST
 - [x] KEYCHECK
 - [x] FUNCTIONS
+- [x] UTILITY
 
 # Processing Blocks
 - FUNCTION
