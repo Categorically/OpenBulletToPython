@@ -15,7 +15,7 @@ class BotData:
     def __init__(self,status=BotStatus.NONE):
         self.Variables = VariableList()
         self.status = status
-        
+        self.cwd = None
 
     def ResponseSourceGet(self):
         return self.Variables.GetWithName("SOURCE").Value
