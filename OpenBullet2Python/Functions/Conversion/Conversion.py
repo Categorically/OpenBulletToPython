@@ -51,8 +51,8 @@ class Conversion():
             return input_bytes.hex()
 
         elif encoding_type == EncodingType.BIN:
-            output = ''.join(format(ord(x), 'b') for x in input_bytes.decode("UTF-8"))
-            return output
+            output = [f'{byte:0>8b}' for byte in input_bytes]
+            return "".join(output)
 
         elif encoding_type == EncodingType.ASCII:
             return input_bytes.decode(encoding='ascii',errors='replace')
