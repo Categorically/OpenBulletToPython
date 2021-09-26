@@ -39,9 +39,12 @@ class OpenBullet:
         for block in self.blocks:
             if self.data.status.value == self.data.BotStatus.FAIL or self.data.status.value == self.data.BotStatus.BAN or self.data.status.value == self.data.BotStatus.ERROR:
                 return
+            try:
+                block.Process(self.data)
+            except Exception as e:
+                print(e)
+                return 
                 
-            block.Process(self.data)
-
     def run(self):
         self.parse()
         if self.blocks:

@@ -1,9 +1,13 @@
+import enum
+from test import CSS
 from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt
 
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValues,InsertVariable
 
-from OpenBullet2Python.Functions.Parsing.Parse import LR, JSON, REGEX
-class ParseType:
+from OpenBullet2Python.Functions.Parsing.Parse import LR, JSON, REGEX, CSS
+from enum import Enum
+
+class ParseType(str, Enum):
     LR = "LR"
     CSS = "CSS"
     JSON = "JSON"
@@ -59,7 +63,7 @@ class BlockParse:
         self.Dict["parse_type"] = parse_type
         self.ParseType = parse_type
 
-        if parse_type == ParseType().REGEX:
+        if parse_type == ParseType.REGEX:
             regex_pattern  = ParseLiteral(line)
             self.Dict["regex_pattern"] = regex_pattern
             self.RegexString = regex_pattern
@@ -73,24 +77,27 @@ class BlockParse:
                 boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
         
-        elif parse_type == ParseType().CSS:
+        elif parse_type == ParseType.CSS:
             CssSelector =  ParseLiteral(line)
+            self.CssSelector = CssSelector
             self.Dict["CssSelector"] = CssSelector
 
             AttributeName = ParseLiteral(line)
+            self.AttributeName = AttributeName
             self.Dict["AttributeName"] = AttributeName
 
             if Lookahead(line) == "Boolean":
                 SetBool(line,self)
             elif Lookahead(line) == "Integer":
                 CssElementIndex = ParseInt(line)
+                self.CssElementIndex = CssElementIndex
                 self.Dict["CssElementIndex"] = CssElementIndex
             self.Dict["Booleans"] = {}
             while Lookahead(line) == "Boolean":
                 boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
 
-        elif parse_type == ParseType().JSON:
+        elif parse_type == ParseType.JSON:
             JsonField = ParseLiteral(line)
             self.Dict["JsonField"] = JsonField
             self.JsonField = JsonField
@@ -99,7 +106,7 @@ class BlockParse:
                 boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
                 
-        elif parse_type == ParseType().LR:
+        elif parse_type == ParseType.LR:
             LeftString = ParseLiteral(line)
             self.Dict["LeftString"] = LeftString
             self.LeftString = LeftString
@@ -139,16 +146,22 @@ class BlockParse:
     def Process(self,BotData):
         original = ReplaceValues(self.ParseTarget,BotData)
         List = []
-        if self.ParseType == ParseType().LR:
+        if self.ParseType == ParseType.LR:
             List = LR(original,ReplaceValues(self.LeftString,BotData),ReplaceValues(self.RightString,BotData),self.Recursive,self.UseRegexLR)
             print(f"Parsed LR {List} From {original[0:10]}......")
-        elif self.ParseType == ParseType().JSON:
+        elif self.ParseType == ParseType.JSON:
             List = JSON(original,ReplaceValues(self.JsonField,BotData),self.Recursive,self.JTokenParsing)
             print(f"Parsed JSON {List} From {original[0:10]}......")
-        elif self.ParseType == ParseType().REGEX:
+        elif self.ParseType == ParseType.REGEX:
             List = REGEX(original,ReplaceValues(self.RegexString,BotData),ReplaceValues(self.RegexOutput,BotData),self.Recursive)
             print(f"Parsed REGEX {List} From {original[0:10]}......")
+        elif self.ParseType == ParseType.REGEX:
+            List = REGEX(original,ReplaceValues(self.RegexString,BotData),ReplaceValues(self.RegexOutput,BotData),self.Recursive)
+            print(f"Parsed REGEX {List} From {original[0:10]}......")
+        elif self.ParseType == ParseType.CSS:
+            List = CSS(original, self.CssSelector, self.AttributeName, self.CssElementIndex, self.Recursive)
+            print(f"Parsed CSS {List} From {original[0:10]}......")
         else:
             pass
 
-        InsertVariable(BotData,self.IsCapture,self.Recursive,List,self.VariableName,self.Prefix,self.Suffix,self.EncodeOutput,self.CreateEmpty)
+        InsertVariable(BotData, self.IsCapture, self.Recursive, List, self.VariableName, self.Prefix, self.Suffix, self.EncodeOutput, self.CreateEmpty)

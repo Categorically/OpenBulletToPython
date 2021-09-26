@@ -49,7 +49,7 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
 
 - PARSE
   - [x] LR
-  - [ ] CSS
+  - [x] CSS
   - [x] JSON
   - [x] REGEX
     - [ ] EncodeOutput
