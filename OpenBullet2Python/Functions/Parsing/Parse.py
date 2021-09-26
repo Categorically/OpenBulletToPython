@@ -1,8 +1,7 @@
 import re
 import json
-import jsonpath_ng
-from jsonpath_ng import jsonpath
 from jsonpath_ng import parse as JTParse
+from bs4 import BeautifulSoup
 
 def LR(input_string, left, right,recursive=False,useRegex=False):
     if not left and not right:
@@ -135,3 +134,30 @@ def BuildLRPattern(ls,rs):
     if not rs: right = "$"
 
     return "(?<=" + left + ").+?(?=" + right + ")"
+
+def CSS(input:str, selector:str, attribute:str, index:int = 0, recusive:bool = False):
+    
+    soup = BeautifulSoup(input, 'html.parser')
+    output = []
+    if recusive:
+        for element in soup.select(selector):
+            if attribute == "innerHTML":
+                output.append(element.decode_contents())
+            elif attribute == "outerHTML":
+                output.append(element)
+            else:
+                attributes = element.attrs
+                if attributes.get(attribute):
+                    output.append(attributes.get(attribute))
+
+    else:
+        if attribute == "innerHTML":
+            output.append(soup.select(selector)[index].decode_contents())
+        elif attribute == "outerHTML":
+            output.append(soup.select(selector)[index])
+        else:
+            attributes = soup.select(selector)[index].attrs
+            if attributes.get(attribute):
+                output.append(attributes.get(attribute))
+        
+    return output

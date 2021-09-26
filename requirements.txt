@@ -1,3 +1,4 @@
 requests
 # Jsonpath is for Jtoken parsing in JSON.
 jsonpath-ng
+beautifulsoup4
