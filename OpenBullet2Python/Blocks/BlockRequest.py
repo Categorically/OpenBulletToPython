@@ -2,10 +2,8 @@ from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel,Parse
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValues, ReplaceValuesRecursive
 from OpenBullet2Python.Models.BotData import BotData
 from OpenBullet2Python.Models.CVar import CVar
+from OpenBullet2Python.Functions.Requests.Requests import OBRequest
 
-import requests
-from requests import Timeout
-from requests import Request, Session
 def ParseString(input_string, separator, count) -> list:
     return [ n.strip() for n in input_string.split(separator,count)]
 class RequestType:
@@ -46,7 +44,7 @@ class BlockRequest:
 
         self.custom_headers = {}
 
-        self.ContentType = "application/x-www-form-urlencoded"
+        self.ContentType = ""
 
         self.auto_redirect = True
 
@@ -67,8 +65,6 @@ class BlockRequest:
         self.output_variable = ""
 
         self.save_as_screenshot = False
-
-        self.request_timeout = 60
 
         self.Dict = {}
 
@@ -186,81 +182,54 @@ class BlockRequest:
                 
         self.Dict["custom_cookies"] = custom_cookies
         self.Dict["custom_headers"] = custom_headers
-    # Using requests https://pypi.org/project/requests/ 
-    # https://requests.readthedocs.io/en/master/
+        
     def Process(self,BotData):
-        cookies = BotData.CookiesGet()
-        if cookies:
-            cookies = cookies.Value
-        else:
-            cookies = {}
+
+
+        local_url = ReplaceValues(self.url,BotData)
+        request = OBRequest()
+        request.Setup(self.auto_redirect)
+
+        if self.request_type == RequestType.Standard:
+            request.SetStandardContent(ReplaceValues(self.post_data, BotData), ReplaceValues(self.ContentType, BotData), self.method, self.encode_content)
+        elif self.request_type == RequestType.BasicAuth:
+            request.SetBasicAuth(ReplaceValues(self.auth_user,BotData), ReplaceValues(self.auth_pass,BotData))
+
+        # Set request cookies
+        cookies = {}
+        cookieJar = BotData.CookiesGet()
+        if cookieJar:
+            cookies = cookieJar.Value
+
         for c in self.custom_cookies.items():
             cookies[ReplaceValues(c[0],BotData)] = cookies[ReplaceValues(c[1],BotData)]
+        request.SetCookies(cookies)
 
-        # Headers to be used for the request
+        # Set request headers
         headers = {}
-        for h in self.custom_headers.items():
-            replacedKey = h[0].replace("-","").lower()
-            # Don't want brotli
-            if replacedKey == "acceptencoding":
-                headers["Accept"] = "*/*"
-            else:
-                headers[ReplaceValues(h[0],BotData)] = ReplaceValues(h[1],BotData)
+        for headerName, headerValue in self.custom_headers.items():
+            headers[ReplaceValues(headerName,BotData)] = ReplaceValues(headerValue,BotData)
+        request.SetHeaders(headers, self.accept_encoding)
 
-        # Add the content type to headers if ContentType is not null
-        if self.ContentType:
-            headers["Content-Type"] = self.ContentType
-        local_url = ReplaceValues(self.url,BotData)
-        if self.request_type == RequestType.Standard or self.request_type == RequestType.BasicAuth:
-            username = ReplaceValues(self.auth_user,BotData)
-            password = ReplaceValues(self.auth_pass,BotData)
-            s = Session()
-            try:
-                if self.method in ["GET","HEAD","DELETE"]:
-                    print(f"{self.method} {local_url}")
 
-                    if self.request_type == RequestType.BasicAuth:
-                        req = Request(self.method,  url=local_url, headers=headers,cookies=cookies,auth=(username,password))
-                    else:
-                        req = Request(self.method,  url=local_url, headers=headers,cookies=cookies)
-                    prepped = s.prepare_request(req)
+        try:
+            (Address, ResponseCode, ResponseHeaders, ResponseCookies) = request.Perform(self.url, self.method)
+            print(f"{self.method} {local_url}")
+        except Exception as e:
+            print(e)
+            return
 
-                    req = s.send(prepped,timeout=self.request_timeout,allow_redirects=self.auto_redirect)
 
-                elif self.method in ["POST","PUT","PATCH"]:
-                    
-                    pData = ReplaceValues(self.post_data,BotData).encode("UTF-8","replace")
-                    if self.encode_content == True:
-                        pData = requests.utils.quote(pData)
-                    print(f"{self.method} {local_url}")
+        BotData.ResponseCodeSet(CVar("RESPONSECODE",ResponseCode,False,True))
+        BotData.AddressSet(CVar("ADDRESS",Address,False,True))
+        BotData.ResponseHeadersSet(CVar("HEADERS",ResponseHeaders,False,True))
 
-                    if self.request_type == RequestType.BasicAuth:
-                        req = Request(self.method,  url=local_url,data=pData, headers=headers,cookies=cookies,auth=(username,password))
-                    else:
-                        req = Request(self.method,  url=local_url,data=pData, headers=headers,cookies=cookies)
-                    prepped = s.prepare_request(req)
+        # Add response cookies to cookie jar
+        for cN,cV in ResponseCookies.items():
+            cookies[cN] = cV
+        BotData.CookiesSet(CVar("COOKIES",cookies,False,True))
 
-                    req = s.send(prepped,timeout=self.request_timeout,allow_redirects=self.auto_redirect)
-            except Exception:
-                return
-
-            ResponseCode = str(req.status_code)
-            BotData.ResponseCodeSet(CVar("RESPONSECODE",ResponseCode,False,True))
-            Address = str(req.url)
-            BotData.ResponseSourceSet(CVar("ADDRESS",Address,False,True))
-            Responce_Headers = dict(req.headers)
-            BotData.ResponseHeadersSet(CVar("HEADERS",Responce_Headers,False,True))
-            Responce_Cookies = dict(req.cookies)
-            cookies = BotData.CookiesGet()
-            if cookies:
-                cookies = cookies.Value
-            else:
-                cookies = {}
-            for cN,cV in Responce_Cookies.items():
-                cookies[cN] = cV
-            BotData.CookiesSet(CVar("COOKIES",cookies,False,True))
-
-            if self.response_type == ResponseType.String:
-                ResponseSource = str(req.text)
-                BotData.ResponseSourceSet(CVar("SOURCE",ResponseSource,False,True))
+        if self.response_type == ResponseType.String:
+            ResponseSource = request.SaveString(self.read_response_source, ResponseHeaders)
+            BotData.ResponseSourceSet(CVar("SOURCE",ResponseSource,False,True))
                 
