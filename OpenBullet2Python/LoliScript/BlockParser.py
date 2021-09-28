@@ -72,8 +72,6 @@ def Parse(input_line):
         if block:
             block.label = label
             block.block_type = identifier
-            block.Dict["label"] = label
-            block.Dict["block_type"] = identifier
             return block
         else:
             # ERROR

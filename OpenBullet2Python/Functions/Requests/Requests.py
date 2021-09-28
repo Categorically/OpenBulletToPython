@@ -1,7 +1,22 @@
 from requests import Request, Session
-from requests.api import request
 from requests.auth import HTTPBasicAuth
 from requests.utils import quote
+from OpenBullet2Python.Functions.Conversion.Conversion import Conversion, EncodingType
+from enum import Enum
+import random
+from math import floor
+
+class MultipartContentType(str, Enum):
+    String = "String"
+    File = "File"
+
+
+class MultipartContent:
+    def __init__(self, Name:str, Value:str, Type:MultipartContentType, ContentType:str = "") -> None:
+        self.Name = Name
+        self.Value = Value
+        self.Type = Type
+        self.ContentType = ContentType
 class OBRequest():
     def __init__(self) -> None:
         pass
@@ -21,15 +36,25 @@ class OBRequest():
 
         return
 
-    def SetRawContent(self):
-        pass
+    def SetRawContent(self, rawData:str, contentType:str):
+        if contentType:
+            self.request.headers["Content-Type"] = contentType
+            rData = Conversion().ConvertFrom(rawData,EncodingType.HEX)
+            self.request.data = rData
 
     def SetBasicAuth(self, user:str, password:str):
         self.request.auth = HTTPBasicAuth(user, password)
 
-    def SetMultipartContent(self):
-        pass
-    
+    def SetMultipartContent(self, contents:list[MultipartContent], boundary:str):
+        self.request.files = []
+        bdry = boundary or GenerateMultipartBoundary()
+        self.request.headers["Content-Type"] = f"multipart/form-data; boundary={bdry}"
+        for c in contents:
+            if c.Type == MultipartContentType.String:
+                self.request.files.append((c.Name, (c.Value)))
+            elif c.Type == MultipartContentType.File:
+                self.request.files.append((c.Name, open(c.Value, "rb")))
+        
     def Perform(self, url, method):
         self.request.url = url
         self.request.method = method
@@ -57,5 +82,13 @@ class OBRequest():
                 pass
             else:
                 self.request.headers[h[0]] = h[1]
+
     def SetCookies(self, cookies:dict):
         self.request.cookies = cookies
+
+def GenerateMultipartBoundary():
+    string = ""
+    for x in range(16):
+        ch = chr(int(floor(26 * random.random() + 65)))
+        string += ch.lower()
+    return f"------WebKitFormBoundary{string}"

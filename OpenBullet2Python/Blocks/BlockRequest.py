@@ -3,20 +3,22 @@ from OpenBullet2Python.Blocks.BlockBase import ReplaceValues, ReplaceValuesRecur
 from OpenBullet2Python.Models.BotData import BotData
 from OpenBullet2Python.Models.CVar import CVar
 from OpenBullet2Python.Functions.Requests.Requests import OBRequest
+from OpenBullet2Python.Functions.Requests.Requests import MultipartContent
+from enum import Enum
 
 def ParseString(input_string, separator, count) -> list:
     return [ n.strip() for n in input_string.split(separator,count)]
-class RequestType:
+class RequestType(str, Enum):
     Standard = "Standard"
     BasicAuth = "BasicAuth"
     Multipart = "Multipart"
     Raw = "Raw"
 
-class MultipartContentType:
+class MultipartContentType(str, Enum):
     String = "String"
     File = "File"
 
-class ResponseType:
+class ResponseType(str, Enum):
     String = "String"
     File = "File"
     Base64String = "Base64String"
@@ -66,95 +68,76 @@ class BlockRequest:
 
         self.save_as_screenshot = False
 
-        self.Dict = {}
-
     def FromLS(self,line:LineParser):
-        
-        multipart_contents = []
-        custom_headers = {}
-        custom_cookies = {}
-
         if str(line.current).startswith("!"):
             return None
 
-        self.Dict = {}
-
         method = ParseEnum(line)
-        self.Dict["method"] = method
         self.method = method
 
         url = ParseLiteral(line)
-        self.Dict["url"] = url
         self.url = url
 
-        self.Dict["Booleans"] = {}
         while Lookahead(line) == "Boolean":
             boolean_name, boolean_value = SetBool(line,self)
-            self.Dict["Booleans"][boolean_name] = boolean_value
 
         while len(str(line.current)) != 0 and line.current.startswith("->") == False:
             parsed = ParseToken(line,"Parameter",True,True).upper()
             if parsed == "MULTIPART":
-                self.Dict["request_type"] = "Multipart"
+                self.request_type = RequestType.Multipart
 
             elif parsed == "BASICAUTH":
-                self.Dict["request_type"] = "BasicAuth"
+                self.request_type = RequestType.BasicAuth
 
             elif parsed == "STANDARD":
-                self.Dict["request_type"] = "Standard"
                 self.request_type = RequestType.Standard
 
             elif parsed == "RAW":
-                self.Dict["request_type"] = "Raw"
+                self.request_type = RequestType.Raw
 
             elif parsed == "CONTENT":
                 post_data = ParseLiteral(line)
-                self.Dict["post_data"] = post_data
                 self.post_data = post_data
 
             elif parsed == "RAWDATA":
                 raw_data = ParseLiteral(line)
-                self.Dict["raw_data"] = raw_data
+                self.raw_data = raw_data
 
             elif parsed == "STRINGCONTENT":
                 stringContentPair = ParseString(ParseLiteral(line), ':', 2)
-                multipart_contents.append({"Type": "STRING","Name":stringContentPair[0],"Value": stringContentPair[1] })
+                self.multipart_contents.append(MultipartContent(stringContentPair[0], stringContentPair[1], MultipartContentType.String))
                 
             elif parsed == "FILECONTENT":
-                stringContentPair = ParseString(ParseLiteral(line), ':', 3)
-                multipart_contents.append({"Type": "FILE","Name":stringContentPair[0],"Value": stringContentPair[1] })
+                fileContentTriplet = ParseString(ParseLiteral(line), ':', 3)
+                self.multipart_contents.append(MultipartContent(fileContentTriplet[0], fileContentTriplet[1], MultipartContentType.File, fileContentTriplet[3]))
 
             elif parsed == "COOKIE":
                 cookiePair = ParseString(ParseLiteral(line), ':', 2)
-                custom_cookies[cookiePair[0]] = cookiePair[1]
+                self.custom_cookies[cookiePair[0]] = cookiePair[1]
 
             elif parsed == "HEADER":
                 headerPair = ParseString(ParseLiteral(line), ':', 2)
-                custom_headers[headerPair[0]] = headerPair[1]
                 self.custom_headers[headerPair[0]] = headerPair[1]
 
             elif parsed == "CONTENTTYPE":
                 ContentType = ParseLiteral(line)
-                self.Dict["ContentType"] = ContentType
                 self.ContentType = ContentType
 
             elif parsed == "USERNAME":
                 auth_user = ParseLiteral(line)
-                self.Dict["auth_user"] = auth_user
                 self.auth_user = auth_user
 
             elif parsed == "PASSWORD":
                 auth_pass = ParseLiteral(line)
-                self.Dict["auth_pass"] = auth_pass
                 self.auth_pass = auth_pass
 
             elif parsed == "BOUNDARY":
                 multipart_boundary = ParseLiteral(line)
-                self.Dict["multipart_boundary"] = multipart_boundary
+                self.multipart_boundary = multipart_boundary
 
             elif parsed == "SECPROTO":
                 SecurityProtocol = ParseLiteral(line)
-                self.Dict["SecurityProtocol"] = SecurityProtocol
+                self.SecurityProtocol = SecurityProtocol
 
             else:
                 pass
@@ -164,25 +147,20 @@ class BlockRequest:
             outType = ParseToken(line,"Parameter",True,True)
 
             if outType.upper() == "STRING":
-                self.response_type = ResponseType.string
+                self.response_type = ResponseType.String
 
             elif outType.upper() == "FILE":
-                self.response_type = ResponseType.file
+                self.response_type = ResponseType.File
                 download_path  = ParseLiteral(line)
-                self.Dict["download_path"] = download_path
+                self.download_path = download_path
                 while Lookahead(line) == "Boolean":
-                        
                     boolean_name, boolean_value = SetBool(line,self)
-                    self.Dict["Booleans"][boolean_name] = boolean_value
 
             elif outType.upper() == "BASE64":
                 self.response_type = ResponseType.Base64String
                 output_variable = ParseLiteral(line)
-                self.Dict["output_variable"] = output_variable
-                
-        self.Dict["custom_cookies"] = custom_cookies
-        self.Dict["custom_headers"] = custom_headers
-        
+                self.output_variable = output_variable
+
     def Process(self,BotData):
 
 
@@ -193,7 +171,21 @@ class BlockRequest:
         if self.request_type == RequestType.Standard:
             request.SetStandardContent(ReplaceValues(self.post_data, BotData), ReplaceValues(self.ContentType, BotData), self.method, self.encode_content)
         elif self.request_type == RequestType.BasicAuth:
-            request.SetBasicAuth(ReplaceValues(self.auth_user,BotData), ReplaceValues(self.auth_pass,BotData))
+            request.SetBasicAuth(ReplaceValues(self.auth_user, BotData), ReplaceValues(self.auth_pass, BotData))
+        elif self.request_type == RequestType.Raw:
+            request.SetRawContent(ReplaceValues(self.raw_data, BotData), ReplaceValues(self.ContentType, BotData))
+        elif self.request_type == RequestType.Multipart:
+            contents = []
+            for m in self.multipart_contents:
+                contents.append(MultipartContent(
+                    Name = ReplaceValues(m.Name, BotData),
+                    Value = ReplaceValues(m.Value, BotData),
+                    ContentType = ReplaceValues(m.ContentType, BotData),
+                    Type = m.Type
+                ))
+            request.SetMultipartContent(contents, ReplaceValues(self.multipart_boundary, BotData))
+
+            
 
         # Set request cookies
         cookies = {}
