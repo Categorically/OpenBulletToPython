@@ -43,9 +43,9 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
 
 - REQUEST
   - [x] Standard
-  - [x] BasicAuth # Not tested
-  - [ ] Multipart
-  - [ ] Raw
+  - [x] BasicAuth
+  - [x] Multipart
+  - [x] Raw
 
 - PARSE
   - [x] LR
