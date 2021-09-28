@@ -1,5 +1,4 @@
 import enum
-from test import CSS
 from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt
 
 from OpenBullet2Python.Blocks.BlockBase import ReplaceValues,InsertVariable
