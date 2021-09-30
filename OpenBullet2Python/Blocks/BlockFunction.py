@@ -19,6 +19,7 @@ import time
 import math
 from enum import Enum
 from OpenBullet2Python.Models.CVar import CVar
+from html import escape, unescape
 
 def RandomString(localInputString:str):
     _lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -445,6 +446,10 @@ class BlockFunction:
 
             elif self.function_type == FunctionType.ClearCookies:
                     BotData.CookiesSet(CVar("COOKIES",{},False,True))
+            elif self.function_type == FunctionType.HTMLEntityEncode:
+                outputString = escape(localInputString)
+            elif self.function_type == FunctionType.HTMLEntityDecode:
+                outputString = unescape(localInputString)
             else:
                 pass
             outputs.append(outputString)

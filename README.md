@@ -42,6 +42,8 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
   - [x] UnixTimeToISO8601
   - [x] Unescape
   - [x] ClearCookies
+  - [x] HTMLEntityEncode
+  - [x] HTMLEntityDecode
 
 - REQUEST
   - [x] Standard
