@@ -22,9 +22,7 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
   - [x] URLEncode
   - [x] URLDecode
   - [x] Hash
-    - [ ] MD4
   - [x] HMAC
-    - [ ] MD4
   - [x] RandomNum
   - [x] RandomString
   - [x] CurrentUnixTime

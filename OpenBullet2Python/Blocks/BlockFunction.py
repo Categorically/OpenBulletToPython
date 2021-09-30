@@ -460,7 +460,9 @@ class BlockFunction:
                 # In case the input is not base64 encoded
                 return ""
         digest = bytearray()
-        if hashAlg == "MD5":
+        if hashAlg == "MD4":
+            digest = Crypto.MD4(rawInput)
+        elif hashAlg == "MD5":
             digest = Crypto.MD5(rawInput)
         elif hashAlg == "SHA1":
             digest = Crypto.SHA1(rawInput)
