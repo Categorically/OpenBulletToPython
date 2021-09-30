@@ -138,6 +138,13 @@ class BlockFunction:
 
         self.UserAgentBrowser = "Chrome"
         self.UserAgentSpecifyBrowser = False
+
+        # PBKDF2PKCS5
+        self.KdfSalt = ""
+        self.KdfSaltSize = 8
+        self.KdfIterations = 1
+        self.KdfKeySize = 16
+        self.KdfAlgorithm = "SHA1"
     def FromLS(self,line:LineParser):
 
         if str(line.current).startswith("!"):
@@ -290,12 +297,15 @@ class BlockFunction:
 
         elif function_type == FunctionType.PBKDF2PKCS5:
             if Lookahead(line) == "Literal":
-                self.Dict["KdfSalt"] = ParseLiteral(line)
+                self.KdfSalt = ParseLiteral(line)
+                self.KdfIterations = ParseInt(line)
+                self.KdfKeySize = ParseInt(line)
+                self.KdfAlgorithm = ParseEnum(line)
             else:
-                self.Dict["KdfSaltSize"] = ParseInt(line)
-                self.Dict["KdfIterations"] = ParseInt(line)
-                self.Dict["KdfKeySize"] = ParseInt(line)
-                self.Dict["KdfAlgorithm"] = ParseEnum(line)
+                self.KdfSaltSize = ParseInt(line)
+                self.KdfIterations = ParseInt(line)
+                self.KdfKeySize = ParseInt(line)
+                self.KdfAlgorithm = ParseEnum(line)
         else:
             pass
         if Lookahead(line) == "Literal":
@@ -395,6 +405,8 @@ class BlockFunction:
             elif self.function_type == FunctionType.UnixTimeToDate:
                 # Static dateformat because dates
                 outputString = datetime.fromtimestamp(int(localInputString)).strftime("%Y-%m-%d:%H-%M-%S")
+            elif self.function_type == FunctionType.PBKDF2PKCS5:
+                outputString = Crypto.PBKDF2PKCS5(localInputString, ReplaceValues(self.KdfSalt, BotData), self.KdfSaltSize, self.KdfIterations, self.KdfKeySize, self.KdfAlgorithm)
             else:
                 pass
             outputs.append(outputString)
@@ -414,15 +426,15 @@ class BlockFunction:
                 return ""
         digest = bytearray()
         if hashAlg == "MD5":
-            digest = Crypto().MD5(rawInput)
+            digest = Crypto.MD5(rawInput)
         elif hashAlg == "SHA1":
-            digest = Crypto().SHA1(rawInput)
+            digest = Crypto.SHA1(rawInput)
         elif hashAlg == "SHA256":
-            digest = Crypto().SHA256(rawInput)
+            digest = Crypto.SHA256(rawInput)
         elif hashAlg == "SHA384":
-            digest = Crypto().SHA384(rawInput)
+            digest = Crypto.SHA384(rawInput)
         elif hashAlg == "SHA512":
-            digest = Crypto().SHA512(rawInput)
+            digest = Crypto.SHA512(rawInput)
         return digest.hex()
 
     def Hmac(self, baseString:str,hashAlg,key:str,inputBase64:bool,keyBase64:bool,outputBase64:bool):
@@ -440,19 +452,19 @@ class BlockFunction:
             rawKey = key.encode('utf-8')
 
         if hashAlg == "MD5":
-            signature  = Crypto().HMACMD5(rawInput,rawKey)
+            signature  = Crypto.HMACMD5(rawInput,rawKey)
 
         elif hashAlg == "SHA1":
-            signature  = Crypto().HMACSHA1(rawInput,rawKey)
+            signature  = Crypto.HMACSHA1(rawInput,rawKey)
 
         elif hashAlg == "SHA256":
-            signature  = Crypto().HMACSHA256(rawInput,rawKey)
+            signature  = Crypto.HMACSHA256(rawInput,rawKey)
 
         elif hashAlg == "SHA384":
-            signature  = Crypto().HMACSHA384(rawInput,rawKey)
+            signature  = Crypto.HMACSHA384(rawInput,rawKey)
 
         elif hashAlg == "SHA512":
-            signature  = Crypto().HMACSHA512(rawInput,rawKey)
+            signature  = Crypto.HMACSHA512(rawInput,rawKey)
         else:
             return ""
         if outputBase64:

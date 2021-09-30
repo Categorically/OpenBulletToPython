@@ -40,6 +40,7 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
   - [x] ReverseString
   - [x] Trim
   - [x] GetRandomUA
+  - [x] PBKDF2PKCS5
 
 - REQUEST
   - [x] Standard
@@ -86,7 +87,7 @@ open_bullet = OpenBullet(config=config_text, USER=username, PASS=password)
 print(open_bullet.run())
 ```
 ```
->>> Calling https://google.com
+>>> GET https://google.com
 >>> SUCCESS
 ```
  https://github.com/openbullet/openbullet
