@@ -1,4 +1,3 @@
-from base64 import decode
 import hashlib
 from hashlib import pbkdf2_hmac
 import hmac
@@ -36,6 +35,10 @@ class Crypto:
             )
             return base64.b64encode(deriveBytes).decode()
             
+    def MD4(rawInput):
+        h = hashlib.new('md4')
+        h.update(rawInput)
+        return h.digest()
     def MD5(rawInput):
         h = hashlib.md5()
         h.update(rawInput)
@@ -60,7 +63,6 @@ class Crypto:
         h = hashlib.sha512()
         h.update(rawInput)
         return h.digest()
-
 
 
     def HMACMD5(rawInput,rawKey):

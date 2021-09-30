@@ -7,14 +7,19 @@ from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, \
     FromBase64
 from OpenBullet2Python.Functions.Crypto.Crypto import Crypto
 from OpenBullet2Python.Functions.UserAgent.UserAgent import UserAgent
+from OpenBullet2Python.Extensions import Unescape
 from urllib.parse import quote, unquote
 from datetime import datetime
+from datetime import timezone
 import base64
 import re
 from random import randint
 import random
 import time
 import math
+from enum import Enum
+from OpenBullet2Python.Models.CVar import CVar
+from html import escape, unescape
 
 def RandomString(localInputString:str):
     _lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -71,7 +76,7 @@ def RandomNum(minNum,maxNum,padNum:bool):
                 return randomNumString
 
                 
-class FunctionType:
+class FunctionType(str, Enum):
     Constant = "Constant"
     Base64Encode = "Base64Encode"
     Base64Decode = "Base64Decode"
@@ -145,6 +150,10 @@ class BlockFunction:
         self.KdfIterations = 1
         self.KdfKeySize = 16
         self.KdfAlgorithm = "SHA1"
+
+        # Translate
+        self.TranslationDictionary = {}
+        self.StopAfterFirstMatch = True
     def FromLS(self,line:LineParser):
 
         if str(line.current).startswith("!"):
@@ -192,12 +201,14 @@ class BlockFunction:
                 boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
             self.Dict["TranslationDictionary"] = {}
+
             while line.current and Lookahead(line) == "Parameter":
                 EnsureIdentifier(line, "KEY")
                 k = ParseLiteral(line)
                 EnsureIdentifier(line, "VALUE")
                 v = ParseLiteral(line)
                 self.Dict["TranslationDictionary"][k] = v
+                self.TranslationDictionary[k] = v
 
         elif function_type == FunctionType.DateToUnixTime:
             self.Dict["DateFormat"] = ParseLiteral(line)
@@ -333,84 +344,116 @@ class BlockFunction:
         localInputStrings = ReplaceValuesRecursive(self.InputString,BotData)
         outputs = []
 
-        i = 0
-        while i < len(localInputStrings):
-            localInputString = localInputStrings[i]
+        for localInputString in localInputStrings:
+            # localInputString = localInputStrings[i]
             outputString = ""
-            if self.function_type == "Constant":
+            if self.function_type == FunctionType.Constant:
                 outputString = localInputString
 
-            elif self.function_type == "Base64Encode":
+            elif self.function_type == FunctionType.Base64Encode:
                 outputString = ToBase64(localInputString)
 
-            elif self.function_type == "Base64Decode":
+            elif self.function_type == FunctionType.Base64Decode:
                 outputString = FromBase64(localInputString)
 
-            elif self.function_type == "Length":
+            elif self.function_type == FunctionType.Length:
                 outputString = str(len(localInputString))
 
-            elif self.function_type == "ToLowercase":
+            elif self.function_type == FunctionType.ToLowercase:
                 outputString = localInputString.lower()
 
-            elif self.function_type == "ToUppercase":
+            elif self.function_type == FunctionType.ToUppercase:
                 outputString = localInputString.upper()
 
-            elif self.function_type == "Replace":
+            elif self.function_type == FunctionType.Replace:
                 if self.UseRegex:
                     outputString = re.sub(ReplaceValues(self.ReplaceWhat,BotData), ReplaceValues(self.ReplaceWith,BotData), localInputString)
                 else:
                     outputString = localInputString.replace(ReplaceValues(self.ReplaceWhat,BotData),ReplaceValues(self.ReplaceWith,BotData))
 
-            elif self.function_type == "URLEncode":
+            elif self.function_type == FunctionType.URLEncode:
                 outputString = quote(localInputString,errors="replace")
 
-            elif self.function_type == "URLDecode":
+            elif self.function_type == FunctionType.URLDecode:
                 outputString = unquote(localInputString)
 
-            elif self.function_type == "Hash":
+            elif self.function_type == FunctionType.Hash:
                 outputString = self.GetHash(localInputString,self.HashType,self.InputBase64).lower()
 
-            elif self.function_type == "HMAC":
+            elif self.function_type == FunctionType.HMAC:
                  outputString = self.Hmac(localInputString,self.HashType,self.HmacKey,self.InputBase64,self.KeyBase64,self.HmacBase64)
-            elif self.function_type == "RandomNum":
+
+            elif self.function_type == FunctionType.RandomNum:
                 outputString = RandomNum(ReplaceValues(self.RandomMin,BotData),ReplaceValues(self.RandomMax,BotData),self.RandomZeroPad)
-            elif self.function_type == "RandomString":
+
+            elif self.function_type == FunctionType.RandomString:
                 outputString = localInputString
                 outputString = RandomString(outputString)
+
             elif self.function_type == FunctionType.CurrentUnixTime:
                 outputString = str(int(time.time()))
+
             elif self.function_type == FunctionType.Ceil:
                 outputString = str(math.ceil(float(localInputString)))
+
             elif self.function_type == FunctionType.Floor:
                 outputString = str(math.floor(float(localInputString)))
+
             elif self.function_type == FunctionType.Round:
                 outputString = str(round(float(localInputString)))
+
             elif self.function_type == FunctionType.CountOccurrences:
                 outputString = str(localInputString.count(self.StringToFind))
+
             elif self.function_type == FunctionType.CharAt:
                 outputString = str(localInputString[int(ReplaceValues(self.charIndex,BotData))])
+
             elif self.function_type == FunctionType.ReverseString:
                 charArray = list(localInputString)
                 charArray.reverse()
                 outputString = "".join(charArray)
+
             elif self.function_type == FunctionType.Substring:
                 outputString = localInputString[int(ReplaceValues(self.SubstringIndex,BotData)): int(ReplaceValues(self.SubstringIndex,BotData)) + int(ReplaceValues(self.SubstringLength, BotData))]
+
             elif self.function_type == FunctionType.GetRandomUA:
                 if self.UserAgentSpecifyBrowser:
                     outputString = UserAgent.ForBrowser(self.UserAgentBrowser)
                 else:
                     outputString = UserAgent.Random()
+
             elif self.function_type == FunctionType.Trim:
                 outputString = localInputString.strip()
+
             elif self.function_type == FunctionType.UnixTimeToDate:
                 # Static dateformat because dates
-                outputString = datetime.fromtimestamp(int(localInputString)).strftime("%Y-%m-%d:%H-%M-%S")
+                outputString = datetime.fromtimestamp(int(localInputString),timezone.utc).strftime("%Y-%m-%d:%H-%M-%S")
+
             elif self.function_type == FunctionType.PBKDF2PKCS5:
                 outputString = Crypto.PBKDF2PKCS5(localInputString, ReplaceValues(self.KdfSalt, BotData), self.KdfSaltSize, self.KdfIterations, self.KdfKeySize, self.KdfAlgorithm)
+
+            elif self.function_type == FunctionType.Translate:
+                outputString = localInputString
+                for entryKey, entryValue in self.TranslationDictionary.items():
+                    if entryKey in outputString:
+                        outputString = outputString.replace(entryKey, entryValue)
+                        if self.StopAfterFirstMatch: break
+            elif self.function_type == FunctionType.Unescape:
+                outputString = Unescape(localInputString)
+
+            elif self.function_type == FunctionType.UnixTimeToISO8601:
+                outputString = datetime.fromtimestamp(int(localInputString),timezone.utc).isoformat()
+
+            elif self.function_type == FunctionType.ClearCookies:
+                    BotData.CookiesSet(CVar("COOKIES",{},False,True))
+            elif self.function_type == FunctionType.HTMLEntityEncode:
+                outputString = escape(localInputString)
+            elif self.function_type == FunctionType.HTMLEntityDecode:
+                outputString = unescape(localInputString)
             else:
                 pass
             outputs.append(outputString)
-            i += 1
+
         print(f"Executed function {self.function_type} on input {localInputStrings} with outcome {outputString}")
         isList = len(outputs) > 1 or "[*]" in self.InputString or "(*)" in self.InputString or "{*}" in self.InputString
         InsertVariable(BotData,self.IsCapture,isList,outputs,self.VariableName,self.CreateEmpty)
@@ -425,7 +468,9 @@ class BlockFunction:
                 # In case the input is not base64 encoded
                 return ""
         digest = bytearray()
-        if hashAlg == "MD5":
+        if hashAlg == "MD4":
+            digest = Crypto.MD4(rawInput)
+        elif hashAlg == "MD5":
             digest = Crypto.MD5(rawInput)
         elif hashAlg == "SHA1":
             digest = Crypto.SHA1(rawInput)

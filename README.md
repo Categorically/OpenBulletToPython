@@ -22,9 +22,7 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
   - [x] URLEncode
   - [x] URLDecode
   - [x] Hash
-    - [ ] MD4
   - [x] HMAC
-    - [ ] MD4
   - [x] RandomNum
   - [x] RandomString
   - [x] CurrentUnixTime
@@ -41,6 +39,11 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
   - [x] Trim
   - [x] GetRandomUA
   - [x] PBKDF2PKCS5
+  - [x] UnixTimeToISO8601
+  - [x] Unescape
+  - [x] ClearCookies
+  - [x] HTMLEntityEncode
+  - [x] HTMLEntityDecode
 
 - REQUEST
   - [x] Standard
