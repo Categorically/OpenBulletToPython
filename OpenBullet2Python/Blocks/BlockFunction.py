@@ -18,6 +18,7 @@ import random
 import time
 import math
 from enum import Enum
+from OpenBullet2Python.Models.CVar import CVar
 
 def RandomString(localInputString:str):
     _lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -442,6 +443,8 @@ class BlockFunction:
             elif self.function_type == FunctionType.UnixTimeToISO8601:
                 outputString = datetime.fromtimestamp(int(localInputString),timezone.utc).isoformat()
 
+            elif self.function_type == FunctionType.ClearCookies:
+                    BotData.CookiesSet(CVar("COOKIES",{},False,True))
             else:
                 pass
             outputs.append(outputString)

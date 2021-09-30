@@ -61,11 +61,10 @@ class OBRequest():
         request = self.session.prepare_request(self.request)
         self.response = self.session.send(request, timeout=self.timeout, allow_redirects=self.auto_redirect)
 
-
         address = self.response.url
         responseCode = str(self.response.status_code)
         headers = dict(self.response.headers)
-        cookies = dict(self.response.cookies)
+        cookies = dict(self.session.cookies)
 
 
         return (address, responseCode, headers, cookies)
