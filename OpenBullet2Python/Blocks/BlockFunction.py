@@ -10,12 +10,14 @@ from OpenBullet2Python.Functions.UserAgent.UserAgent import UserAgent
 from OpenBullet2Python.Extensions import Unescape
 from urllib.parse import quote, unquote
 from datetime import datetime
+from datetime import timezone
 import base64
 import re
 from random import randint
 import random
 import time
 import math
+from enum import Enum
 
 def RandomString(localInputString:str):
     _lowercase = "abcdefghijklmnopqrstuvwxyz"
@@ -72,7 +74,7 @@ def RandomNum(minNum,maxNum,padNum:bool):
                 return randomNumString
 
                 
-class FunctionType:
+class FunctionType(str, Enum):
     Constant = "Constant"
     Base64Encode = "Base64Encode"
     Base64Decode = "Base64Decode"
@@ -343,46 +345,46 @@ class BlockFunction:
         for localInputString in localInputStrings:
             # localInputString = localInputStrings[i]
             outputString = ""
-            if self.function_type == "Constant":
+            if self.function_type == FunctionType.Constant:
                 outputString = localInputString
 
-            elif self.function_type == "Base64Encode":
+            elif self.function_type == FunctionType.Base64Encode:
                 outputString = ToBase64(localInputString)
 
-            elif self.function_type == "Base64Decode":
+            elif self.function_type == FunctionType.Base64Decode:
                 outputString = FromBase64(localInputString)
 
-            elif self.function_type == "Length":
+            elif self.function_type == FunctionType.Length:
                 outputString = str(len(localInputString))
 
-            elif self.function_type == "ToLowercase":
+            elif self.function_type == FunctionType.ToLowercase:
                 outputString = localInputString.lower()
 
-            elif self.function_type == "ToUppercase":
+            elif self.function_type == FunctionType.ToUppercase:
                 outputString = localInputString.upper()
 
-            elif self.function_type == "Replace":
+            elif self.function_type == FunctionType.Replace:
                 if self.UseRegex:
                     outputString = re.sub(ReplaceValues(self.ReplaceWhat,BotData), ReplaceValues(self.ReplaceWith,BotData), localInputString)
                 else:
                     outputString = localInputString.replace(ReplaceValues(self.ReplaceWhat,BotData),ReplaceValues(self.ReplaceWith,BotData))
 
-            elif self.function_type == "URLEncode":
+            elif self.function_type == FunctionType.URLEncode:
                 outputString = quote(localInputString,errors="replace")
 
-            elif self.function_type == "URLDecode":
+            elif self.function_type == FunctionType.URLDecode:
                 outputString = unquote(localInputString)
 
-            elif self.function_type == "Hash":
+            elif self.function_type == FunctionType.Hash:
                 outputString = self.GetHash(localInputString,self.HashType,self.InputBase64).lower()
 
-            elif self.function_type == "HMAC":
+            elif self.function_type == FunctionType.HMAC:
                  outputString = self.Hmac(localInputString,self.HashType,self.HmacKey,self.InputBase64,self.KeyBase64,self.HmacBase64)
 
-            elif self.function_type == "RandomNum":
+            elif self.function_type == FunctionType.RandomNum:
                 outputString = RandomNum(ReplaceValues(self.RandomMin,BotData),ReplaceValues(self.RandomMax,BotData),self.RandomZeroPad)
 
-            elif self.function_type == "RandomString":
+            elif self.function_type == FunctionType.RandomString:
                 outputString = localInputString
                 outputString = RandomString(outputString)
 
@@ -423,7 +425,7 @@ class BlockFunction:
 
             elif self.function_type == FunctionType.UnixTimeToDate:
                 # Static dateformat because dates
-                outputString = datetime.fromtimestamp(int(localInputString)).strftime("%Y-%m-%d:%H-%M-%S")
+                outputString = datetime.fromtimestamp(int(localInputString),timezone.utc).strftime("%Y-%m-%d:%H-%M-%S")
 
             elif self.function_type == FunctionType.PBKDF2PKCS5:
                 outputString = Crypto.PBKDF2PKCS5(localInputString, ReplaceValues(self.KdfSalt, BotData), self.KdfSaltSize, self.KdfIterations, self.KdfKeySize, self.KdfAlgorithm)
@@ -436,6 +438,9 @@ class BlockFunction:
                         if self.StopAfterFirstMatch: break
             elif self.function_type == FunctionType.Unescape:
                 outputString = Unescape(localInputString)
+
+            elif self.function_type == FunctionType.UnixTimeToISO8601:
+                outputString = datetime.fromtimestamp(int(localInputString),timezone.utc).isoformat()
 
             else:
                 pass
