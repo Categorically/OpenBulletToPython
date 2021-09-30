@@ -1,5 +1,5 @@
-# OpenBullet2Python
-OpenBullet2Python using code from OpenBullet
+# OpenBulletToPython
+OpenBulletToPython using code from OpenBullet
 
 This is not a user enumeration tool. The name is borrowed from OpenBullet but will not have support for wordlists, wordlist types.
 
