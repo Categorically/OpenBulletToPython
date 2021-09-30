@@ -42,6 +42,7 @@ This is not a user enumeration tool. The name is borrowed from OpenBullet but wi
   - [x] GetRandomUA
   - [x] PBKDF2PKCS5
   - [x] UnixTimeToISO8601
+  - [x] Unescape
 
 - REQUEST
   - [x] Standard
