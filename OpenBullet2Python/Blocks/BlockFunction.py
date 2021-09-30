@@ -7,6 +7,7 @@ from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, \
     FromBase64
 from OpenBullet2Python.Functions.Crypto.Crypto import Crypto
 from OpenBullet2Python.Functions.UserAgent.UserAgent import UserAgent
+from OpenBullet2Python.Extensions import Unescape
 from urllib.parse import quote, unquote
 from datetime import datetime
 import base64
@@ -145,6 +146,10 @@ class BlockFunction:
         self.KdfIterations = 1
         self.KdfKeySize = 16
         self.KdfAlgorithm = "SHA1"
+
+        # Translate
+        self.TranslationDictionary = {}
+        self.StopAfterFirstMatch = True
     def FromLS(self,line:LineParser):
 
         if str(line.current).startswith("!"):
@@ -192,12 +197,14 @@ class BlockFunction:
                 boolean_name, boolean_value = SetBool(line,self)
                 self.Dict["Booleans"][boolean_name] = boolean_value
             self.Dict["TranslationDictionary"] = {}
+
             while line.current and Lookahead(line) == "Parameter":
                 EnsureIdentifier(line, "KEY")
                 k = ParseLiteral(line)
                 EnsureIdentifier(line, "VALUE")
                 v = ParseLiteral(line)
                 self.Dict["TranslationDictionary"][k] = v
+                self.TranslationDictionary[k] = v
 
         elif function_type == FunctionType.DateToUnixTime:
             self.Dict["DateFormat"] = ParseLiteral(line)
@@ -333,9 +340,8 @@ class BlockFunction:
         localInputStrings = ReplaceValuesRecursive(self.InputString,BotData)
         outputs = []
 
-        i = 0
-        while i < len(localInputStrings):
-            localInputString = localInputStrings[i]
+        for localInputString in localInputStrings:
+            # localInputString = localInputStrings[i]
             outputString = ""
             if self.function_type == "Constant":
                 outputString = localInputString
@@ -372,45 +378,69 @@ class BlockFunction:
 
             elif self.function_type == "HMAC":
                  outputString = self.Hmac(localInputString,self.HashType,self.HmacKey,self.InputBase64,self.KeyBase64,self.HmacBase64)
+
             elif self.function_type == "RandomNum":
                 outputString = RandomNum(ReplaceValues(self.RandomMin,BotData),ReplaceValues(self.RandomMax,BotData),self.RandomZeroPad)
+
             elif self.function_type == "RandomString":
                 outputString = localInputString
                 outputString = RandomString(outputString)
+
             elif self.function_type == FunctionType.CurrentUnixTime:
                 outputString = str(int(time.time()))
+
             elif self.function_type == FunctionType.Ceil:
                 outputString = str(math.ceil(float(localInputString)))
+
             elif self.function_type == FunctionType.Floor:
                 outputString = str(math.floor(float(localInputString)))
+
             elif self.function_type == FunctionType.Round:
                 outputString = str(round(float(localInputString)))
+
             elif self.function_type == FunctionType.CountOccurrences:
                 outputString = str(localInputString.count(self.StringToFind))
+
             elif self.function_type == FunctionType.CharAt:
                 outputString = str(localInputString[int(ReplaceValues(self.charIndex,BotData))])
+
             elif self.function_type == FunctionType.ReverseString:
                 charArray = list(localInputString)
                 charArray.reverse()
                 outputString = "".join(charArray)
+
             elif self.function_type == FunctionType.Substring:
                 outputString = localInputString[int(ReplaceValues(self.SubstringIndex,BotData)): int(ReplaceValues(self.SubstringIndex,BotData)) + int(ReplaceValues(self.SubstringLength, BotData))]
+
             elif self.function_type == FunctionType.GetRandomUA:
                 if self.UserAgentSpecifyBrowser:
                     outputString = UserAgent.ForBrowser(self.UserAgentBrowser)
                 else:
                     outputString = UserAgent.Random()
+
             elif self.function_type == FunctionType.Trim:
                 outputString = localInputString.strip()
+
             elif self.function_type == FunctionType.UnixTimeToDate:
                 # Static dateformat because dates
                 outputString = datetime.fromtimestamp(int(localInputString)).strftime("%Y-%m-%d:%H-%M-%S")
+
             elif self.function_type == FunctionType.PBKDF2PKCS5:
                 outputString = Crypto.PBKDF2PKCS5(localInputString, ReplaceValues(self.KdfSalt, BotData), self.KdfSaltSize, self.KdfIterations, self.KdfKeySize, self.KdfAlgorithm)
+
+            elif self.function_type == FunctionType.Translate:
+                outputString = localInputString
+                for entryKey, entryValue in self.TranslationDictionary.items():
+                    if entryKey in outputString:
+                        outputString = outputString.replace(entryKey, entryValue)
+                        if self.StopAfterFirstMatch: break
+            elif self.function_type == FunctionType.Unescape:
+                outputString = Unescape(localInputString)
+
             else:
                 pass
             outputs.append(outputString)
-            i += 1
+
         print(f"Executed function {self.function_type} on input {localInputStrings} with outcome {outputString}")
         isList = len(outputs) > 1 or "[*]" in self.InputString or "(*)" in self.InputString or "{*}" in self.InputString
         InsertVariable(BotData,self.IsCapture,isList,outputs,self.VariableName,self.CreateEmpty)
