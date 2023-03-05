@@ -1,10 +1,10 @@
-from OpenBullet2Python.LoliScript.LineParser import ParseToken,LineParser
+from LoliScript.LineParser import ParseToken,LineParser
 import re
-from OpenBullet2Python.Blocks.BlockParse import BlockParse
-from OpenBullet2Python.Blocks.BlockRequest import BlockRequest
-from OpenBullet2Python.Blocks.BlockKeycheck import BlockKeycheck
-from OpenBullet2Python.Blocks.BlockFunction import BlockFunction
-from OpenBullet2Python.Blocks.BlockUtility import BlockUtility
+from Blocks.BlockParse import BlockParse
+from Blocks.BlockRequest import BlockRequest
+from Blocks.BlockKeycheck import BlockKeycheck
+from Blocks.BlockFunction import BlockFunction
+from Blocks.BlockUtility import BlockUtility
 BlockMappings  = {"BYPASSCF":"BlockBypassCF" ,
              "SOLVECAPTCHA":"BlockSolveCaptcha" ,
              "REPORTCAPTCHA":"BlockReportCaptcha" ,

@@ -1,19 +1,19 @@
 from genericpath import isdir
 import types
-from OpenBullet2Python.Models.BotData import BotData
+from Models.BotData import BotData
 from enum import Enum
-from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel, \
+from LoliScript.LineParser import LineParser, ParseLabel, \
     ParseEnum, ParseLiteral, Lookahead, SetBool, ParseToken, \
     ParseInt, EnsureIdentifier
-from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, \
+from Blocks.BlockBase import ReplaceValuesRecursive, \
     InsertVariable, ReplaceValues
-from OpenBullet2Python.Models.CVar import CVar
-from OpenBullet2Python.Models.CVar import VarType
-from OpenBullet2Python.Functions.Conditions.Condition import Verify
-from OpenBullet2Python.Functions.Conversion.Conversion import Conversion
+from Models.CVar import CVar
+from Models.CVar import VarType
+from Functions.Conditions.Condition import Verify
+from Functions.Conversion.Conversion import Conversion
 from random import choice, shuffle
 import os
-from OpenBullet2Python.Functions.Files.Files import NotInCWD
+from Functions.Files.Files import NotInCWD
 from shutil import copyfile, move, rmtree
 
 def string_escape(s, encoding='utf-8'):

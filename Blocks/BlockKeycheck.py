@@ -1,8 +1,8 @@
-from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier,CheckIdentifier
-from OpenBullet2Python.Models.KeyChain import KeychainType, KeychainMode, KeyChain
-from OpenBullet2Python.Models.Key import Key
-from OpenBullet2Python.Functions.Conditions.Condition import Comparer
-from OpenBullet2Python.Models.BotData import BotData
+from LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier,CheckIdentifier
+from Models.KeyChain import KeychainType, KeychainMode, KeyChain
+from Models.Key import Key
+from Functions.Conditions.Condition import Comparer
+from Models.BotData import BotData
 class BlockKeycheck:
     def __init__(self):
         self.Dict = {}

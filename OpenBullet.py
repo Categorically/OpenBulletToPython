@@ -1,7 +1,7 @@
-from OpenBullet2Python.LoliScript.Loliscript import CompressedLines
-from OpenBullet2Python.LoliScript.BlockParser import Parse
-from OpenBullet2Python.Models.BotData import BotData
-from OpenBullet2Python.Models.CVar import CVar
+from LoliScript.Loliscript import CompressedLines
+from LoliScript.BlockParser import Parse
+from Models.BotData import BotData
+from Models.CVar import CVar
 import os
 
 class OpenBullet:

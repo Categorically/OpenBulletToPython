@@ -1,9 +1,9 @@
 import enum
-from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt
+from LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt
 
-from OpenBullet2Python.Blocks.BlockBase import ReplaceValues,InsertVariable
+from Blocks.BlockBase import ReplaceValues,InsertVariable
 
-from OpenBullet2Python.Functions.Parsing.Parse import LR, JSON, REGEX, CSS
+from Functions.Parsing.Parse import LR, JSON, REGEX, CSS
 from enum import Enum
 
 class ParseType(str, Enum):

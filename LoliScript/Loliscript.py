@@ -1,5 +1,5 @@
 
-from OpenBullet2Python.LoliScript.BlockParser import IsBlock
+from LoliScript.BlockParser import IsBlock
 
 def CompressedLines(config_text) -> list:
     i = 0

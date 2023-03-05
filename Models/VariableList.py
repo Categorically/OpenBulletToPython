@@ -1,5 +1,5 @@
-from OpenBullet2Python.Models.CVar import CVar
-from OpenBullet2Python.Models.CVar import VarType
+from Models.CVar import CVar
+from Models.CVar import VarType
 class VariableList:
     def __init__(self):
         self.all = []

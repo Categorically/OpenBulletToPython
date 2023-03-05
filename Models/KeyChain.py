@@ -1,5 +1,5 @@
 from enum import Enum
-from OpenBullet2Python.Models.Key import Key
+from Models.Key import Key
 class KeychainType(Enum):
     Success = "Success"
     Failure = "Failure"

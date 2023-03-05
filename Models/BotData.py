@@ -1,4 +1,4 @@
-from OpenBullet2Python.Models.VariableList import VariableList
+from Models.VariableList import VariableList
 
 from enum import Enum
 

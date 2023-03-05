@@ -1,7 +1,7 @@
 from requests import Request, Session
 from requests.auth import HTTPBasicAuth
 from requests.utils import quote
-from OpenBullet2Python.Functions.Conversion.Conversion import Conversion, EncodingType
+from Functions.Conversion.Conversion import Conversion, EncodingType
 from enum import Enum
 import random
 from math import floor

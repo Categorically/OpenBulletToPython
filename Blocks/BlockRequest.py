@@ -1,9 +1,9 @@
-from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
-from OpenBullet2Python.Blocks.BlockBase import ReplaceValues, ReplaceValuesRecursive
-from OpenBullet2Python.Models.BotData import BotData
-from OpenBullet2Python.Models.CVar import CVar
-from OpenBullet2Python.Functions.Requests.Requests import OBRequest
-from OpenBullet2Python.Functions.Requests.Requests import MultipartContent
+from LoliScript.LineParser import LineParser, ParseLabel,ParseEnum,ParseLiteral,Lookahead, SetBool,ParseToken,ParseInt,EnsureIdentifier
+from Blocks.BlockBase import ReplaceValues, ReplaceValuesRecursive
+from Models.BotData import BotData
+from Models.CVar import CVar
+from Functions.Requests.Requests import OBRequest
+from Functions.Requests.Requests import MultipartContent
 from enum import Enum
 
 def ParseString(input_string, separator, count) -> list:

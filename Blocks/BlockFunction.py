@@ -1,13 +1,13 @@
-from OpenBullet2Python.LoliScript.LineParser import LineParser, ParseLabel, \
+from LoliScript.LineParser import LineParser, ParseLabel, \
     ParseEnum, ParseLiteral, Lookahead, SetBool, ParseToken, \
     ParseInt, EnsureIdentifier
-from OpenBullet2Python.Blocks.BlockBase import ReplaceValuesRecursive, \
+from Blocks.BlockBase import ReplaceValuesRecursive, \
     InsertVariable, ReplaceValues
-from OpenBullet2Python.Functions.Encoding.Encode import ToBase64, \
+from Functions.Encoding.Encode import ToBase64, \
     FromBase64
-from OpenBullet2Python.Functions.Crypto.Crypto import Crypto
-from OpenBullet2Python.Functions.UserAgent.UserAgent import UserAgent
-from OpenBullet2Python.Extensions import Unescape
+from Functions.Crypto.Crypto import Crypto
+from Functions.UserAgent.UserAgent import UserAgent
+from Extensions import Unescape
 from urllib.parse import quote, unquote
 from datetime import datetime
 from datetime import timezone
@@ -18,7 +18,7 @@ import random
 import time
 import math
 from enum import Enum
-from OpenBullet2Python.Models.CVar import CVar
+from Models.CVar import CVar
 from html import escape, unescape
 
 def RandomString(localInputString:str):
