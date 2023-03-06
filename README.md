@@ -2,74 +2,86 @@
 OpenBulletToPython using code from OpenBullet
 
 This is not a user enumeration tool. The name is borrowed from OpenBullet but will not have support for wordlists, wordlist types.
+<details>
+  <summary>Parsing Loliscript</summary>
 
-# Parsing Loliscript
-- [x] PARSE
-- [x] REQUEST
-- [x] KEYCHECK
-- [x] FUNCTIONS
-- [x] UTILITY
+  - [x] PARSE
+  - [x] REQUEST
+  - [x] KEYCHECK
+  - [x] FUNCTIONS
+  - [x] UTILITY
+</details>
+<details>
+  <summary>Processing Blocks</summary>
 
-# Processing Blocks
-- FUNCTION
-  - [x] Constant
-  - [x] Base64Encode
-  - [x] Base64Decode
-  - [x] ToUppercase
-  - [x] ToLowercase
-  - [x] Length
-  - [x] Replace
-  - [x] URLEncode
-  - [x] URLDecode
-  - [x] Hash
-  - [x] HMAC
-  - [x] RandomNum
-  - [x] RandomString
-  - [x] CurrentUnixTime
-  - [x] UnixTimeToDate
-    - [ ] Dynamic DateFormat
-  - [x] Ceil
-  - [x] Floor
-  - [x] Round
-  - [ ] Compute
-  - [x] CountOccurrences
-  - [x] CharAt
-  - [x] Substring
-  - [x] ReverseString
-  - [x] Trim
-  - [x] GetRandomUA
-  - [x] PBKDF2PKCS5
-  - [x] UnixTimeToISO8601
-  - [x] Unescape
-  - [x] ClearCookies
-  - [x] HTMLEntityEncode
-  - [x] HTMLEntityDecode
+  - FUNCTION
+    - [x] Constant
+    - [x] Base64Encode
+    - [x] Base64Decode
+    - [x] ToUppercase
+    - [x] ToLowercase
+    - [x] Length
+    - [x] Replace
+    - [x] URLEncode
+    - [x] URLDecode
+    - [x] Hash
+    - [x] HMAC
+    - [x] RandomNum
+    - [x] RandomString
+    - [x] CurrentUnixTime
+    - [x] UnixTimeToDate
+      - [ ] Dynamic DateFormat
+    - [x] Ceil
+    - [x] Floor
+    - [x] Round
+    - [ ] Compute
+    - [x] CountOccurrences
+    - [x] CharAt
+    - [x] Substring
+    - [x] ReverseString
+    - [x] Trim
+    - [x] GetRandomUA
+    - [x] PBKDF2PKCS5
+    - [x] UnixTimeToISO8601
+    - [x] Unescape
+    - [x] ClearCookies
+    - [x] HTMLEntityEncode
+    - [x] HTMLEntityDecode
+  - REQUEST
+    - [x] Standard
+    - [x] BasicAuth
+    - [x] Multipart
+    - [x] Raw
 
-- REQUEST
-  - [x] Standard
-  - [x] BasicAuth
-  - [x] Multipart
-  - [x] Raw
+  - PARSE
+    - [x] LR
+    - [x] CSS
+    - [x] JSON
+    - [x] REGEX
+      - [ ] EncodeOutput
+      - [ ] DotMatches
 
-- PARSE
-  - [x] LR
-  - [x] CSS
-  - [x] JSON
-  - [x] REGEX
-    - [ ] EncodeOutput
-    - [ ] DotMatches
+  - KEYCHECK
+    - [ ] CUSTOM
 
-- KEYCHECK
-  - [ ] CUSTOM
+  - UTILITY
+    - [x] List
+    - [x] Variable
+    - [x] Conversion
+    - [x] File
+    - [x] Folder
+</details>
+<details>
+  <summary>Proxy</summary>
 
-- UTILITY
-  - [x] List
-  - [x] Variable
-  - [x] Conversion
-  - [x] File
-  - [x] Folder
+  - [x] HTTP
+  - [x] HTTPS
+  - [x] SOCKS4
+  - [x] SCOKS5
+</details>
+<details>
+  <summary>Getting started</summary>
   
- 
 ```Python
 from OpenBullet import OpenBullet
 
@@ -94,3 +106,4 @@ print(open_bullet.run())
 >>> SUCCESS
 ```
  https://github.com/openbullet/openbullet
+</details>
