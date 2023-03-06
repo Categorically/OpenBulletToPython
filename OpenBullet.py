@@ -4,8 +4,31 @@ from Models.BotData import BotData, proxyType
 from Models.CVar import CVar
 from typing import Union
 import os
+import argparse
+
+def config_file_to_text(filepath:str) -> Union[str, None]:
+    loliscript = ""
+    try:
+        with open(filepath, "r") as f:
+            config_text = f.read()
+    except Exception as e:
+        print(e)
+        return None
+    
+    lines = config_text.splitlines()
+    for line_index, line in enumerate(lines):
+        if line == "[SCRIPT]": # Start of the script
+            try: # index out of bounds
+                loliscript = "\n".join(lines[line_index + 1:])
+            except Exception:
+                return None
+            break
+    if not loliscript: return None
+    return loliscript
 
 class OpenBullet:
+
+        
     def to_request_proxy(proxy:str, proxy_type:proxyType) -> Union[dict, None]:
         ip = None
         port = None
@@ -100,15 +123,18 @@ class OpenBullet:
         
     
 if __name__ == "__main__":
-    config_text = r"""REQUEST GET "https://google.com" 
-  
-  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" 
-  HEADER "Pragma: no-cache" 
-  HEADER "Accept: */*" 
+    parser = argparse.ArgumentParser(description='OpenBulletToPython')
+    parser.add_argument("-f", "--filename")
+    parser.add_argument("-t", "--text")
+    args = parser.parse_args()
 
-KEYCHECK 
-  KEYCHAIN Success OR 
-    KEY "title>Google" """
-
-    open_bullet = OpenBullet(config=config_text)
-    print(open_bullet.run())
+    config_text = ""
+    if args.filename:
+        config_text = config_file_to_text(args.filename)
+    elif args.text:
+        config_text = args.text
+        
+    if config_text:
+        bullet = OpenBullet(config=config_text)
+        print(bullet.run())
+        
