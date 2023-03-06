@@ -55,11 +55,11 @@ class OBRequest():
             elif c.Type == MultipartContentType.File:
                 self.request.files.append((c.Name, open(c.Value, "rb")))
         
-    def Perform(self, url, method):
+    def Perform(self, url, method, proxy):
         self.request.url = url
         self.request.method = method
         request = self.session.prepare_request(self.request)
-        self.response = self.session.send(request, timeout=self.timeout, allow_redirects=self.auto_redirect)
+        self.response = self.session.send(request, timeout=self.timeout, allow_redirects=self.auto_redirect, proxies=proxy)
 
         address = self.response.url
         responseCode = str(self.response.status_code)

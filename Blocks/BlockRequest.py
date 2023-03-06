@@ -160,10 +160,8 @@ class BlockRequest:
                 self.response_type = ResponseType.Base64String
                 output_variable = ParseLiteral(line)
                 self.output_variable = output_variable
-
-    def Process(self,BotData):
-
-
+    def Process(self,BotData:BotData):
+        proxy = BotData.proxy
         local_url = ReplaceValues(self.url,BotData)
         request = OBRequest()
         request.Setup(self.auto_redirect)
@@ -205,7 +203,7 @@ class BlockRequest:
 
 
         try:
-            (Address, ResponseCode, ResponseHeaders, ResponseCookies) = request.Perform(self.url, self.method)
+            (Address, ResponseCode, ResponseHeaders, ResponseCookies) = request.Perform(self.url, self.method, proxy)
             print(f"{self.method} {local_url}")
         except Exception as e:
             print(e)

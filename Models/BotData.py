@@ -3,6 +3,11 @@ from Models.VariableList import VariableList
 from enum import Enum
 
 
+class proxyType(str,Enum):
+    HTTP = "http"
+    HTTPS = "https"
+    SOCKS4 = "socks4"
+    SOCKS5 = "socks5"
 class BotData:
     class BotStatus(str,Enum):
         NONE = "NONE"
@@ -12,10 +17,11 @@ class BotData:
         BAN = "BAN"
         RETRY = "RETRY"
         CUSTOM = "CUSTOM"
-    def __init__(self,status=BotStatus.NONE):
+    def __init__(self,status=BotStatus.NONE, proxy:dict = None):
         self.Variables = VariableList()
         self.status = status
         self.cwd = None
+        self.proxy = proxy
 
     def ResponseSourceGet(self):
         return self.Variables.GetWithName("SOURCE").Value

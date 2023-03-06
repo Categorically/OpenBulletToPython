@@ -1,12 +1,51 @@
 from LoliScript.Loliscript import CompressedLines
 from LoliScript.BlockParser import Parse
-from Models.BotData import BotData
+from Models.BotData import BotData, proxyType
 from Models.CVar import CVar
+from typing import Union
 import os
 
 class OpenBullet:
-    def __init__(self,config:str, data:BotData = None, USER:str = None, PASS:str = None, output_path:str = None) -> None:
+    def to_request_proxy(proxy:str, proxy_type:proxyType) -> Union[dict, None]:
+        ip = None
+        port = None
+        username = None
+        password = None
 
+        try:
+            if proxy.count(":") == 1: # "ip:port"
+                ip, port = proxy.split(":", 1)
+            elif proxy.count(":") == 3: # "username:password:ip:port"
+                username, password, ip, port = proxy.split(":", 3)
+            
+        except Exception:
+            return None
+        proxy_uri = None
+        if username and password:
+            proxy_uri = username + ":" + password + "@" + ip + ":" + port
+        else:
+            proxy_uri = ip + ":" + port
+
+        request_proxy = {}
+        if proxy_type == proxyType.HTTP or proxy_type == proxyType.HTTPS:
+            request_proxy["http"] = "http://" + proxy_uri
+
+        if proxy_type == proxyType.HTTP:
+            request_proxy["https"] = "http://" + proxy_uri
+        elif proxy_type == proxyType.HTTPS:
+            request_proxy["https"] = "https://" + proxy_uri
+
+        if proxy_type == proxyType.SOCKS4:
+            request_proxy["http"] = "socks4://" + proxy_uri
+            request_proxy["https"] = "socks4://" + proxy_uri
+        elif proxy_type == proxyType.SOCKS5:
+            request_proxy["http"] = "socks5://" + proxy_uri
+            request_proxy["https"] = "socks5://" + proxy_uri
+        return request_proxy
+    def __init__(self,config:str, data:BotData = None, USER:str = None, PASS:str = None, output_path:str = None,
+                proxy:Union[str, None] = None, proxy_type:Union[str, proxyType] = proxyType.HTTP) -> None:
+        """Proxy format: 
+        Username:Password:Ip:Port"""
         self.blocks = []
         self.config = config
         if not data:
@@ -14,6 +53,10 @@ class OpenBullet:
         else:
             self.data = data
         
+        if proxy:
+            request_proxy = self.to_request_proxy(proxy, proxy_type)
+            self.data.proxy = request_proxy
+
         if USER:
             self.data.Variables.Set(CVar("USER",USER,False,True))
         if PASS:

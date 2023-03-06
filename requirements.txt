@@ -1,4 +1,4 @@
-requests
+requests[socks] # Socks4 and 5 supported
 # Jsonpath is for Jtoken parsing in JSON.
 jsonpath-ng
 beautifulsoup4
