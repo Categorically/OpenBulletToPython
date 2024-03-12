@@ -26,13 +26,12 @@ class BlockKeycheck:
             KC = KeyChain()
             kc = {}
             kc["Keys"] = []
-            KeyChainType = ParseEnum(line)
+            KCT = ParseEnum(line)
             
-            kc["Type"] = KeyChainType
-            KC.Type = KeychainType[KeyChainType]
-            if kc.get("Type") == "CUSTOM" and Lookahead(line) == "Literal":
+            kc["Type"] = KCT
+            KC.Type = KeychainType[KCT]
+            if kc.get("Type") == KeychainType.Custom and Lookahead(line) == "Literal":
                 kc["CustomType"] = ParseLiteral(line)
-            # kc["Mode"] = ParseEnum(line)
             KC_Mode = ParseEnum(line)
             kc["Mode"] = KC_Mode
             KC.Mode = KeychainMode[KC_Mode]

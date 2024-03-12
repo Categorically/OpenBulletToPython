@@ -1,6 +1,6 @@
 from enum import Enum
 from Models.Key import Key
-class KeychainType(Enum):
+class KeychainType(str, Enum):
     Success = "Success"
     Failure = "Failure"
     Ban = "Ban"
@@ -14,7 +14,7 @@ class KeyChain:
     def __init__(self,Type=None,Mode=None,banOn4XX=None,banOnToCheck=None,Keys=None):
         self.Type = KeychainType.Success
         self.Mode = KeychainMode.AND
-        self.Keys = []
+        self.Keys: list[Key] = []
 
     def CheckKeys(self,BotData):
         if self.Mode == KeychainMode.OR:
