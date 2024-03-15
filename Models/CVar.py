@@ -12,7 +12,7 @@ class CVar:
     Hidde: bool
     """
 
-    def __init__(self, Name:str, Value,IsCapture:bool,Hidden=False):
+    def __init__(self, Name:str, Value,IsCapture:bool=False,Hidden=False):
 
         if type(Value) == list:
             self.var_type = VarType.List
@@ -25,7 +25,8 @@ class CVar:
         self.Value = Value
         self.IsCapture = IsCapture
         self.Hidden = Hidden
-    
+    def __repr__(self) -> str:
+        return f"CVar(Name={self.Name}, Value={self.Value}, IsCapture={self.IsCapture}, Hidden={self.Hidden})"
     def ToString(self):
         if self.var_type == VarType.Single:
             return self.Value
