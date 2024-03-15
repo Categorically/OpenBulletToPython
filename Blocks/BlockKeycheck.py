@@ -66,10 +66,10 @@ class BlockKeycheck:
 
         self.Dict["KeyChains"] = KeyChains
 
-    def Process(self,BotData):
+    def Process(self,data:BotData):
         try:
-            if BotData.ResponseCodeGet().startswith("4") and self.banOn4XX:
-                BotData.status = BotData.BotStatus.BAN
+            if data.ResponseCodeGet().startswith("4") and self.banOn4XX:
+                data.status = BotData.BotStatus.BAN
                 return
         except Exception:
             pass
@@ -78,14 +78,14 @@ class BlockKeycheck:
         found = False
 
         for keychain in self.KeyChains_Objects:
-            if keychain.CheckKeys(BotData):
+            if keychain.CheckKeys(data):
                 found = True
                 if keychain.Type == KeychainType.Success:
-                    BotData.status = BotData.BotStatus.SUCCESS
+                    data.status = BotData.BotStatus.SUCCESS
                 elif keychain.Type == KeychainType.Failure:
-                    BotData.status = BotData.BotStatus.FAIL
+                    data.status = BotData.BotStatus.FAIL
                 elif keychain.Type == KeychainType.Ban:
-                    BotData.status = BotData.BotStatus.BAN
+                    data.status = BotData.BotStatus.BAN
 
         if not found and self.banOnToCheck:
-            BotData.status = BotData.BotStatus.BAN
+            data.status = BotData.BotStatus.BAN
