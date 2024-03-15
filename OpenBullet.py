@@ -1,10 +1,11 @@
-from LoliScript.Loliscript import CompressedLines
+from LoliScript.LoliScript import CompressedLines
 from LoliScript.BlockParser import Parse
 from Models.BotData import BotData, proxyType
 from Models.CVar import CVar
 from typing import Union
 import os
 import argparse
+from LoliScript.LoliScript import LoliScript
 
 def config_file_to_text(filepath:str) -> Union[str, None]:
     loliscript = ""
@@ -112,12 +113,16 @@ class OpenBullet:
                 return 
                 
     def run(self):
-        self.parse()
-        if self.blocks:
-            self.process()
-            return self.status()
-        else:
-            print("No blocks to process")
+        return self.RunBot()
+
+    def RunBot(self):
+        loli = LoliScript(self.config)
+        loli.reset()
+
+        while loli.CanProceed():
+            loli.TakeStep(self.data)
+
+        return self.status()
     def status(self):
         return self.data.status.value
         
