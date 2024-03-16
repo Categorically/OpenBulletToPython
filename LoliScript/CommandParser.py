@@ -2,10 +2,12 @@ from LoliScript.LineParser import ParseToken,LineParser
 from enum import Enum
 import re
 from LoliScript.SetParser import Parse as ParseSet
+from LoliScript.DeleteParser import Parse as ParseDelete
 from Models.BotData import BotData
 
 class CommandName(str, Enum):
     SET = "SET"
+    DELETE = "DELETE"
 
 def IsCommand(text):
     match = re.match("^([^ ]*)" , text)
@@ -27,12 +29,6 @@ def Parse(input_line, data:BotData):
 
     if identifier == CommandName.SET:
         return ParseSet(line, data)
+    elif identifier == CommandName.DELETE:
+        return ParseDelete(line, data)
             
-
-
-
-
-if __name__ == "__main__":
-    print(IsCommand("SET")) # True
-    print(IsCommand("GET")) # False
-
