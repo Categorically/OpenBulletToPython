@@ -1,5 +1,4 @@
 import re
-from Models.BotData import BotData
 from Models.CVar import VarType
 from Models.CVar import CVar
 def ParseArguments(input_string, delimL, delimR):
