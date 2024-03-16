@@ -51,7 +51,10 @@ class LoliScript():
 
         while self.IsEmptyOrCommentOrDisabled(currentLine):
             self.i += 1
-            currentLine = self.lines[self.i]
+            try:
+                currentLine = self.lines[self.i]
+            except Exception:
+                return
 
         lookahead = 0
 
