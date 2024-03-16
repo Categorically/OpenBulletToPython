@@ -1,8 +1,10 @@
 from Models.CVar import CVar
 from Models.CVar import VarType
+
+from Functions.Conditions.Condition import Comparer, ReplaceAndVerify
 class VariableList:
     def __init__(self):
-        self.all = []
+        self.all:list[CVar] = []
     # Captures = [v for v in all if v.IsCapture == True and v.Hidden == False]
     def Captures(self):
         return [v for v in self.all if v.IsCapture == True and v.Hidden == False]
@@ -52,6 +54,9 @@ class VariableList:
         if self.VariableExists(variable.Name) == False: self.Set(variable)
     def Remove(self,name):
         self.all = [v for v in self.all if v.Name != name]
+
+    def RemoveWithComparer(self, comparer:Comparer, name:str, data):
+        self.all = [v for v in self.all if v.Hidden and not ReplaceAndVerify(v.Name, comparer, name, data)]
 
     def ToCaptureString(self):
         return " | ".join([v.Name + "=" + v.ToString() for v in self.Captures()]) 
