@@ -152,8 +152,8 @@ def ReplaceValuesRecursive(input_string,BotData):
     return theEnd(toReplace,BotData)
 
 def InsertVariable(BotData,isCapture,recursive,values,variableName,prefix="" ,suffix="" ,urlEncode=False ,createEmpty=True):
-    # thisList = [ReplaceValues(prefix, bot_data) + str(v).strip() + ReplaceValues(suffix,bot_data) for v in values]
-    thisList = values
+    thisList = [ReplaceValues(prefix, BotData) + str(v).strip() + ReplaceValues(suffix,BotData) for v in values]
+    
     if urlEncode == False: pass
 
     variable = None
