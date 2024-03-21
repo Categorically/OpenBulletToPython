@@ -1,5 +1,6 @@
 import re
-
+from Models.BotData import BotData
+from Blocks.BlockBase import ReplaceValues
 class LineParser:
     def __init__(self) -> None:
         self.current = ""
@@ -34,7 +35,9 @@ def ParseLabel(line:LineParser) -> str:
     return ParseToken(line,"Label",True,True)
 
 
-def ParseLiteral(line:LineParser) -> str:
+def ParseLiteral(line:LineParser,replace=False, data:BotData = None) -> str:
+    if replace:
+        return ReplaceValues(line.current, data)
     return ParseToken(line,"Literal",True,True)
 
     
