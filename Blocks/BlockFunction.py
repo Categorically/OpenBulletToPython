@@ -456,7 +456,7 @@ class BlockFunction:
 
         print(f"Executed function {self.function_type} on input {localInputStrings} with outcome {outputString}")
         isList = len(outputs) > 1 or "[*]" in self.InputString or "(*)" in self.InputString or "{*}" in self.InputString
-        InsertVariable(BotData,self.IsCapture,isList,outputs,self.VariableName,self.CreateEmpty)
+        InsertVariable(BotData,isCapture=self.IsCapture,recursive=isList,values=outputs,variableName=self.VariableName,createEmpty=self.CreateEmpty)
 
     def GetHash(self,baseString:str,hashAlg:str,inputBase64:bool):
         if not inputBase64:
